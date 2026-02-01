@@ -22,9 +22,9 @@
    - Quick pipeline overview
    - Key metrics and validation results
 
-3. **`EDA_SUMMARY_FOR_REPORT.md`**
-   - Complete EDA analysis
-   - All findings and interpretations
+3. **`EDA_REPORT.md`**
+   - Complete EDA analysis with tables and plot references
+   - All findings addressing rubric requirements
    - Feature engineering justification
 
 ### Supporting Documentation

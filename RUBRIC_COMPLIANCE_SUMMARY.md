@@ -115,7 +115,7 @@ ticker_df['volume_norm'] = volume_scaler.fit_transform(ticker_df[['volume']])
 ## Criterion 2: EDA (5/5) ✅
 
 ### (a) Data Completeness/Freshness/Quality ✅
-**Evidence:** `EDA_SUMMARY_FOR_REPORT.md` Section 1, `notebooks/eda_outputs/01_quality_summary.json`
+**Evidence:** `EDA_REPORT.md` Section 1, `notebooks/eda_outputs/01_quality_summary.json`
 
 - ✅ 262,257 observations, 100 stocks, 14.2 years (2009-2023)
 - ✅ No missing price data in critical fields
@@ -125,7 +125,7 @@ ticker_df['volume_norm'] = volume_scaler.fit_transform(ticker_df[['volume']])
 ---
 
 ### (b) Variables and Their Distributions ✅
-**Evidence:** `EDA_SUMMARY_FOR_REPORT.md` Section 2, `notebooks/eda_outputs/02_univariate_distributions.png`, `03_returns_distribution.png`
+**Evidence:** `EDA_REPORT.md` Section 2, `notebooks/eda_outputs/02_univariate_distributions.png`, `03_returns_distribution.png`
 
 - ✅ Price distributions (mean, median, std, ranges)
 - ✅ Returns distribution (mean: +0.29%, std: 34.66%)
@@ -135,7 +135,7 @@ ticker_df['volume_norm'] = volume_scaler.fit_transform(ticker_df[['volume']])
 ---
 
 ### (c) Anomalies - Outliers ✅
-**Evidence:** `EDA_SUMMARY_FOR_REPORT.md` Section 3
+**Evidence:** `EDA_REPORT.md` Section 3
 
 - ✅ IQR method: 25,372 price outliers (9.67%)
 - ✅ Extreme returns: 2,626 gains >10%, 1,818 losses >10%
@@ -144,7 +144,7 @@ ticker_df['volume_norm'] = volume_scaler.fit_transform(ticker_df[['volume']])
 ---
 
 ### (d) Relationships - Correlations ✅
-**Evidence:** `EDA_SUMMARY_FOR_REPORT.md` Section 4, `notebooks/eda_outputs/05_correlation_matrix.png`, `07_target_relationships.png`
+**Evidence:** `EDA_REPORT.md` Section 4, `notebooks/eda_outputs/05_correlation_matrix.png`, `07_target_relationships.png`
 
 - ✅ Correlation matrix (10 numeric variables)
 - ✅ S&P 500 return strongest predictor (+0.023)
@@ -154,7 +154,7 @@ ticker_df['volume_norm'] = volume_scaler.fit_transform(ticker_df[['volume']])
 ---
 
 ### Plots with Sufficient Explanation ✅
-**Evidence:** All plots in `notebooks/eda_outputs/`, detailed explanations in `EDA_SUMMARY_FOR_REPORT.md`
+**Evidence:** All plots in `notebooks/eda_outputs/`, detailed explanations in `EDA_REPORT.md`
 
 **9 artifacts generated:**
 1. Quality summary (JSON)
@@ -176,7 +176,7 @@ Each plot has:
 
 ## Criterion 3: Feature Identification from EDA (2/2) ✅
 
-**Evidence:** `EDA_SUMMARY_FOR_REPORT.md` Section 9 "Recommendations for Modeling"
+**Evidence:** `EDA_REPORT.md` Section "Recommendations for Feature Engineering"
 
 Not just plots - **explicit connection from EDA findings to features:**
 
@@ -269,7 +269,7 @@ Not just plots - **explicit connection from EDA findings to features:**
 
 ### Must Include:
 1. **`PIPELINE_SUMMARY.md`** - Quick pipeline overview with key numbers
-2. **`EDA_SUMMARY_FOR_REPORT.md`** - Comprehensive EDA findings
+2. **`EDA_REPORT.md`** - Comprehensive EDA findings with tables and plot references
 3. **`data/processed/04_feature_engineering_summary.json`** - Normalization evidence
 4. **`notebooks/eda_outputs/05_correlation_matrix.png`** - Relationships
 5. **`notebooks/eda_outputs/07_target_relationships.png`** - News impact validation

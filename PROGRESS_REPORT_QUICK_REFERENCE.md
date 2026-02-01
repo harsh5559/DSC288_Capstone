@@ -65,7 +65,7 @@ All rubric requirements completed with normalization implemented.
 
 ### Must Include:
 1. **Pipeline:** `PIPELINE_SUMMARY.md`, `scripts/04_feature_engineering.py`
-2. **EDA:** `EDA_SUMMARY_FOR_REPORT.md`, `notebooks/01_EDA.ipynb`
+2. **EDA:** `EDA_REPORT.md`, `notebooks/01_EDA.ipynb`
 3. **Normalization:** `data/processed/04_feature_engineering_summary.json`
 
 ### Supporting:
