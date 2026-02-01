@@ -1,0 +1,22 @@
+{
+  "alignment_timestamp": "2026-01-31T21:29:14.623744",
+  "total_records": 262257,
+  "num_tickers": 100,
+  "date_range": {
+    "start": "2009-10-07",
+    "end": "2023-12-14"
+  },
+  "news_coverage": {
+    "records_with_news": 3821,
+    "alignment_rate": 1.4569677835100685
+  },
+  "target_distribution": {
+    "hold": 182914,
+    "sell": 40261,
+    "buy": 39082
+  },
+  "market_context_coverage": {
+    "records_with_sp500": 226612,
+    "coverage_rate": 86.40837041527966
+  }
+}

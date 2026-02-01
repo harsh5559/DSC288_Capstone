@@ -1,0 +1,39 @@
+{
+  "engineering_timestamp": "2026-01-31T21:36:13.983632",
+  "total_records": 262257,
+  "original_features": 16,
+  "new_features": 19,
+  "total_features": 35,
+  "feature_categories": {
+    "normalized": 6,
+    "technical_indicators": 9,
+    "market_relative": 3,
+    "price_ratios": 2
+  },
+  "normalization_methods": {
+    "prices": "MinMaxScaler (0-1 range, per ticker)",
+    "volume": "StandardScaler (z-score, per ticker)",
+    "returns": "StandardScaler (z-score, per ticker)"
+  },
+  "new_feature_list": [
+    "open_norm",
+    "high_norm",
+    "low_norm",
+    "close_norm",
+    "volume_norm",
+    "return_norm",
+    "sma_5",
+    "sma_20",
+    "sma_50",
+    "price_to_sma5",
+    "price_to_sma20",
+    "momentum_5",
+    "momentum_20",
+    "volatility_20",
+    "volume_ma_20",
+    "volume_ratio",
+    "excess_return",
+    "market_up",
+    "market_down"
+  ]
+}

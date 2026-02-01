@@ -1,0 +1,64 @@
+{
+  "loading_timestamp": "2026-01-31T21:11:00.920438",
+  "datasets": {
+    "financial_phrasebank": {
+      "file": "financial_phrasebank_raw.parquet",
+      "records": 2264,
+      "columns": [
+        "sentence",
+        "sentiment"
+      ],
+      "size_mb": 0.16
+    },
+    "fnspid_news": {
+      "file": "fnspid_news_raw.parquet",
+      "records": 20000,
+      "columns": [
+        "Date",
+        "Article_title",
+        "Stock_symbol",
+        "Url",
+        "Publisher",
+        "Author",
+        "Article",
+        "Lsa_summary",
+        "Luhn_summary",
+        "Textrank_summary",
+        "Lexrank_summary",
+        "source",
+        "Unnamed: 0"
+      ],
+      "size_mb": 31.03
+    },
+    "fnspid_prices": {
+      "file": "fnspid_prices_raw.parquet",
+      "records": 460293,
+      "columns": [
+        "date",
+        "volume",
+        "open",
+        "high",
+        "low",
+        "close",
+        "adj close",
+        "ticker"
+      ],
+      "size_mb": 9.32
+    },
+    "sp500": {
+      "file": "sp500_raw.parquet",
+      "records": 6289,
+      "columns": [
+        "Date",
+        "Open",
+        "High",
+        "Low",
+        "Close",
+        "Volume",
+        "Dividends",
+        "Stock Splits"
+      ],
+      "size_mb": 0.26
+    }
+  }
+}

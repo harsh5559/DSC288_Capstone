@@ -45,11 +45,16 @@ Thumbs.db
 data/raw/fnspid/*.parquet
 data/raw/fnspid/*.csv
 data/raw/fnspid/*.json
+data/raw/fnspid/Stock_news/
+data/raw/fnspid/Stock_price/
 data/raw/financial_phrasebank/*.csv
+data/raw/financial_phrasebank/data/
 data/raw/finqa/*.json
 data/raw/yahoo_sp500/*.csv
 data/processed/*.parquet
 data/processed/*.csv
+notebooks/eda_outputs/*.png
+notebooks/eda_outputs/*.json
 
 # Keep directory structure
 !data/raw/fnspid/.gitkeep

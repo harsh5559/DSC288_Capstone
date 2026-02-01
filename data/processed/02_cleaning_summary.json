@@ -1,0 +1,137 @@
+{
+  "cleaning_timestamp": "2026-01-31T21:11:16.211484",
+  "datasets": {
+    "prices": {
+      "records": 428243,
+      "columns": [
+        "date",
+        "volume",
+        "open",
+        "high",
+        "low",
+        "close",
+        "adj_close",
+        "ticker"
+      ],
+      "null_counts": {
+        "date": 0,
+        "volume": 0,
+        "open": 0,
+        "high": 0,
+        "low": 0,
+        "close": 0,
+        "adj_close": 1,
+        "ticker": 0
+      },
+      "dtypes": {
+        "date": "datetime64[ns]",
+        "volume": "float64",
+        "open": "float64",
+        "high": "float64",
+        "low": "float64",
+        "close": "float64",
+        "adj_close": "float64",
+        "ticker": "object"
+      }
+    },
+    "news": {
+      "records": 9721,
+      "columns": [
+        "date",
+        "article_title",
+        "ticker",
+        "url",
+        "publisher",
+        "author",
+        "article",
+        "lsa_summary",
+        "luhn_summary",
+        "text",
+        "lexrank_summary",
+        "source",
+        "unnamed:_0"
+      ],
+      "null_counts": {
+        "date": 0,
+        "article_title": 0,
+        "ticker": 0,
+        "url": 0,
+        "publisher": 9721,
+        "author": 9721,
+        "article": 0,
+        "lsa_summary": 0,
+        "luhn_summary": 0,
+        "text": 0,
+        "lexrank_summary": 0,
+        "source": 0,
+        "unnamed:_0": 0
+      },
+      "dtypes": {
+        "date": "datetime64[ns, UTC]",
+        "article_title": "object",
+        "ticker": "object",
+        "url": "object",
+        "publisher": "object",
+        "author": "float64",
+        "article": "object",
+        "lsa_summary": "object",
+        "luhn_summary": "object",
+        "text": "object",
+        "lexrank_summary": "object",
+        "source": "object",
+        "unnamed:_0": "float64"
+      }
+    },
+    "phrasebank": {
+      "records": 2259,
+      "columns": [
+        "sentence",
+        "sentiment"
+      ],
+      "null_counts": {
+        "sentence": 0,
+        "sentiment": 0
+      },
+      "dtypes": {
+        "sentence": "object",
+        "sentiment": "object"
+      }
+    },
+    "sp500": {
+      "records": 6289,
+      "columns": [
+        "date",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "dividends",
+        "stock_splits",
+        "sp500_return"
+      ],
+      "null_counts": {
+        "date": 0,
+        "open": 0,
+        "high": 0,
+        "low": 0,
+        "close": 0,
+        "volume": 0,
+        "dividends": 0,
+        "stock_splits": 0,
+        "sp500_return": 1
+      },
+      "dtypes": {
+        "date": "object",
+        "open": "float64",
+        "high": "float64",
+        "low": "float64",
+        "close": "float64",
+        "volume": "int64",
+        "dividends": "float64",
+        "stock_splits": "float64",
+        "sp500_return": "float64"
+      }
+    }
+  }
+}
