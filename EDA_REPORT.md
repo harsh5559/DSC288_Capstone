@@ -7,6 +7,48 @@
 
 ---
 
+## Master Combined Dataset Structure
+
+This EDA analyzes the output from **Stage 3** of the data pipeline (`data/processed/data_aligned.parquet`), which merges stock prices, financial news, and market context into a unified dataset for model training.
+
+### Dataset Schema
+
+**Table: Column Descriptions**
+| Column | Type | Description |
+|--------|------|-------------|
+| `date` | Date | Trading date |
+| `ticker` | String | Stock ticker symbol (100 unique stocks) |
+| `open` | Float | Opening price |
+| `high` | Float | Daily high price |
+| `low` | Float | Daily low price |
+| `close` | Float | Closing price |
+| `adj_close` | Float | Adjusted closing price (for splits/dividends) |
+| `volume` | Float | Trading volume (number of shares) |
+| `text` | String | Concatenated news articles (if available) |
+| `source` | String | News source(s) |
+| `news_count` | Integer | Number of news articles for that stock-day |
+| `sp500_close` | Float | S&P 500 index closing value |
+| `sp500_return` | Float | S&P 500 daily return (%) |
+| `next_day_close` | Float | Next trading day's closing price (for target creation) |
+| `next_day_return` | Float | Next day return (%) |
+| `target` | String | Prediction target: "buy" (>+2%), "hold" (-2% to +2%), "sell" (<-2%) |
+
+**Total Features:** 16 columns (Stage 3 output) + 19 engineered features (Stage 4) = **35 total features**
+
+### Sample Data
+
+**Example: First 3 records from the dataset**
+
+| date | ticker | open | high | low | close | volume | news_count | sp500_return | next_day_return | target |
+|------|--------|------|------|-----|-------|--------|------------|--------------|-----------------|--------|
+| 2009-10-07 | A | $19.36 | $19.46 | $19.23 | $19.38 | 2,222,200 | 0 | +0.75% | +1.11% | hold |
+| 2009-10-08 | A | $19.67 | $19.85 | $19.54 | $19.60 | 4,704,900 | 0 | +0.56% | +0.26% | hold |
+| 2009-10-09 | A | $19.59 | $19.70 | $19.57 | $19.65 | 2,916,600 | 0 | NaN | -0.04% | hold |
+
+**Note:** The `text` and `source` columns contain financial news articles when available (1.46% of records). Stage 4 of the pipeline adds 19 engineered features including technical indicators (SMA, momentum, volatility) and normalized price/volume features.
+
+---
+
 ## 1. Data Completeness, Freshness, and Quality
 
 ### Dataset Overview
