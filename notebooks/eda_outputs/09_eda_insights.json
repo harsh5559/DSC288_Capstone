@@ -1,0 +1,26 @@
+{
+  "data_quality": {
+    "total_records": 262257,
+    "num_tickers": 100,
+    "date_range_years": 14.184804928131417,
+    "missing_data": "4 columns with missing values"
+  },
+  "distributions": {
+    "target_balance": {
+      "hold": 0.6974608876026188,
+      "sell": 0.15351735130044195,
+      "buy": 0.14902176109693926
+    },
+    "returns_mean": 0.0029278879409421173,
+    "returns_std": 0.34662506425953243
+  },
+  "anomalies": {
+    "price_outliers": "25,372 (9.67%)",
+    "extreme_gains": 2626,
+    "extreme_losses": 1818
+  },
+  "relationships": {
+    "news_coverage": "1.46%",
+    "market_context_available": "86.41%"
+  }
+}

@@ -53,8 +53,8 @@ data/raw/finqa/*.json
 data/raw/yahoo_sp500/*.csv
 data/processed/*.parquet
 data/processed/*.csv
-notebooks/eda_outputs/*.png
-notebooks/eda_outputs/*.json
+# notebooks/eda_outputs/*.png  # Commented out - we need these for EDA report
+# notebooks/eda_outputs/*.json  # Commented out - small summary files needed
 
 # Keep directory structure
 !data/raw/fnspid/.gitkeep
