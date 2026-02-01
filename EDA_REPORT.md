@@ -37,15 +37,69 @@ This EDA analyzes the output from **Stage 3** of the data pipeline (`data/proces
 
 ### Sample Data
 
-**Example: First 3 records from the dataset**
+**Example: First 3 records from the dataset (showing all 16 columns)**
 
-| date | ticker | open | high | low | close | volume | news_count | sp500_return | next_day_return | target |
-|------|--------|------|------|-----|-------|--------|------------|--------------|-----------------|--------|
-| 2009-10-07 | A | $19.36 | $19.46 | $19.23 | $19.38 | 2,222,200 | 0 | +0.75% | +1.11% | hold |
-| 2009-10-08 | A | $19.67 | $19.85 | $19.54 | $19.60 | 4,704,900 | 0 | +0.56% | +0.26% | hold |
-| 2009-10-09 | A | $19.59 | $19.70 | $19.57 | $19.65 | 2,916,600 | 0 | NaN | -0.04% | hold |
+**Record 1:**
+```
+date            : 2009-10-07
+ticker          : A
+open            : $19.36
+high            : $19.46
+low             : $19.23
+close           : $19.38
+adj_close       : $17.69
+volume          : 2,222,200
+text            : None (no news this day)
+source          : None
+news_count      : 0
+sp500_close     : $1,065.48
+sp500_return    : +0.75%
+next_day_close  : $19.60
+next_day_return : +1.11%
+target          : hold
+```
 
-**Note:** The `text` and `source` columns contain financial news articles when available (1.46% of records). Stage 4 of the pipeline adds 19 engineered features including technical indicators (SMA, momentum, volatility) and normalized price/volume features.
+**Record 2:**
+```
+date            : 2009-10-08
+ticker          : A
+open            : $19.67
+high            : $19.85
+low             : $19.54
+close           : $19.60
+adj_close       : $17.89
+volume          : 4,704,900
+text            : None (no news this day)
+source          : None
+news_count      : 0
+sp500_close     : $1,071.49
+sp500_return    : +0.56%
+next_day_close  : $19.65
+next_day_return : +0.26%
+target          : hold
+```
+
+**Record 3:**
+```
+date            : 2009-10-09
+ticker          : A
+open            : $19.59
+high            : $19.70
+low             : $19.57
+close           : $19.65
+adj_close       : $17.94
+volume          : 2,916,600
+text            : None (no news this day)
+source          : None
+news_count      : 0
+sp500_close     : NaN (market data not available)
+sp500_return    : NaN
+next_day_close  : $19.64
+next_day_return : -0.04%
+target          : hold
+```
+
+**Note:** When news is available (1.46% of records), the `text` column contains concatenated article text and `source` contains the news source(s). Stage 4 of the pipeline adds 19 engineered features including technical indicators (SMA, momentum, volatility) and normalized price/volume features, bringing the total to **35 features**.
 
 ---
 
