@@ -197,31 +197,6 @@
 
 ---
 
-## What Makes This 15/15
-
-### Pipeline (5/5)
-- ✅ All 4 requirements met (merge, cleanse, augment, **normalize**)
-- ✅ Proper normalization: MinMaxScaler (prices) + StandardScaler (volume/returns)
-- ✅ Clear documentation with validation section
-
-### EDA (5/5)
-- ✅ All 4 requirements covered with visual + statistical analysis
-- ✅ 7 plots embedded in report with clear explanations
-- ✅ 15 tables with actual statistics
-
-### Feature Identification (2/2)
-- ✅ Not just plots - explicit EDA → feature traceability
-- ✅ Each feature justified by analysis findings
-
-### Quality (3/3)
-- ✅ Complete pipeline (4 stages done)
-- ✅ Comprehensive documentation (3 main files)
-- ✅ Mature work showing clear path to completion
-
-**No gaps. All requirements exceeded.**
-
----
-
 ## If Asked: "What's New About Our System?"
 
 > "Our multi-agent LLM system optimizes for **explainability** - every buy/hold/sell recommendation comes with a natural language explanation grounded in cited sources via RAG. Unlike traditional models that provide opaque predictions, our system uses specialized agents (fundamental, news/sentiment, technical analysts, optimistic/cautious viewpoints) to generate interpretable recommendations with data provenance. This addresses the trust gap for our target users: intermediate/beginner retail investors who value understanding over pure performance. Our data pipeline specifically filters to 2009-2023 to ensure we have BOTH prices AND news, enabling the system to cite actual articles rather than rely solely on technical analysis."
