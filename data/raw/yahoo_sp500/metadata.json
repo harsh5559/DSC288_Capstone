@@ -1,0 +1,26 @@
+{
+  "ticker": "^GSPC",
+  "name": "S&P 500 Index",
+  "source": "Yahoo Finance",
+  "downloaded_at": "2026-01-31T16:03:12.284686",
+  "date_range": {
+    "start": "1999-01-04 00:00:00-05:00",
+    "end": "2023-12-29 00:00:00-05:00"
+  },
+  "num_records": 6289,
+  "columns": [
+    "Open",
+    "High",
+    "Low",
+    "Close",
+    "Volume",
+    "Dividends",
+    "Stock Splits"
+  ],
+  "statistics": {
+    "close_min": 676.530029296875,
+    "close_max": 4796.56005859375,
+    "close_mean": 1947.6910573043738,
+    "volume_mean": 3225782157.735729
+  }
+}
