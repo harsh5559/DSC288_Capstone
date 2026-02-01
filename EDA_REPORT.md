@@ -1,6 +1,6 @@
 # Exploratory Data Analysis Report
 
-**Dataset:** Multi-Agent LLM Financial Decision Support System  
+
 **Analysis Period:** October 2009 - December 2023 (14.2 years)  
 **Observations:** 262,257 stock-day records across 100 tickers  
 **Analysis Date:** January 31, 2026
