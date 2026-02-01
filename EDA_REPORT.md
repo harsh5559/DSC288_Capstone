@@ -71,6 +71,8 @@
 - Typical stock price around $27, but mean inflated by high-priced stocks
 - Volume varies by several orders of magnitude across stocks
 
+**Feature Engineering Implication:** The right-skewed price distributions and wide range ($0.01 to $7,250) justify per-ticker MinMaxScaler normalization to bring all stocks to a comparable 0-1 scale. The high variance in volume across stocks similarly motivates StandardScaler for volume features.
+
 ### Next-Day Returns Distribution
 
 **Table 5: Returns Statistics**
@@ -93,6 +95,8 @@
 - High volatility (34.7% standard deviation)
 - Distribution roughly symmetric around zero
 - Extreme outliers present (max return likely data error or stock split)
+
+**Feature Engineering Implication:** High volatility (34.7% std) motivates the creation of `volatility_20` (rolling 20-day standard deviation) as a feature to capture risk. The extreme outliers justify StandardScaler normalization for returns to reduce the impact of anomalies on model training.
 
 ### Target Variable Distribution
 
@@ -169,6 +173,8 @@
 
 **Key Finding:** High-volume days often coincide with news events or earnings announcements, providing useful signal for attention mechanisms.
 
+**Feature Engineering Implication:** Volume spikes (top 1% = 50M+ shares) justify creating `volume_ratio` (current volume / 20-day average) and `volume_ma_20` features to capture abnormal trading activity. These features help the model identify significant events that may not have corresponding news in our dataset.
+
 ---
 
 ## 4. Relationships and Correlations
@@ -197,6 +203,8 @@
 2. **Price levels have negligible correlation** with next-day returns - stock price itself doesn't predict direction
 3. **Volume has minimal predictive power** at daily level
 
+**Feature Engineering Implication:** S&P 500's predictive power (+0.023 correlation, strongest among all features) justifies creating market-relative features: `sp500_return`, `excess_return` (stock return - market return), and `market_up`/`market_down` binary indicators. Since raw price levels show negligible correlation, we use price ratios like `price_to_sma5` and `price_to_sma20` instead to capture relative positioning.
+
 ### News Impact on Target Distribution
 
 **Table 13: Target Distribution by News Availability**
@@ -212,6 +220,8 @@
 
 **Key Finding:** Days with news show 10% more extreme movements (buy/sell signals) compared to days without news. This validates the importance of news in the multi-agent system.
 
+**Feature Engineering Implication:** The 10% increase in extreme movements on news days justifies creating news-based features: `news_count` (number of articles per day) and sentiment scores derived from Financial Phrasebank. These features will feed into the news/sentiment analyst agent in the multi-agent framework.
+
 ### Market Direction Impact
 
 **Table 14: Target Distribution by S&P 500 Direction**
@@ -223,6 +233,8 @@
 
 **Key Finding:** Individual stocks tend to follow market direction. When S&P 500 is down, sell signals increase to 19.3%. When S&P 500 is up, buy signals increase to 17.2%. Market context is critical for stock-level predictions. (See Figure 5, right subplot)
 
+**Feature Engineering Implication:** The strong relationship between market direction and stock targets confirms the need for S&P 500 features in the model. This finding directly motivated the inclusion of `sp500_return`, `excess_return`, and directional indicators in Stage 4 of the pipeline.
+
 ### Price-Volume Relationship
 
 ![Price-Volume Scatter Plot](notebooks/eda_outputs/06_price_volume_scatter.png)
@@ -230,6 +242,8 @@
 **Figure 6:** Scatter plot showing relationship between stock price and trading volume. Sample of 10,000 points for visualization clarity.
 
 **Key Finding:** No clear linear relationship between price and volume. High-volume days occur across all price ranges, suggesting volume and price should be treated as independent features.
+
+**Feature Engineering Implication:** The lack of correlation between price and volume confirms that both should be included as separate features in the model. Volume features (`volume`, `volume_ratio`, `volume_ma_20`) provide independent signal from price features (`close`, `sma_*`, `price_to_sma*`), capturing different aspects of market behavior (trading activity vs. valuation).
 
 ---
 
@@ -269,6 +283,8 @@
    - Steady coverage: 16K-24K records per year
    - No major data gaps
    - Recent years have more complete data
+
+**Feature Engineering Implication:** Temporal volatility patterns (e.g., COVID-19 spike) justify technical indicators that capture momentum and trend changes: `sma_5`, `sma_20`, `sma_50` (simple moving averages), `momentum_5`, `momentum_20` (rate of change), and price-to-moving-average ratios. These features help the model adapt to different market regimes.
 
 ---
 
