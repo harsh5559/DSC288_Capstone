@@ -14,7 +14,7 @@ This project develops a multi-agent LLM-based system for financial decision supp
 
 ## Current Status
 
-✅ **Week 2 Milestone (January 2026)** - Completed
+**Week 2 Milestone (January 2026)** - Completed
 - Data pipeline implemented (4 stages)
 - Exploratory data analysis completed
 - Feature engineering with normalization
@@ -172,13 +172,6 @@ See `requirements.txt` for complete list with versions.
 3. **Multi-Agent Implementation** - Build agent framework using OpenAI API
 4. **RAG System** - Implement retrieval-augmented generation for grounding explanations
 5. **Evaluation** - Temporal consistency, baseline comparison, explanation faithfulness
-
-## Project Timeline
-
-- **Week 2 (Jan 2026):** ✅ Data pipeline + EDA completed
-- **Week 4-6:** Model training and multi-agent system implementation
-- **Week 7-8:** RAG integration and evaluation
-- **Week 9-10:** Final testing, documentation, presentation
 
 ## Dataset Statistics
 
