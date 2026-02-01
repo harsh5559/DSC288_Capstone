@@ -6,7 +6,7 @@
 
 ---
 
-## Quick Stats (Memorize These)
+## Quick Stats
 
 | Metric | Value |
 |--------|-------|
