@@ -28,8 +28,7 @@
    - Feature engineering justification
 
 ### Supporting Documentation
-4. `PIPELINE_VALIDATION.md` - Full technical validation
-5. `scripts/README.md` - How to run pipeline
+4. `scripts/README.md` - How to run pipeline
 
 ### Visualizations (in `notebooks/eda_outputs/`)
 - `02_univariate_distributions.png` - Price/target distributions
@@ -214,9 +213,8 @@ Copy from WEEK2_PROGRESS_CHECKLIST.md → "References"
 
 Check these files in order:
 1. `WEEK2_PROGRESS_CHECKLIST.md` - Complete checklist
-2. `PIPELINE_SUMMARY.md` - Pipeline details
-3. `EDA_SUMMARY_FOR_REPORT.md` - EDA details
-4. `PIPELINE_VALIDATION.md` - Technical validation
+2. `PIPELINE_SUMMARY.md` - Pipeline details with validation section
+3. `EDA_REPORT.md` - EDA details
 
 All content is **copy-paste ready** for your report!
 

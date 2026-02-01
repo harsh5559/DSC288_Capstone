@@ -7,7 +7,7 @@
 ## Criterion 1: Data Pipeline (5/5) ✅
 
 ### (a) Data Merging ✅
-**Evidence:** `scripts/03_align_data.py`, `PIPELINE_VALIDATION.md` Section "Stage 3"
+**Evidence:** `scripts/03_align_data.py`, `PIPELINE_SUMMARY.md` (Stage 3 details)
 
 We merge 5 data sources:
 - FNSPID stock prices + news (merged on ticker, date)
@@ -24,7 +24,7 @@ We merge 5 data sources:
 ---
 
 ### (b) Data Cleansing ✅
-**Evidence:** `scripts/02_clean_data.py`, `PIPELINE_VALIDATION.md` Section "Stage 2"
+**Evidence:** `scripts/02_clean_data.py`, `PIPELINE_SUMMARY.md` (Stage 2 details)
 
 Comprehensive cleaning:
 - **NULL handling:** Forward-fill for prices, drop for missing critical fields
@@ -45,7 +45,7 @@ Comprehensive cleaning:
 ---
 
 ### (c) Data Augmentation/Enrichment ✅
-**Evidence:** `scripts/03_align_data.py`, `scripts/04_feature_engineering.py`, `PIPELINE_VALIDATION.md` Sections "Stage 3" and "Stage 4"
+**Evidence:** `scripts/03_align_data.py`, `scripts/04_feature_engineering.py`, `PIPELINE_SUMMARY.md` (Stages 3 & 4)
 
 **Created 19 new features:**
 
@@ -72,7 +72,7 @@ Comprehensive cleaning:
 ---
 
 ### (d) Data Normalization ✅
-**Evidence:** `scripts/04_feature_engineering.py`, `PIPELINE_VALIDATION.md` Section "Stage 4: Feature Engineering & Normalization"
+**Evidence:** `scripts/04_feature_engineering.py`, `PIPELINE_SUMMARY.md` (Stage 4 & Normalization section)
 
 **Normalization implemented per ticker** (to preserve relative patterns):
 
@@ -209,10 +209,9 @@ Not just plots - **explicit connection from EDA findings to features:**
 ### Comprehensive Documentation ✅
 
 **Pipeline Documentation:**
-1. `PIPELINE_SUMMARY.md` - Quick reference with all key numbers
-2. `PIPELINE_VALIDATION.md` - 347-line technical validation report
-3. `scripts/README.md` - Pipeline stage descriptions
-4. `data/processed/*_summary.json` - 4 JSON files with quantitative stats
+1. `PIPELINE_SUMMARY.md` - Complete pipeline documentation with validation section
+2. `scripts/README.md` - Pipeline stage descriptions
+3. `data/processed/*_summary.json` - 4 JSON files with quantitative stats
 
 **EDA Documentation:**
 1. `EDA_SUMMARY_FOR_REPORT.md` - 404-line comprehensive report
@@ -275,7 +274,7 @@ Not just plots - **explicit connection from EDA findings to features:**
 5. **`notebooks/eda_outputs/07_target_relationships.png`** - News impact validation
 
 ### Supporting Evidence:
-- `PIPELINE_VALIDATION.md` - Technical details if needed
+- `PIPELINE_SUMMARY.md` - Complete pipeline documentation with validation
 - `scripts/04_feature_engineering.py` - Normalization code
 - All other EDA plots in `notebooks/eda_outputs/`
 

@@ -163,13 +163,48 @@ print([col for col in df.columns if '_norm' in col])
 
 ---
 
+---
+
+## Pipeline Validation
+
+### Validation Tests Performed
+
+**Test 1: Data Integrity**
+- All 4 stages completed without errors
+- File formats verified (parquet for processed data)
+- Column schemas match expected structure
+
+**Test 2: Data Quality**
+- **Price data retention:** 93% (428,243 from 460,293 records)
+- **News data retention:** 49% after quality filtering (9,721 from 20,000 sampled)
+- **No missing values** in critical fields (ticker, date, close price)
+- **No duplicates** in (ticker, date) combinations
+
+**Test 3: Temporal Consistency**
+- Data sorted by (ticker, date) for all outputs
+- Targets use only historical data (no look-ahead bias)
+- Next-day predictions properly offset by 1 day
+
+**Test 4: Feature Engineering**
+- All 19 engineered features successfully created
+- Normalized features have correct scale:
+  - Prices: [0, 1] range (MinMaxScaler)
+  - Volume/Returns: z-scores (StandardScaler)
+- Technical indicators calculated correctly per ticker
+
+**Test 5: Pipeline Performance**
+- **Total runtime:** ~3 minutes for 100 stocks
+- **Memory usage:** ~2 GB peak
+- **Scalability:** Tested and validated, can scale to full dataset
+
+### Validation Evidence
+- `data/processed/*_summary.json` - Quantitative metrics for each stage
+- `data/processed/data_engineered.parquet` - Final validated dataset
+- `scripts/01-04_*.py` - Reproducible pipeline code
+
+---
+
 ## For Progress Report
 
 ### Summary Statement:
 > "We implemented a 4-stage data pipeline that loads data from 5 financial sources, cleans and standardizes formats, aligns news with stock prices during the 2009-2023 period where both are available (critical for explainable recommendations), and engineers 19 new features with proper normalization. The final dataset contains 262,257 observations across 100 stocks with 35 features (6 normalized, 9 technical indicators, 4 market-relative), ready for multi-agent LLM model development."
-
-### Key Evidence Files:
-1. `PIPELINE_VALIDATION.md` - Comprehensive technical validation
-2. `data/processed/*_summary.json` - Quantitative pipeline metrics
-3. `data/processed/data_engineered.parquet` - Final model-ready dataset
-4. `scripts/01-04_*.py` - Reproducible pipeline code

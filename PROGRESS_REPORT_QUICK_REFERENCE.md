@@ -69,7 +69,7 @@ All rubric requirements completed with normalization implemented.
 3. **Normalization:** `data/processed/04_feature_engineering_summary.json`
 
 ### Supporting:
-- `PIPELINE_VALIDATION.md` - Technical validation details
+- `PIPELINE_SUMMARY.md` - Complete pipeline documentation (includes validation)
 - `notebooks/eda_outputs/*.png` - All visualizations
 - `data/processed/*_summary.json` - Stage statistics
 

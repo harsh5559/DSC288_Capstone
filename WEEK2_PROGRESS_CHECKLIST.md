@@ -6,8 +6,8 @@
 - [x] **Stage 1:** Data loading from 5 sources
 - [x] **Stage 2:** Data cleaning (NULL handling, deduplication, outlier removal)
 - [x] **Stage 3:** Temporal alignment (news-price merging, target creation)
-- [x] **Validation:** Tested with 100 stocks, ~2.5 min runtime
-- [x] **Documentation:** `PIPELINE_VALIDATION.md`, `PIPELINE_SUMMARY.md`
+- [x] **Validation:** Tested with 100 stocks, ~3 min runtime (see validation section in PIPELINE_SUMMARY.md)
+- [x] **Documentation:** `PIPELINE_SUMMARY.md` (includes validation section)
 
 **Evidence:**
 - Scripts: `scripts/01_load_data.py`, `02_clean_data.py`, `03_align_data.py`
