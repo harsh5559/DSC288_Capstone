@@ -62,7 +62,9 @@
 | Min | $0.01 | $0.03 | $0.01 | $0.03 | 1 |
 | Max | $7,250 | $7,250 | $7,250 | $7,250 | 470M |
 
-**Figure Reference:** `notebooks/eda_outputs/02_univariate_distributions.png` (6 subplots showing histograms)
+![Price and Volume Distributions](notebooks/eda_outputs/02_univariate_distributions.png)
+
+**Figure 1:** Univariate distributions for prices (open, high, low, close), volume, and target labels. Shows right-skewed price distributions and balanced target classification.
 
 **Key Observations:**
 - Large gap between mean and median indicates right-skewed distribution
@@ -82,7 +84,9 @@
 | Min | -98.27% |
 | Max | +12,950% |
 
-**Figure Reference:** `notebooks/eda_outputs/03_returns_distribution.png` (histogram with threshold lines and box plot)
+![Next-Day Returns Distribution](notebooks/eda_outputs/03_returns_distribution.png)
+
+**Figure 2:** Next-day returns distribution showing histogram with buy/sell thresholds (±2%) and box plot for outlier visualization.
 
 **Key Observations:**
 - Slight positive mean return (+0.29% per day)
@@ -101,9 +105,7 @@
 
 **Decision Thresholds:** Buy (>+2%), Hold (-2% to +2%), Sell (<-2%)
 
-**Figure Reference:** `notebooks/eda_outputs/02_univariate_distributions.png` (subplot 6)
-
-**Key Finding:** Reasonably balanced for 3-class classification. Approximately 70% hold reflects typical market behavior where most days show modest price changes.
+**Key Finding:** Reasonably balanced for 3-class classification. Approximately 70% hold reflects typical market behavior where most days show modest price changes. (See Figure 1, subplot 6 for target distribution visualization)
 
 ### News Coverage Distribution
 
@@ -114,7 +116,9 @@
 | Records without news | 258,436 (98.54%) |
 | Average articles per day (when available) | 2.42 |
 
-**Figure Reference:** `notebooks/eda_outputs/04_news_coverage.png`
+![News Coverage Analysis](notebooks/eda_outputs/04_news_coverage.png)
+
+**Figure 3:** News coverage analysis showing distribution of records with/without news and article count distribution when news is available.
 
 **Key Finding:** Low daily news coverage is expected - not every stock has news every trading day. The 3,821 examples provide sufficient training data for sentiment analysis.
 
@@ -142,9 +146,7 @@
 | ACI | 2019-03-14 | $7,000 |
 | ACI | 2019-03-19 | $7,000 |
 
-**Note:** ACI (Albertsons) shows unusually high prices in 2019-2020, likely due to stock splits or data quality issues requiring investigation.
-
-**Figure Reference:** `notebooks/eda_outputs/02_univariate_distributions.png` (box plots visible in subplots)
+**Note:** ACI (Albertsons) shows unusually high prices in 2019-2020, likely due to stock splits or data quality issues requiring investigation. Box plots for outlier visualization are included in Figure 1.
 
 ### Extreme Returns
 
@@ -155,9 +157,7 @@
 | Extreme Losses (>10%) | 1,818 | 0.7% |
 | Total Extreme Moves | 4,444 | 1.7% |
 
-**Figure Reference:** `notebooks/eda_outputs/03_returns_distribution.png`
-
-**Key Finding:** More extreme gains than losses suggests market uptrend bias during 2009-2023 period (post-financial crisis recovery and bull market). These extreme moves are valuable for testing model performance during volatile periods.
+**Key Finding:** More extreme gains than losses suggests market uptrend bias during 2009-2023 period (post-financial crisis recovery and bull market). These extreme moves are valuable for testing model performance during volatile periods. (See Figure 2 for full returns distribution)
 
 ### Volume Anomalies
 
@@ -188,7 +188,9 @@
 | Current Price (high) | -0.003 |
 | S&P 500 Close | -0.005 |
 
-**Figure Reference:** `notebooks/eda_outputs/05_correlation_matrix.png` (correlation heatmap)
+![Correlation Matrix](notebooks/eda_outputs/05_correlation_matrix.png)
+
+**Figure 4:** Correlation heatmap showing relationships between numeric variables. Lower triangle shown to avoid redundancy.
 
 **Key Findings:**
 1. **S&P 500 Return is the strongest predictor** (correlation: +0.023) - market direction influences individual stocks
@@ -204,7 +206,9 @@
 | Hold | 69.9% | 60.9% | -9.0 pp |
 | Sell | 15.3% | 20.5% | +5.2 pp |
 
-**Figure Reference:** `notebooks/eda_outputs/07_target_relationships.png` (left subplot)
+![Target Relationships](notebooks/eda_outputs/07_target_relationships.png)
+
+**Figure 5:** Target distribution analysis showing (left) impact of news availability and (right) impact of market direction on buy/hold/sell signals.
 
 **Key Finding:** Days with news show 10% more extreme movements (buy/sell signals) compared to days without news. This validates the importance of news in the multi-agent system.
 
@@ -217,13 +221,13 @@
 | Flat | 15.9% | 69.1% | 15.0% |
 | Up | 17.2% | 71.0% | 11.9% |
 
-**Figure Reference:** `notebooks/eda_outputs/07_target_relationships.png` (right subplot)
-
-**Key Finding:** Individual stocks tend to follow market direction. When S&P 500 is down, sell signals increase to 19.3%. When S&P 500 is up, buy signals increase to 17.2%. Market context is critical for stock-level predictions.
+**Key Finding:** Individual stocks tend to follow market direction. When S&P 500 is down, sell signals increase to 19.3%. When S&P 500 is up, buy signals increase to 17.2%. Market context is critical for stock-level predictions. (See Figure 5, right subplot)
 
 ### Price-Volume Relationship
 
-**Figure Reference:** `notebooks/eda_outputs/06_price_volume_scatter.png`
+![Price-Volume Scatter Plot](notebooks/eda_outputs/06_price_volume_scatter.png)
+
+**Figure 6:** Scatter plot showing relationship between stock price and trading volume. Sample of 10,000 points for visualization clarity.
 
 **Key Finding:** No clear linear relationship between price and volume. High-volume days occur across all price ranges, suggesting volume and price should be treated as independent features.
 
@@ -245,7 +249,9 @@
 | 2022 | 19,246 | $52.56 | 3.1M | -0.08% |
 | 2023 | 18,433 | $53.04 | 2.4M | +0.05% |
 
-**Figure Reference:** `notebooks/eda_outputs/08_temporal_trends.png` (4 subplots: records, price, volume, returns by year)
+![Temporal Trends](notebooks/eda_outputs/08_temporal_trends.png)
+
+**Figure 7:** Temporal analysis showing yearly trends in (top-left) record count, (top-right) average price, (bottom-left) average volume, and (bottom-right) average returns.
 
 **Key Temporal Patterns:**
 
