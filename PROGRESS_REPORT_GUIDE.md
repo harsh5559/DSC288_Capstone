@@ -74,21 +74,21 @@
 
 ---
 
-## Key Files for Your Report
+## Key Files for the Report
 
 ### Primary Documents
 1. **`PIPELINE_SUMMARY.md`** - Complete pipeline description + validation
 2. **`EDA_REPORT.md`** - Complete EDA with tables and plots
-3. **`scripts/04_feature_engineering.py`** - Normalization code
 
 ### Supporting Evidence
+- `scripts/04_feature_engineering.py` - Normalization code
 - `data/processed/*_summary.json` - Stage-by-stage statistics
 - `notebooks/eda_outputs/*.png` - All 7 visualizations
 - `notebooks/01_EDA.ipynb` - Reproducible analysis code
 
 ---
 
-## Text for Your Report (Copy-Paste Ready)
+## Summaries for Report
 
 ### Data Pipeline Section
 
@@ -222,7 +222,7 @@
 
 ---
 
-## If Asked: "What's New About Your System?"
+## If Asked: "What's New About Our System?"
 
 > "Our multi-agent LLM system optimizes for **explainability** - every buy/hold/sell recommendation comes with a natural language explanation grounded in cited sources via RAG. Unlike traditional models that provide opaque predictions, our system uses specialized agents (fundamental, news/sentiment, technical analysts, optimistic/cautious viewpoints) to generate interpretable recommendations with data provenance. This addresses the trust gap for our target users: intermediate/beginner retail investors who value understanding over pure performance. Our data pipeline specifically filters to 2009-2023 to ensure we have BOTH prices AND news, enabling the system to cite actual articles rather than rely solely on technical analysis."
 
@@ -256,18 +256,7 @@ F:\288r\
 │   └── eda_outputs/              # 7 plots + 2 JSONs
 ├── PIPELINE_SUMMARY.md           # Pipeline documentation
 ├── EDA_REPORT.md                 # EDA documentation
-├── RUBRIC_COMPLIANCE_SUMMARY.md  # Detailed rubric evidence
+├── PROGRESS_REPORT_GUIDE.md      # This file - complete report guide
 └── requirements.txt              # Dependencies
 ```
 
----
-
-## Bottom Line
-
-✅ **Pipeline:** 4 stages complete including normalization  
-✅ **EDA:** All rubric requirements with 7 embedded plots  
-✅ **Features:** Analysis-driven selection from EDA findings  
-✅ **Documentation:** Professional and comprehensive  
-✅ **Grade:** 15/15 - No gaps
-
-**You're ready to submit!**
