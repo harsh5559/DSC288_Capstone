@@ -1962,34 +1962,88 @@ flowchart TB
             <h2>7. Graph RAG System Details</h2>
 
             <h3>7.1 Neo4j Schema Design</h3>
-            <div class="mermaid-container large">
-                <div class="mermaid">
-%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px'}}}%%
-graph LR
-    subgraph Entities["ENTITY NODES"]
-        Stock["<b>(:Stock)</b><br/>ticker, name, sector<br/>price, volume, date"]
-        Article["<b>(:Article)</b><br/>id, date, title<br/>text, source, url"]
-        Person["<b>(:Person)</b><br/>name, role<br/>company, title"]
-        Event["<b>(:Event)</b><br/>type, date<br/>description, impact"]
-        Sentiment["<b>(:Sentiment)</b><br/>score, label<br/>confidence, phrases"]
-        Signal["<b>(:TradingSignal)</b><br/>type, strength<br/>date, reasoning"]
-    end
-
-    Stock -->|"<b>MENTIONED_IN</b><br/>mention_count, context"| Article
-    Person -->|"<b>MENTIONED_IN</b><br/>role_in_article"| Article
-    Article -->|"<b>HAS_SENTIMENT</b><br/>extraction_date"| Sentiment
-    Event -->|"<b>AFFECTS</b><br/>direction, magnitude"| Stock
-    Sentiment -->|"<b>TRIGGERS</b><br/>confidence, delay"| Signal
-    Signal -->|"<b>RECOMMENDS</b><br/>target_price"| Stock
-    Stock -->|"<b>CORRELATED_WITH</b><br/>correlation, period"| Stock
-    Person -->|"<b>EXECUTIVE_OF</b><br/>start_date"| Stock
-
-    style Stock fill:#3182ce,color:#fff
-    style Article fill:#d69e2e,color:#fff
-    style Sentiment fill:#38a169,color:#fff
-    style Signal fill:#e53e3e,color:#fff
-    style Event fill:#7c3aed,color:#fff
-    style Person fill:#805ad5,color:#fff
+            
+            <!-- Static Neo4j Schema Diagram -->
+            <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 20px; padding: 40px; margin: 20px 0;">
+                <h4 style="color: white; text-align: center; margin-bottom: 30px; font-size: 1.3em;">Knowledge Graph Entity-Relationship Schema</h4>
+                
+                <!-- Entity Nodes -->
+                <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-bottom: 40px;">
+                    <div style="background: #3182ce; color: white; padding: 20px 25px; border-radius: 12px; text-align: center; min-width: 150px; box-shadow: 0 4px 15px rgba(49,130,206,0.4);">
+                        <div style="font-weight: bold; font-size: 1.1em; margin-bottom: 8px;">(:Stock)</div>
+                        <div style="font-size: 0.85em; opacity: 0.9;">ticker, name, sector</div>
+                        <div style="font-size: 0.85em; opacity: 0.9;">price, volume, date</div>
+                    </div>
+                    <div style="background: #d69e2e; color: white; padding: 20px 25px; border-radius: 12px; text-align: center; min-width: 150px; box-shadow: 0 4px 15px rgba(214,158,46,0.4);">
+                        <div style="font-weight: bold; font-size: 1.1em; margin-bottom: 8px;">(:Article)</div>
+                        <div style="font-size: 0.85em; opacity: 0.9;">id, date, title</div>
+                        <div style="font-size: 0.85em; opacity: 0.9;">text, source, url</div>
+                    </div>
+                    <div style="background: #805ad5; color: white; padding: 20px 25px; border-radius: 12px; text-align: center; min-width: 150px; box-shadow: 0 4px 15px rgba(128,90,213,0.4);">
+                        <div style="font-weight: bold; font-size: 1.1em; margin-bottom: 8px;">(:Person)</div>
+                        <div style="font-size: 0.85em; opacity: 0.9;">name, role</div>
+                        <div style="font-size: 0.85em; opacity: 0.9;">company, title</div>
+                    </div>
+                    <div style="background: #7c3aed; color: white; padding: 20px 25px; border-radius: 12px; text-align: center; min-width: 150px; box-shadow: 0 4px 15px rgba(124,58,237,0.4);">
+                        <div style="font-weight: bold; font-size: 1.1em; margin-bottom: 8px;">(:Event)</div>
+                        <div style="font-size: 0.85em; opacity: 0.9;">type, date</div>
+                        <div style="font-size: 0.85em; opacity: 0.9;">description, impact</div>
+                    </div>
+                    <div style="background: #38a169; color: white; padding: 20px 25px; border-radius: 12px; text-align: center; min-width: 150px; box-shadow: 0 4px 15px rgba(56,161,105,0.4);">
+                        <div style="font-weight: bold; font-size: 1.1em; margin-bottom: 8px;">(:Sentiment)</div>
+                        <div style="font-size: 0.85em; opacity: 0.9;">score, label</div>
+                        <div style="font-size: 0.85em; opacity: 0.9;">confidence, phrases</div>
+                    </div>
+                    <div style="background: #e53e3e; color: white; padding: 20px 25px; border-radius: 12px; text-align: center; min-width: 150px; box-shadow: 0 4px 15px rgba(229,62,62,0.4);">
+                        <div style="font-weight: bold; font-size: 1.1em; margin-bottom: 8px;">(:TradingSignal)</div>
+                        <div style="font-size: 0.85em; opacity: 0.9;">type, strength</div>
+                        <div style="font-size: 0.85em; opacity: 0.9;">date, reasoning</div>
+                    </div>
+                </div>
+                
+                <!-- Relationships -->
+                <h4 style="color: white; text-align: center; margin-bottom: 20px; font-size: 1.1em;">Relationships</h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px 20px; border-radius: 10px; color: white; display: flex; align-items: center;">
+                        <span style="background: #3182ce; padding: 5px 10px; border-radius: 5px; font-size: 0.85em;">Stock</span>
+                        <span style="margin: 0 10px; color: #a0aec0;">—[:MENTIONED_IN]→</span>
+                        <span style="background: #d69e2e; padding: 5px 10px; border-radius: 5px; font-size: 0.85em;">Article</span>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px 20px; border-radius: 10px; color: white; display: flex; align-items: center;">
+                        <span style="background: #d69e2e; padding: 5px 10px; border-radius: 5px; font-size: 0.85em;">Article</span>
+                        <span style="margin: 0 10px; color: #a0aec0;">—[:HAS_SENTIMENT]→</span>
+                        <span style="background: #38a169; padding: 5px 10px; border-radius: 5px; font-size: 0.85em;">Sentiment</span>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px 20px; border-radius: 10px; color: white; display: flex; align-items: center;">
+                        <span style="background: #38a169; padding: 5px 10px; border-radius: 5px; font-size: 0.85em;">Sentiment</span>
+                        <span style="margin: 0 10px; color: #a0aec0;">—[:TRIGGERS]→</span>
+                        <span style="background: #e53e3e; padding: 5px 10px; border-radius: 5px; font-size: 0.85em;">TradingSignal</span>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px 20px; border-radius: 10px; color: white; display: flex; align-items: center;">
+                        <span style="background: #e53e3e; padding: 5px 10px; border-radius: 5px; font-size: 0.85em;">TradingSignal</span>
+                        <span style="margin: 0 10px; color: #a0aec0;">—[:RECOMMENDS]→</span>
+                        <span style="background: #3182ce; padding: 5px 10px; border-radius: 5px; font-size: 0.85em;">Stock</span>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px 20px; border-radius: 10px; color: white; display: flex; align-items: center;">
+                        <span style="background: #7c3aed; padding: 5px 10px; border-radius: 5px; font-size: 0.85em;">Event</span>
+                        <span style="margin: 0 10px; color: #a0aec0;">—[:AFFECTS]→</span>
+                        <span style="background: #3182ce; padding: 5px 10px; border-radius: 5px; font-size: 0.85em;">Stock</span>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px 20px; border-radius: 10px; color: white; display: flex; align-items: center;">
+                        <span style="background: #805ad5; padding: 5px 10px; border-radius: 5px; font-size: 0.85em;">Person</span>
+                        <span style="margin: 0 10px; color: #a0aec0;">—[:EXECUTIVE_OF]→</span>
+                        <span style="background: #3182ce; padding: 5px 10px; border-radius: 5px; font-size: 0.85em;">Stock</span>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px 20px; border-radius: 10px; color: white; display: flex; align-items: center;">
+                        <span style="background: #805ad5; padding: 5px 10px; border-radius: 5px; font-size: 0.85em;">Person</span>
+                        <span style="margin: 0 10px; color: #a0aec0;">—[:MENTIONED_IN]→</span>
+                        <span style="background: #d69e2e; padding: 5px 10px; border-radius: 5px; font-size: 0.85em;">Article</span>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px 20px; border-radius: 10px; color: white; display: flex; align-items: center;">
+                        <span style="background: #3182ce; padding: 5px 10px; border-radius: 5px; font-size: 0.85em;">Stock</span>
+                        <span style="margin: 0 10px; color: #a0aec0;">—[:CORRELATED_WITH]→</span>
+                        <span style="background: #3182ce; padding: 5px 10px; border-radius: 5px; font-size: 0.85em;">Stock</span>
+                    </div>
                 </div>
             </div>
 
