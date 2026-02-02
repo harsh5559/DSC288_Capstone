@@ -1,0 +1,2604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSC288 Capstone Progress Report - Group 10</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <style>
+        :root {
+            --primary: #1a365d;
+            --secondary: #2c5282;
+            --accent: #3182ce;
+            --success: #38a169;
+            --warning: #d69e2e;
+            --danger: #e53e3e;
+            --bg-light: #f7fafc;
+            --bg-card: #ffffff;
+            --text-primary: #1a202c;
+            --text-secondary: #4a5568;
+            --border: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 50px 40px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.8em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header .subtitle {
+            font-size: 1.4em;
+            opacity: 0.95;
+            margin-bottom: 10px;
+        }
+
+        .header .tech-stack {
+            font-size: 1.2em;
+            background: rgba(255,255,255,0.15);
+            padding: 12px 25px;
+            border-radius: 30px;
+            display: inline-block;
+            margin-top: 15px;
+        }
+
+        .header .team-info {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 25px;
+        }
+
+        .header .team-info span {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.95em;
+        }
+
+        /* Navigation */
+        .nav {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+        }
+
+        .nav ul {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            list-style: none;
+        }
+
+        .nav a {
+            color: var(--primary);
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            transition: all 0.3s;
+            font-weight: 500;
+            font-size: 0.95em;
+        }
+
+        .nav a:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* Section Styles */
+        .section {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 45px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            color: var(--primary);
+            font-size: 2em;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section h2::before {
+            content: '';
+            width: 8px;
+            height: 35px;
+            background: linear-gradient(135deg, var(--accent), var(--secondary));
+            border-radius: 4px;
+        }
+
+        .section h3 {
+            color: var(--secondary);
+            font-size: 1.5em;
+            margin: 30px 0 20px 0;
+        }
+
+        .section h4 {
+            color: var(--text-secondary);
+            font-size: 1.15em;
+            margin: 25px 0 12px 0;
+        }
+
+        .section p {
+            margin-bottom: 15px;
+            font-size: 1.05em;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 28px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(49, 130, 206, 0.3);
+        }
+
+        .stat-card .value {
+            font-size: 2.8em;
+            font-weight: 700;
+            display: block;
+        }
+
+        .stat-card .label {
+            font-size: 0.95em;
+            opacity: 0.9;
+            margin-top: 8px;
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin: 25px 0;
+        }
+
+        .card {
+            background: linear-gradient(135deg, var(--bg-light) 0%, white 100%);
+            border-radius: 15px;
+            padding: 28px;
+            border: 1px solid var(--border);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        }
+
+        .card.highlight {
+            border-left: 5px solid var(--accent);
+        }
+
+        .card.success {
+            border-left: 5px solid var(--success);
+        }
+
+        .card.warning {
+            border-left: 5px solid var(--warning);
+        }
+
+        .card h4 {
+            color: var(--primary);
+            margin-bottom: 12px;
+            font-size: 1.2em;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            margin: 25px 0;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 16px 22px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        td {
+            padding: 14px 22px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.95em;
+        }
+
+        tr:nth-child(even) {
+            background: var(--bg-light);
+        }
+
+        tr:hover {
+            background: #edf2f7;
+        }
+
+        /* Status Badges */
+        .badge {
+            display: inline-block;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .badge-success { background: #c6f6d5; color: #276749; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-info { background: #bee3f8; color: #2b6cb0; }
+        .badge-danger { background: #fed7d7; color: #c53030; }
+        .badge-purple { background: #e9d8fd; color: #553c9a; }
+
+        /* Large Mermaid Diagrams */
+        .mermaid-container {
+            background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+            overflow-x: auto;
+            border: 2px solid var(--border);
+        }
+
+        .mermaid-container.large {
+            padding: 50px;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        .mermaid svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Plot Containers */
+        .plot-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+        }
+
+        .plot-container h4 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .plot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 25px;
+        }
+
+        /* Callouts */
+        .callout {
+            background: linear-gradient(135deg, #ebf8ff 0%, #e6fffa 100%);
+            border-left: 5px solid var(--accent);
+            padding: 25px 30px;
+            border-radius: 0 15px 15px 0;
+            margin: 25px 0;
+        }
+
+        .callout.warning {
+            background: linear-gradient(135deg, #fffaf0 0%, #fef3c7 100%);
+            border-left-color: var(--warning);
+        }
+
+        .callout.success {
+            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+            border-left-color: var(--success);
+        }
+
+        .callout.purple {
+            background: linear-gradient(135deg, #faf5ff 0%, #e9d8fd 100%);
+            border-left-color: #7c3aed;
+        }
+
+        .callout h4 {
+            color: var(--primary);
+            margin-bottom: 12px;
+            font-size: 1.15em;
+        }
+
+        /* Code Blocks */
+        .code-block {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 25px;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.92em;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+
+        .code-block .comment { color: #718096; }
+        .code-block .keyword { color: #f687b3; }
+        .code-block .string { color: #68d391; }
+        .code-block .function { color: #63b3ed; }
+
+        /* Feature Tags */
+        .feature-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .feature-tag {
+            background: var(--bg-light);
+            color: var(--secondary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.88em;
+            border: 1px solid var(--border);
+            font-weight: 500;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 35px;
+            margin: 30px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, var(--accent), var(--secondary), var(--success));
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding: 22px 25px;
+            background: var(--bg-light);
+            border-radius: 12px;
+            margin-bottom: 18px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -39px;
+            top: 28px;
+            width: 14px;
+            height: 14px;
+            background: var(--accent);
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Links */
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Image Links for EDA */
+        .eda-artifact-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 18px;
+            background: var(--bg-light);
+            border-radius: 10px;
+            margin: 8px 0;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .eda-artifact-link:hover {
+            background: #edf2f7;
+            border-color: var(--accent);
+            text-decoration: none;
+        }
+
+        .eda-artifact-link .icon {
+            font-size: 1.5em;
+        }
+
+        .eda-artifact-link .info {
+            flex: 1;
+        }
+
+        .eda-artifact-link .name {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .eda-artifact-link .desc {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+        }
+
+        /* Highlight Box */
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 35px;
+            border-radius: 20px;
+            margin: 30px 0;
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+        }
+
+        .highlight-box h3 {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .highlight-box ul {
+            margin-left: 20px;
+        }
+
+        .highlight-box li {
+            margin-bottom: 10px;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--primary);
+            color: white;
+            padding: 35px;
+            border-radius: 20px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        /* Print/PDF Styles */
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .nav {
+                display: none;
+            }
+            
+            .section {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+
+            .mermaid-container {
+                break-inside: avoid;
+            }
+
+            .plot-container {
+                break-inside: avoid;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.8em; }
+            .section { padding: 25px; }
+            .nav ul { flex-direction: column; align-items: center; }
+            .plot-grid { grid-template-columns: 1fr; }
+            .card-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 style="font-size: 2.2em; margin-bottom: 8px;">DSC288R - Milestone 2: 1st Progress Report</h1>
+            <p class="subtitle" style="font-size: 1.5em; font-weight: 600; margin-bottom: 25px;">Multi-Agent Graph RAG System for Explainable Financial Decision Support</p>
+            
+            <div style="background: rgba(255,255,255,0.12); border-radius: 15px; padding: 25px 40px; display: inline-block; text-align: left;">
+                <div style="color: white; font-size: 1.05em; line-height: 2;">
+                    <div><strong>Project Group #</strong> 10</div>
+                    <div><strong>Authors:</strong> Harsh Arya, Gabrielle Despaigne, Camila Paik, Raghav Vasappanavara</div>
+                    <div><strong>Emails:</strong> harya@ucsd.edu, gdespaigne@ucsd.edu, cpaik@ucsd.edu, rvasappanavara@ucsd.edu</div>
+                    <div><strong>Institution:</strong> UC San Diego</div>
+                    <div><strong>Date:</strong> February 2026</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav">
+            <ul>
+                <li><a href="#background">Background</a></li>
+                <li><a href="#datasets">Datasets</a></li>
+                <li><a href="#pipeline">Data Pipeline</a></li>
+                <li><a href="#eda">EDA & Visualizations</a></li>
+                <li><a href="#sentiment">Sentiment Impact</a></li>
+                <li><a href="#system">System Architecture</a></li>
+                <li><a href="#graphrag">Graph RAG Details</a></li>
+                <li><a href="#progress">Progress</a></li>
+                <li><a href="#risks">Risks</a></li>
+            </ul>
+        </nav>
+
+        <!-- Data Set Complexity and Feature Summary -->
+        <div style="background: white; border-radius: 20px; padding: 30px 40px; margin-bottom: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
+            <h3 style="color: #1a365d; margin-bottom: 20px; font-size: 1.4em; text-align: center;">Data Set Complexity and Feature Summary</h3>
+            <div class="stats-grid" style="margin: 0;">
+                <div class="stat-card">
+                    <span class="value">262K</span>
+                    <span class="label">Total Observations</span>
+                </div>
+                <div class="stat-card">
+                    <span class="value">100</span>
+                    <span class="label">Stock Tickers</span>
+                </div>
+                <div class="stat-card">
+                    <span class="value">14.2</span>
+                    <span class="label">Years of Data</span>
+                </div>
+                <div class="stat-card">
+                    <span class="value">35</span>
+                    <span class="label">Engineered Features</span>
+                </div>
+                <div class="stat-card">
+                    <span class="value">+10%</span>
+                    <span class="label">News Impact on Volatility</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 1: Background & Problem Statement -->
+        <section id="background" class="section">
+            <h2>1. Background & Problem Statement</h2>
+            
+            <!-- Problem Statement -->
+            <div style="background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); color: white; padding: 35px; border-radius: 20px; margin-bottom: 30px;">
+                <h3 style="color: white; margin-bottom: 20px; font-size: 1.6em; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 15px;">1.1 Problem Statement</h3>
+                <p style="font-size: 1.15em; line-height: 1.8; margin-bottom: 20px;">
+                    <strong>The rise of AI-driven trading has created a critical trust gap:</strong> while algorithmic systems become increasingly sophisticated at predicting market movements, they remain opaque "black boxes" that provide recommendations without explanation. Retail investors receive buy, hold, or sell signals but have no visibility into the reasoning behind these decisions.
+                </p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 25px;">
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 12px; border-left: 4px solid #e53e3e;">
+                        <h4 style="color: #fed7d7; margin-bottom: 10px;">❌ The Trust Problem</h4>
+                        <p style="opacity: 0.95;">Users cannot verify if recommendations are based on sound analysis or flawed assumptions, eroding confidence in AI-powered financial tools.</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 12px; border-left: 4px solid #d69e2e;">
+                        <h4 style="color: #fef3c7; margin-bottom: 10px;">❌ The Learning Problem</h4>
+                        <p style="opacity: 0.95;">Without explanations, investors cannot develop financial literacy or understand market dynamics—they remain dependent on the black box.</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 12px; border-left: 4px solid #38a169;">
+                        <h4 style="color: #c6f6d5; margin-bottom: 10px;">❌ The Accountability Problem</h4>
+                        <p style="opacity: 0.95;">When recommendations fail, there is no audit trail to understand what went wrong or how to improve future decisions.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Our Proposal -->
+            <div style="background: linear-gradient(135deg, #38a169 0%, #2f855a 100%); color: white; padding: 35px; border-radius: 20px; margin-bottom: 30px;">
+                <h3 style="color: white; margin-bottom: 20px; font-size: 1.6em; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 15px;">1.2 Our Proposal: Explainable Graph RAG Trading System</h3>
+                <p style="font-size: 1.15em; line-height: 1.8; margin-bottom: 25px;">
+                    We propose a <strong>Multi-Agent Graph RAG System</strong> that prioritizes <strong>explainability over pure prediction accuracy</strong>. Every trading recommendation comes with:
+                </p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                    <div style="background: rgba(255,255,255,0.15); padding: 22px; border-radius: 12px;">
+                        <h4 style="color: white; margin-bottom: 12px;">📝 Natural Language Explanations</h4>
+                        <p style="opacity: 0.95;">"Based on positive earnings news and upward momentum, we recommend buying AAPL" — not just "BUY: 0.73"</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.15); padding: 22px; border-radius: 12px;">
+                        <h4 style="color: white; margin-bottom: 12px;">🔗 Cited Sources</h4>
+                        <p style="opacity: 0.95;">Every claim is grounded in specific news articles, financial data, or technical indicators with traceable provenance</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.15); padding: 22px; border-radius: 12px;">
+                        <h4 style="color: white; margin-bottom: 12px;">⚖️ Balanced Perspectives</h4>
+                        <p style="opacity: 0.95;">Optimistic and Cautious agents debate before synthesis, ensuring users see both bullish arguments and risk factors</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.15); padding: 22px; border-radius: 12px;">
+                        <h4 style="color: white; margin-bottom: 12px;">🕸️ Knowledge Graph Reasoning</h4>
+                        <p style="opacity: 0.95;">Neo4j stores entity relationships enabling multi-hop queries like "Find stocks affected by the same executive"</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Differentiation from Prior Work -->
+            <div style="background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%); color: white; padding: 35px; border-radius: 20px; margin-bottom: 30px;">
+                <h3 style="color: white; margin-bottom: 20px; font-size: 1.6em; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 15px;">1.3 Key Differentiation from Prior Work</h3>
+                <p style="font-size: 1.1em; line-height: 1.7; margin-bottom: 25px;">
+                    While several LLM-based trading systems exist, our approach is fundamentally different:
+                </p>
+                
+                <div class="table-container" style="margin: 0;">
+                    <table style="background: rgba(255,255,255,0.95); color: #1a202c;">
+                        <thead>
+                            <tr style="background: rgba(0,0,0,0.8);">
+                                <th style="color: white;">Capability</th>
+                                <th style="color: white;">TradingAgents<br/>(Xiao 2024)</th>
+                                <th style="color: white;">FinGPT<br/>(Yang 2023)</th>
+                                <th style="color: white;">Traditional RAG</th>
+                                <th style="color: white; background: #38a169;">Our System</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Knowledge Graph</strong></td>
+                                <td>❌ No graph storage</td>
+                                <td>❌ No graph storage</td>
+                                <td>❌ Vector DB only</td>
+                                <td style="background: #c6f6d5;"><strong>✅ Neo4j Graph RAG</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Entity Relationships</strong></td>
+                                <td>⚠️ Implicit only</td>
+                                <td>❌ None</td>
+                                <td>❌ Flat documents</td>
+                                <td style="background: #c6f6d5;"><strong>✅ Explicit edges</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Sentiment → Signal Link</strong></td>
+                                <td>⚠️ Not traceable</td>
+                                <td>✅ Sentiment model</td>
+                                <td>❌ Not modeled</td>
+                                <td style="background: #c6f6d5;"><strong>✅ Graph edges with audit trail</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Citation Provenance</strong></td>
+                                <td>⚠️ Basic</td>
+                                <td>❌ No citations</td>
+                                <td>⚠️ Chunk-level</td>
+                                <td style="background: #c6f6d5;"><strong>✅ Entity-level citations</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Production Framework</strong></td>
+                                <td>❌ Custom code</td>
+                                <td>❌ Custom code</td>
+                                <td>⚠️ Various</td>
+                                <td style="background: #c6f6d5;"><strong>✅ OpenAI Agents SDK</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Multi-Hop Reasoning</strong></td>
+                                <td>❌ Single-hop</td>
+                                <td>❌ Single-hop</td>
+                                <td>❌ Limited</td>
+                                <td style="background: #c6f6d5;"><strong>✅ Graph traversal</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Three Pillars -->
+            <h3>1.4 Our Three Technology Pillars</h3>
+            <div class="card-grid">
+                <div class="card highlight">
+                    <h4>🕸️ Neo4j Knowledge Graph</h4>
+                    <p>Stores entities (stocks, articles, people, events, sentiment) and their <strong>explicit relationships</strong>. Unlike vector databases, this enables complex multi-hop queries: "Find all stocks mentioned positively by analysts who were bearish on AAPL last quarter."</p>
+                </div>
+                <div class="card success">
+                    <h4>🤖 GPT-5.2 + OpenAI Agents SDK</h4>
+                    <p>Uses the official OpenAI Agents SDK for <strong>production-grade multi-agent orchestration</strong>. Specialist agents (fundamental, technical, sentiment) hand off to each other with full context preservation—unlike custom LangChain implementations.</p>
+                </div>
+                <div class="card warning">
+                    <h4>🔗 Sentiment-to-Signal Modeling</h4>
+                    <p>Creates <strong>auditable graph edges</strong> from news articles → sentiment scores → trading signals. Every recommendation can be traced back to the specific articles and data points that influenced it.</p>
+                </div>
+            </div>
+
+            <h3>1.5 Target Users</h3>
+            <p>Intermediate and beginner retail investors who value <strong>understanding financial recommendations</strong> over opaque numerical predictions. Our system helps users learn <em>why</em> markets move, not just <em>what</em> to trade—building genuine financial literacy through explainable AI.</p>
+        </section>
+
+        <!-- Section 2: Datasets -->
+        <section id="datasets" class="section">
+            <h2>2. Datasets</h2>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Dataset</th>
+                            <th>Description</th>
+                            <th>Size</th>
+                            <th>Usage in Our System</th>
+                            <th>Source Link</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>FNSPID</strong></td>
+                            <td>Stock prices (OHLCV) and financial news for Fortune 500 companies</td>
+                            <td>460K prices<br>20K news articles</td>
+                            <td>Primary data for price patterns and news entity extraction</td>
+                            <td><a href="https://huggingface.co/datasets/Zihan1004/FNSPID" target="_blank">HuggingFace ↗</a></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Financial Phrasebank</strong></td>
+                            <td>Human-annotated sentiment labels for financial sentences</td>
+                            <td>2,264 sentences</td>
+                            <td>Training sentiment classification model</td>
+                            <td><a href="https://huggingface.co/datasets/takala/financial_phrasebank" target="_blank">HuggingFace ↗</a></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Yahoo Finance S&P 500</strong></td>
+                            <td>Historical S&P 500 index data for market context</td>
+                            <td>6,289 trading days</td>
+                            <td>Market-relative features and benchmark</td>
+                            <td><a href="https://finance.yahoo.com/quote/%5EGSPC/history/" target="_blank">Yahoo Finance ↗</a></td>
+                        </tr>
+                        <tr>
+                            <td><strong>FinQA</strong></td>
+                            <td>Financial question-answering benchmark dataset</td>
+                            <td>8,281 Q&A pairs</td>
+                            <td>Evaluation of explanation quality</td>
+                            <td><a href="https://github.com/czyssrs/FinQA" target="_blank">GitHub ↗</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="callout success">
+                <h4>📚 Primary Citations</h4>
+                <p><strong>FNSPID:</strong> Dong, Z. et al. (2023). "FNSPID: A Comprehensive Financial News and Stock Price Integration Dataset." <em>HuggingFace Datasets.</em></p>
+                <p><strong>Financial Phrasebank:</strong> Malo, P. et al. (2014). "Good Debt or Bad Debt: Detecting Semantic Orientations in Economic Texts." <em>Journal of the Association for Information Science and Technology</em>, 65(4), 782-796.</p>
+            </div>
+        </section>
+
+        <!-- Section 3: Data Pipeline -->
+        <section id="pipeline" class="section">
+            <h2>3. Data Pipeline</h2>
+
+            <h3>3.1 Pipeline Purpose</h3>
+            <p>Our 4-stage data pipeline integrates structured market data (stock prices, trading volume, market indices) with unstructured financial text (news articles) during the period where both are available (2009-2023). This alignment is <strong>critical</strong> for the Graph RAG system to generate explainable recommendations grounded in actual cited sources.</p>
+
+            <h3>3.2 End-to-End Pipeline Architecture</h3>
+            <div class="mermaid-container large">
+                <div class="mermaid">
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px', 'fontFamily': 'Segoe UI', 'primaryBorderColor': '#333', 'lineColor': '#333'}}}%%
+flowchart TB
+    subgraph DataSources["📥 DATA SOURCES"]
+        direction TB
+        DS1["<b>FNSPID Stock Prices</b><br/>460,293 OHLCV records<br/>100 tickers"]
+        DS2["<b>FNSPID Financial News</b><br/>20,000 articles<br/>2009-2023"]
+        DS3["<b>Financial Phrasebank</b><br/>2,264 labeled sentences<br/>Sentiment training"]
+        DS4["<b>Yahoo S&P 500</b><br/>6,289 trading days<br/>Market context"]
+    end
+
+    subgraph Stage1["🔄 STAGE 1: DATA LOADING"]
+        direction TB
+        L1["Load CSV/JSON Files"]
+        L2["Convert to Parquet Format"]
+        L3["Standardize Column Names"]
+        L4["Sample 100 stocks for validation"]
+        L1 --> L2 --> L3 --> L4
+    end
+
+    subgraph Stage2["🧹 STAGE 2: DATA CLEANING"]
+        direction TB
+        C1["<b>NULL Handling</b><br/>Forward-fill prices<br/>Drop missing critical fields"]
+        C2["<b>Deduplication</b><br/>Remove 278 duplicate articles<br/>by content hash"]
+        C3["<b>Outlier Removal</b><br/>951 records with >50%<br/>daily changes"]
+        C4["<b>Quality Filters</b><br/>Remove non-positive prices<br/>Zero/negative volume"]
+        C1 --> C2 --> C3 --> C4
+    end
+
+    subgraph Stage3["🔗 STAGE 3: TEMPORAL ALIGNMENT"]
+        direction TB
+        T1["<b>Date Filter</b><br/>2009-2023 only<br/>(news-available period)"]
+        T2["<b>Merge Strategy</b><br/>Join on (ticker, date)<br/>News → Prices"]
+        T3["<b>Market Context</b><br/>Add S&P 500 returns<br/>86.4% coverage"]
+        T4["<b>Target Creation</b><br/>Buy: >+2%<br/>Hold: ±2%<br/>Sell: <-2%"]
+        T1 --> T2 --> T3 --> T4
+    end
+
+    subgraph Stage4["⚙️ STAGE 4: FEATURE ENGINEERING"]
+        direction TB
+        F1["<b>Normalization</b><br/>MinMax for prices<br/>Z-score for volume"]
+        F2["<b>Technical Indicators</b><br/>SMA-5/20/50<br/>Momentum, Volatility"]
+        F3["<b>Market Features</b><br/>Excess return<br/>Market up/down flags"]
+        F4["<b>Output</b><br/>35 total features<br/>Model-ready dataset"]
+        F1 --> F2 --> F3 --> F4
+    end
+
+    subgraph Output["📊 PIPELINE OUTPUT"]
+        direction TB
+        O1["<b>data_aligned.parquet</b><br/>262,257 records"]
+        O2["<b>data_engineered.parquet</b><br/>35 features"]
+        O3["<b>Summary JSONs</b><br/>Validation metrics"]
+    end
+
+    subgraph GraphRAG["🕸️ GRAPH RAG SYSTEM"]
+        direction TB
+        G1["Entity Extraction<br/>(GPT-5.2)"]
+        G2["Knowledge Graph<br/>(Neo4j)"]
+        G3["Multi-Agent System<br/>(OpenAI SDK)"]
+    end
+
+    DataSources --> Stage1
+    Stage1 --> Stage2
+    Stage2 --> Stage3
+    Stage3 --> Stage4
+    Stage4 --> Output
+    Output --> GraphRAG
+
+    style DataSources fill:#e3f2fd,stroke:#1565c0,stroke-width:3px
+    style Stage1 fill:#fff3e0,stroke:#ef6c00,stroke-width:3px
+    style Stage2 fill:#fce4ec,stroke:#c2185b,stroke-width:3px
+    style Stage3 fill:#e8f5e9,stroke:#2e7d32,stroke-width:3px
+    style Stage4 fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px
+    style Output fill:#e0f2f1,stroke:#00695c,stroke-width:3px
+    style GraphRAG fill:#7c3aed,stroke:#5b21b6,stroke-width:4px,color:#fff
+    
+    style DS1 fill:#bbdefb,stroke:#1565c0,stroke-width:2px
+    style DS2 fill:#bbdefb,stroke:#1565c0,stroke-width:2px
+    style DS3 fill:#bbdefb,stroke:#1565c0,stroke-width:2px
+    style DS4 fill:#bbdefb,stroke:#1565c0,stroke-width:2px
+    
+    style L1 fill:#ffe0b2,stroke:#ef6c00,stroke-width:2px
+    style L2 fill:#ffe0b2,stroke:#ef6c00,stroke-width:2px
+    style L3 fill:#ffe0b2,stroke:#ef6c00,stroke-width:2px
+    style L4 fill:#ffe0b2,stroke:#ef6c00,stroke-width:2px
+    
+    style C1 fill:#f8bbd9,stroke:#c2185b,stroke-width:2px
+    style C2 fill:#f8bbd9,stroke:#c2185b,stroke-width:2px
+    style C3 fill:#f8bbd9,stroke:#c2185b,stroke-width:2px
+    style C4 fill:#f8bbd9,stroke:#c2185b,stroke-width:2px
+    
+    style T1 fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
+    style T2 fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
+    style T3 fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
+    style T4 fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
+    
+    style F1 fill:#e1bee7,stroke:#7b1fa2,stroke-width:2px
+    style F2 fill:#e1bee7,stroke:#7b1fa2,stroke-width:2px
+    style F3 fill:#e1bee7,stroke:#7b1fa2,stroke-width:2px
+    style F4 fill:#e1bee7,stroke:#7b1fa2,stroke-width:2px
+    
+    style O1 fill:#b2dfdb,stroke:#00695c,stroke-width:2px
+    style O2 fill:#b2dfdb,stroke:#00695c,stroke-width:2px
+    style O3 fill:#b2dfdb,stroke:#00695c,stroke-width:2px
+    
+    style G1 fill:#9575cd,stroke:#5b21b6,stroke-width:2px,color:#fff
+    style G2 fill:#9575cd,stroke:#5b21b6,stroke-width:2px,color:#fff
+    style G3 fill:#9575cd,stroke:#5b21b6,stroke-width:2px,color:#fff
+                </div>
+            </div>
+
+            <h3>3.3 Pipeline Stage Details</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Stage</th>
+                            <th>Key Operations</th>
+                            <th>Input → Output</th>
+                            <th>Quality Metrics</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="badge badge-warning">Stage 1</span><br><strong>Loading</strong></td>
+                            <td>
+                                • Load from 5 data sources<br>
+                                • Convert to Parquet format<br>
+                                • Standardize schemas<br>
+                                • Sample 100 stocks
+                            </td>
+                            <td>Raw CSV/JSON → 5 Parquet files</td>
+                            <td>Runtime: ~2 min<br>460K price records loaded</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-danger">Stage 2</span><br><strong>Cleaning</strong></td>
+                            <td>
+                                • Forward-fill NULL prices<br>
+                                • Remove 278 duplicate articles<br>
+                                • Remove 951 outliers (>50% changes)<br>
+                                • Filter non-positive prices
+                            </td>
+                            <td>Raw data → Clean Parquets</td>
+                            <td><strong>93%</strong> price retention<br><strong>49%</strong> news retention</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-success">Stage 3</span><br><strong>Alignment</strong></td>
+                            <td>
+                                • Filter to 2009-2023 period<br>
+                                • Merge news+prices on (ticker, date)<br>
+                                • Add S&P 500 context<br>
+                                • Create buy/hold/sell targets
+                            </td>
+                            <td>Clean data → Aligned dataset</td>
+                            <td><strong>262,257</strong> records<br><strong>86.4%</strong> market coverage</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-purple">Stage 4</span><br><strong>Engineering</strong></td>
+                            <td>
+                                • MinMaxScaler for prices (0-1)<br>
+                                • StandardScaler for volume (z-score)<br>
+                                • 9 technical indicators<br>
+                                • 4 market-relative features
+                            </td>
+                            <td>Aligned → Feature-engineered</td>
+                            <td><strong>35</strong> total features<br><strong>19</strong> new engineered</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>3.4 Data Normalization Methods</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature Type</th>
+                            <th>Normalization Method</th>
+                            <th>Output Range</th>
+                            <th>Scope</th>
+                            <th>Justification</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Prices (open, high, low, close)</td>
+                            <td><strong>MinMaxScaler</strong></td>
+                            <td>[0, 1]</td>
+                            <td>Per ticker</td>
+                            <td>Different stocks have vastly different price scales ($0.01 to $7,250)</td>
+                        </tr>
+                        <tr>
+                            <td>Volume</td>
+                            <td><strong>StandardScaler</strong></td>
+                            <td>Z-score (μ=0, σ=1)</td>
+                            <td>Per ticker</td>
+                            <td>Volume varies by orders of magnitude; z-score preserves relative patterns</td>
+                        </tr>
+                        <tr>
+                            <td>Returns</td>
+                            <td><strong>StandardScaler</strong></td>
+                            <td>Z-score (μ=0, σ=1)</td>
+                            <td>Per ticker</td>
+                            <td>High volatility (34.7% std) requires standardization to reduce outlier impact</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>3.5 Pipeline Output Summary</h3>
+            <div class="card-grid">
+                <div class="card highlight">
+                    <h4>📦 Final Dataset</h4>
+                    <ul>
+                        <li><strong>262,257</strong> stock-day observations</li>
+                        <li><strong>100</strong> unique tickers</li>
+                        <li><strong>14.2 years</strong> (Oct 2009 - Dec 2023)</li>
+                        <li><strong>35</strong> total features</li>
+                    </ul>
+                </div>
+                <div class="card success">
+                    <h4>🎯 Target Distribution</h4>
+                    <ul>
+                        <li><strong>Hold:</strong> 182,914 (69.7%)</li>
+                        <li><strong>Sell:</strong> 40,261 (15.4%)</li>
+                        <li><strong>Buy:</strong> 39,082 (14.9%)</li>
+                    </ul>
+                </div>
+                <div class="card warning">
+                    <h4>📰 News Coverage</h4>
+                    <ul>
+                        <li><strong>1.46%</strong> of stock-days have news</li>
+                        <li><strong>3,821</strong> stock-days with articles</li>
+                        <li><strong>2.42</strong> avg articles when available</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: EDA -->
+        <section id="eda" class="section">
+            <h2>4. Exploratory Data Analysis</h2>
+
+            <h3>4.1 Analysis Methods Used</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Analysis Type</th>
+                            <th>Graphical</th>
+                            <th>Non-Graphical</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Univariate</strong></td>
+                            <td>Histograms, Box plots, Bar charts</td>
+                            <td>Mean, Median, Std, Quartiles, IQR</td>
+                            <td>Understand individual variable distributions and outliers</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Bivariate</strong></td>
+                            <td>Scatter plots, Grouped bar charts</td>
+                            <td>Pearson correlation, Cross-tabulation</td>
+                            <td>Identify relationships between pairs of variables</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Multivariate</strong></td>
+                            <td>Correlation heatmaps</td>
+                            <td>Correlation matrix analysis</td>
+                            <td>Discover complex relationships across all features</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Temporal</strong></td>
+                            <td>Time series line charts</td>
+                            <td>Yearly aggregations, Trend detection</td>
+                            <td>Identify patterns, seasonality, regime changes</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>4.2 Data Quality & Completeness</h3>
+            <div class="plot-container">
+                <h4>Missing Values Analysis</h4>
+                <div id="missing-values-chart" style="height: 350px;"></div>
+            </div>
+
+            <div style="background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%); border: 2px solid #3182ce; border-radius: 15px; padding: 25px; margin: 20px 0;">
+                <h4 style="color: #1a365d; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                    <span style="background: #3182ce; color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.85em;">INSIGHT</span>
+                    Data Quality Assessment
+                </h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
+                    <div style="background: white; padding: 15px; border-radius: 10px; border-left: 4px solid #38a169;">
+                        <strong style="color: #38a169;">✓ Price Data: 0% Missing</strong>
+                        <p style="font-size: 0.9em; margin-top: 5px;">Complete OHLCV data for all 262,257 records - critical for technical analysis</p>
+                    </div>
+                    <div style="background: white; padding: 15px; border-radius: 10px; border-left: 4px solid #d69e2e;">
+                        <strong style="color: #d69e2e;">⚠ News Text: 98.5% Missing</strong>
+                        <p style="font-size: 0.9em; margin-top: 5px;">Expected behavior - not every stock has daily news coverage (1.46% with news)</p>
+                    </div>
+                    <div style="background: white; padding: 15px; border-radius: 10px; border-left: 4px solid #3182ce;">
+                        <strong style="color: #3182ce;">◐ S&P 500: 86.4% Coverage</strong>
+                        <p style="font-size: 0.9em; margin-top: 5px;">Strong market context coverage for relative performance analysis</p>
+                    </div>
+                    <div style="background: white; padding: 15px; border-radius: 10px; border-left: 4px solid #805ad5;">
+                        <strong style="color: #805ad5;">📅 14.2 Years of Data</strong>
+                        <p style="font-size: 0.9em; margin-top: 5px;">Oct 2009 - Dec 2023: Captures multiple market cycles including COVID-19</p>
+                    </div>
+                </div>
+                <p style="margin-top: 15px; font-style: italic; color: #4a5568;"><strong>What we did:</strong> Analyzed missing value patterns to ensure data quality. Price data completeness confirms reliability for model training.</p>
+            </div>
+
+            <h3>4.3 Price Distributions</h3>
+            <div class="plot-container">
+                <h4>Stock Price Distribution Analysis</h4>
+                <div id="price-distribution-chart" style="height: 400px;"></div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Statistic</th>
+                            <th>Open ($)</th>
+                            <th>High ($)</th>
+                            <th>Low ($)</th>
+                            <th>Close ($)</th>
+                            <th>Volume</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Mean</strong></td><td>62.25</td><td>63.21</td><td>61.22</td><td>62.18</td><td>2.6M</td></tr>
+                        <tr><td><strong>Median</strong></td><td>27.36</td><td>27.74</td><td>26.95</td><td>27.34</td><td>334K</td></tr>
+                        <tr><td><strong>Std Dev</strong></td><td>219.92</td><td>222.97</td><td>216.43</td><td>219.35</td><td>12M</td></tr>
+                        <tr><td><strong>Min</strong></td><td>0.01</td><td>0.03</td><td>0.01</td><td>0.03</td><td>1</td></tr>
+                        <tr><td><strong>Max</strong></td><td>7,250</td><td>7,250</td><td>7,250</td><td>7,250</td><td>470M</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="background: linear-gradient(135deg, #fffaf0 0%, #fef3c7 100%); border: 2px solid #d69e2e; border-radius: 15px; padding: 25px; margin: 20px 0;">
+                <h4 style="color: #744210; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                    <span style="background: #d69e2e; color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.85em;">INSIGHT</span>
+                    Price Distribution Analysis
+                </h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <strong style="color: #744210;">What We Found:</strong>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li>Large gap between mean ($62) and median ($27) reveals <strong>right-skewed distribution</strong></li>
+                            <li>Price range spans $0.01 to $7,250 across 100 stocks</li>
+                            <li>Volume varies by orders of magnitude (1 to 470M shares)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <strong style="color: #744210;">Action Taken:</strong>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li>Applied <strong>per-ticker MinMaxScaler</strong> for prices (0-1 range)</li>
+                            <li>Applied <strong>per-ticker StandardScaler</strong> for volume (z-score)</li>
+                            <li>This enables cross-stock comparison in model training</li>
+                        </ul>
+                    </div>
+                </div>
+                <p style="margin-top: 15px; font-style: italic; color: #744210;"><strong>Why this matters:</strong> Without normalization, high-priced stocks would dominate model training. Per-ticker scaling preserves relative patterns while enabling fair comparison.</p>
+            </div>
+
+            <h3>4.4 Returns Distribution & Target Classes</h3>
+            <div class="plot-grid">
+                <div class="plot-container">
+                    <h4>Next-Day Returns Distribution</h4>
+                    <div id="returns-distribution-chart" style="height: 380px;"></div>
+                </div>
+                <div class="plot-container">
+                    <h4>Target Class Distribution (Buy/Hold/Sell)</h4>
+                    <div id="target-distribution-chart" style="height: 380px;"></div>
+                </div>
+            </div>
+
+            <div style="background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%); border: 2px solid #38a169; border-radius: 15px; padding: 25px; margin: 20px 0;">
+                <h4 style="color: #22543d; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                    <span style="background: #38a169; color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.85em;">INSIGHT</span>
+                    Returns & Target Analysis
+                </h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                    <div style="background: white; padding: 20px; border-radius: 10px; border: 1px solid #9ae6b4;">
+                        <strong style="color: #22543d; font-size: 1.1em;">📊 What We Analyzed:</strong>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li>Distribution of next-day returns across 262K observations</li>
+                            <li>Created 3-class targets using ±2% thresholds</li>
+                            <li>Identified extreme movements (>10% gains/losses)</li>
+                        </ul>
+                    </div>
+                    <div style="background: white; padding: 20px; border-radius: 10px; border: 1px solid #9ae6b4;">
+                        <strong style="color: #22543d; font-size: 1.1em;">🔍 What We Found:</strong>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li><strong>High volatility:</strong> 34.66% std dev requires volatility features</li>
+                            <li><strong>Balanced targets:</strong> 70% Hold, 15% Sell, 15% Buy</li>
+                            <li><strong>4,444 extreme moves:</strong> Critical events for model training</li>
+                        </ul>
+                    </div>
+                    <div style="background: white; padding: 20px; border-radius: 10px; border: 1px solid #9ae6b4;">
+                        <strong style="color: #22543d; font-size: 1.1em;">⚙️ Features Created:</strong>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li><code>volatility_20</code>: 20-day rolling std deviation</li>
+                            <li><code>return_norm</code>: Standardized returns (z-score)</li>
+                            <li><code>momentum_5/20</code>: Short/medium-term momentum</li>
+                        </ul>
+                    </div>
+                </div>
+                <p style="margin-top: 15px; font-style: italic; color: #22543d;"><strong>Why this matters:</strong> The balanced 70/15/15 target split enables effective 3-class classification. High volatility justifies technical indicator features.</p>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Returns Metric</th>
+                            <th>Value</th>
+                            <th>Implication for Modeling</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Mean Daily Return</td>
+                            <td><strong>+0.29%</strong></td>
+                            <td>Slight positive bias reflects 2009-2023 bull market</td>
+                        </tr>
+                        <tr>
+                            <td>Median Return</td>
+                            <td><strong>0.00%</strong></td>
+                            <td>Half of trading days show minimal change</td>
+                        </tr>
+                        <tr>
+                            <td>Standard Deviation</td>
+                            <td><strong>34.66%</strong></td>
+                            <td>High volatility justifies volatility_20 feature</td>
+                        </tr>
+                        <tr>
+                            <td>Extreme Gains (>10%)</td>
+                            <td><strong>2,626</strong> (1.0%)</td>
+                            <td>Captures major positive events</td>
+                        </tr>
+                        <tr>
+                            <td>Extreme Losses (>10%)</td>
+                            <td><strong>1,818</strong> (0.7%)</td>
+                            <td>Captures crashes and corrections</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>4.5 Correlation Analysis</h3>
+            <div class="plot-container">
+                <h4>Feature Correlation Matrix</h4>
+                <div id="correlation-heatmap" style="height: 450px;"></div>
+            </div>
+
+            <div style="background: linear-gradient(135deg, #faf5ff 0%, #e9d8fd 100%); border: 2px solid #805ad5; border-radius: 15px; padding: 25px; margin: 20px 0;">
+                <h4 style="color: #44337a; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                    <span style="background: #805ad5; color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.85em;">INSIGHT</span>
+                    Correlation Analysis Results
+                </h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                    <div style="background: white; padding: 20px; border-radius: 10px; border: 1px solid #d6bcfa;">
+                        <strong style="color: #44337a; font-size: 1.1em;">🏆 Key Discovery:</strong>
+                        <p style="margin-top: 10px;"><strong>S&P 500 Return (+0.023)</strong> is the strongest predictor of individual stock movements. This confirms that market context is critical for stock-level predictions.</p>
+                    </div>
+                    <div style="background: white; padding: 20px; border-radius: 10px; border: 1px solid #d6bcfa;">
+                        <strong style="color: #44337a; font-size: 1.1em;">❌ What Doesn't Work:</strong>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li>Raw price levels have negligible correlation (-0.003)</li>
+                            <li>Raw volume is not predictive (-0.001)</li>
+                            <li>Absolute values don't capture patterns</li>
+                        </ul>
+                    </div>
+                    <div style="background: white; padding: 20px; border-radius: 10px; border: 1px solid #d6bcfa;">
+                        <strong style="color: #44337a; font-size: 1.1em;">⚙️ Features Created Based on This:</strong>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li><code>sp500_return</code>: Market return</li>
+                            <li><code>excess_return</code>: Stock - Market</li>
+                            <li><code>price_to_sma5/20</code>: Relative pricing</li>
+                            <li><code>volume_ratio</code>: Relative volume</li>
+                        </ul>
+                    </div>
+                </div>
+                <p style="margin-top: 15px; font-style: italic; color: #44337a;"><strong>Design Decision:</strong> We use relative features (ratios, deviations from averages) instead of absolute values because they capture meaningful patterns.</p>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Variable</th>
+                            <th>Correlation with Next-Day Return</th>
+                            <th>Feature Engineering Decision</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>S&P 500 Return</strong></td>
+                            <td><span class="badge badge-success">+0.023</span> (Strongest)</td>
+                            <td>→ Add <code>sp500_return</code>, <code>excess_return</code>, <code>market_up/down</code></td>
+                        </tr>
+                        <tr>
+                            <td>Next-Day Close</td>
+                            <td>+0.004</td>
+                            <td>→ Minimal predictive power</td>
+                        </tr>
+                        <tr>
+                            <td>Volume</td>
+                            <td>-0.001</td>
+                            <td>→ Use <code>volume_ratio</code> instead of raw volume</td>
+                        </tr>
+                        <tr>
+                            <td>Price Levels</td>
+                            <td>-0.003</td>
+                            <td>→ Use <code>price_to_sma</code> ratios instead of raw prices</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>4.6 Temporal Analysis</h3>
+            <div class="plot-container">
+                <h4>Yearly Trends: Returns & Volume (2014-2023)</h4>
+                <div id="temporal-trends-chart" style="height: 400px;"></div>
+            </div>
+
+            <div style="background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%); border: 2px solid #c2185b; border-radius: 15px; padding: 25px; margin: 20px 0;">
+                <h4 style="color: #880e4f; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                    <span style="background: #c2185b; color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.85em;">INSIGHT</span>
+                    Temporal Pattern Analysis
+                </h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                    <div style="background: white; padding: 20px; border-radius: 10px; border: 1px solid #f48fb1;">
+                        <strong style="color: #880e4f; font-size: 1.1em;">🦠 COVID-19 Impact (2020):</strong>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li><strong>+1.35%</strong> avg daily return (vs 0.2% typical)</li>
+                            <li><strong>3.5M</strong> avg volume (2.4x normal)</li>
+                            <li>Price drop from $59 → $50 average</li>
+                        </ul>
+                    </div>
+                    <div style="background: white; padding: 20px; border-radius: 10px; border: 1px solid #f48fb1;">
+                        <strong style="color: #880e4f; font-size: 1.1em;">📊 Market Regime Changes:</strong>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li>2014-2019: Stable growth period</li>
+                            <li>2020: Extreme volatility (COVID crash/recovery)</li>
+                            <li>2021-2023: Elevated volume persists</li>
+                        </ul>
+                    </div>
+                    <div style="background: white; padding: 20px; border-radius: 10px; border: 1px solid #f48fb1;">
+                        <strong style="color: #880e4f; font-size: 1.1em;">⚙️ Features to Capture This:</strong>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li><code>volatility_20</code>: Detects regime changes</li>
+                            <li><code>momentum_5/20</code>: Captures trend shifts</li>
+                            <li><code>sma_5/20/50</code>: Multi-timeframe averages</li>
+                        </ul>
+                    </div>
+                </div>
+                <p style="margin-top: 15px; font-style: italic; color: #880e4f;"><strong>Why this matters:</strong> Models must handle different market regimes. Our technical indicators help the system adapt to volatile vs stable periods.</p>
+            </div>
+
+            <h3>4.7 Outlier Analysis</h3>
+            
+            <div style="background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%); border: 2px solid #e53e3e; border-radius: 15px; padding: 25px; margin: 20px 0;">
+                <h4 style="color: #742a2a; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                    <span style="background: #e53e3e; color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.85em;">INSIGHT</span>
+                    Outlier Detection & Treatment
+                </h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                    <div style="background: white; padding: 20px; border-radius: 10px; border: 1px solid #feb2b2;">
+                        <strong style="color: #742a2a; font-size: 1.1em;">📊 What We Analyzed:</strong>
+                        <p style="margin-top: 10px;">Used IQR method (1.5x threshold) to detect statistical outliers in price and return distributions. Also flagged extreme daily moves (>10% and >50%).</p>
+                    </div>
+                    <div style="background: white; padding: 20px; border-radius: 10px; border: 1px solid #feb2b2;">
+                        <strong style="color: #742a2a; font-size: 1.1em;">✓ Retained (Valid Signals):</strong>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li>25,372 price outliers (high-priced stocks)</li>
+                            <li>4,444 extreme returns (real market events)</li>
+                            <li>These are valuable training examples!</li>
+                        </ul>
+                    </div>
+                    <div style="background: white; padding: 20px; border-radius: 10px; border: 1px solid #feb2b2;">
+                        <strong style="color: #742a2a; font-size: 1.1em;">✗ Removed (Data Errors):</strong>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li>951 records with >50% daily change</li>
+                            <li>Likely stock splits or data quality issues</li>
+                            <li>Only 0.2% of data removed</li>
+                        </ul>
+                    </div>
+                </div>
+                <p style="margin-top: 15px; font-style: italic; color: #742a2a;"><strong>Design Decision:</strong> We retain extreme but valid market moves (10% changes) while removing likely data errors (50%+ changes). This preserves valuable volatility signals.</p>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Outlier Category</th>
+                            <th>Detection Method</th>
+                            <th>Count</th>
+                            <th>Percentage</th>
+                            <th>Treatment</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Price Outliers</td>
+                            <td>IQR (1.5x threshold)</td>
+                            <td>25,372</td>
+                            <td>9.67%</td>
+                            <td>Retained - valid high-priced stocks</td>
+                        </tr>
+                        <tr>
+                            <td>Extreme Gains</td>
+                            <td>>10% daily return</td>
+                            <td>2,626</td>
+                            <td>1.0%</td>
+                            <td>Retained - valuable buy signals</td>
+                        </tr>
+                        <tr>
+                            <td>Extreme Losses</td>
+                            <td><-10% daily return</td>
+                            <td>1,818</td>
+                            <td>0.7%</td>
+                            <td>Retained - valuable sell signals</td>
+                        </tr>
+                        <tr>
+                            <td>Data Errors</td>
+                            <td>>50% daily change</td>
+                            <td>951</td>
+                            <td>0.2%</td>
+                            <td><strong>Removed</strong> - likely stock splits or errors</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>4.8 EDA Artifacts Produced</h3>
+            <p>All visualizations are generated programmatically in our Jupyter notebook and saved for reproducibility. Click any artifact to view on GitHub:</p>
+            
+            <div class="card-grid">
+                <a href="https://github.com/harsh5559/DSC288_Capstone/blob/main/notebooks/eda_outputs/02_univariate_distributions.png" class="eda-artifact-link" target="_blank">
+                    <span class="icon">📊</span>
+                    <div class="info">
+                        <div class="name">02_univariate_distributions.png</div>
+                        <div class="desc">6 subplots: Price distributions (OHLC), Volume, Target labels</div>
+                    </div>
+                    <span style="color: #3182ce; font-size: 0.8em;">View on GitHub →</span>
+                </a>
+                <a href="https://github.com/harsh5559/DSC288_Capstone/blob/main/notebooks/eda_outputs/03_returns_distribution.png" class="eda-artifact-link" target="_blank">
+                    <span class="icon">📈</span>
+                    <div class="info">
+                        <div class="name">03_returns_distribution.png</div>
+                        <div class="desc">Returns histogram with ±2% threshold lines and box plot</div>
+                    </div>
+                    <span style="color: #3182ce; font-size: 0.8em;">View on GitHub →</span>
+                </a>
+                <a href="https://github.com/harsh5559/DSC288_Capstone/blob/main/notebooks/eda_outputs/04_news_coverage.png" class="eda-artifact-link" target="_blank">
+                    <span class="icon">📰</span>
+                    <div class="info">
+                        <div class="name">04_news_coverage.png</div>
+                        <div class="desc">News availability analysis: 1.46% coverage, article count distribution</div>
+                    </div>
+                    <span style="color: #3182ce; font-size: 0.8em;">View on GitHub →</span>
+                </a>
+                <a href="https://github.com/harsh5559/DSC288_Capstone/blob/main/notebooks/eda_outputs/05_correlation_matrix.png" class="eda-artifact-link" target="_blank">
+                    <span class="icon">🔗</span>
+                    <div class="info">
+                        <div class="name">05_correlation_matrix.png</div>
+                        <div class="desc">Correlation heatmap for all numeric features</div>
+                    </div>
+                    <span style="color: #3182ce; font-size: 0.8em;">View on GitHub →</span>
+                </a>
+                <a href="https://github.com/harsh5559/DSC288_Capstone/blob/main/notebooks/eda_outputs/06_price_volume_scatter.png" class="eda-artifact-link" target="_blank">
+                    <span class="icon">📉</span>
+                    <div class="info">
+                        <div class="name">06_price_volume_scatter.png</div>
+                        <div class="desc">Price-volume relationship scatter plot (10K sample)</div>
+                    </div>
+                    <span style="color: #3182ce; font-size: 0.8em;">View on GitHub →</span>
+                </a>
+                <a href="https://github.com/harsh5559/DSC288_Capstone/blob/main/notebooks/eda_outputs/07_target_relationships.png" class="eda-artifact-link" target="_blank">
+                    <span class="icon">🎯</span>
+                    <div class="info">
+                        <div class="name">07_target_relationships.png</div>
+                        <div class="desc">Target distribution by news availability and market direction</div>
+                    </div>
+                    <span style="color: #3182ce; font-size: 0.8em;">View on GitHub →</span>
+                </a>
+                <a href="https://github.com/harsh5559/DSC288_Capstone/blob/main/notebooks/eda_outputs/08_temporal_trends.png" class="eda-artifact-link" target="_blank">
+                    <span class="icon">📅</span>
+                    <div class="info">
+                        <div class="name">08_temporal_trends.png</div>
+                        <div class="desc">4 subplots: Yearly trends in records, price, volume, returns</div>
+                    </div>
+                    <span style="color: #3182ce; font-size: 0.8em;">View on GitHub →</span>
+                </a>
+                <a href="https://github.com/harsh5559/DSC288_Capstone/blob/main/notebooks/eda_outputs/01_quality_summary.json" class="eda-artifact-link" target="_blank">
+                    <span class="icon">📋</span>
+                    <div class="info">
+                        <div class="name">01_quality_summary.json</div>
+                        <div class="desc">JSON file with data quality metrics and missing value counts</div>
+                    </div>
+                    <span style="color: #3182ce; font-size: 0.8em;">View on GitHub →</span>
+                </a>
+                <a href="https://github.com/harsh5559/DSC288_Capstone/blob/main/notebooks/eda_outputs/09_eda_insights.json" class="eda-artifact-link" target="_blank">
+                    <span class="icon">💡</span>
+                    <div class="info">
+                        <div class="name">09_eda_insights.json</div>
+                        <div class="desc">Aggregated statistical insights and key findings</div>
+                    </div>
+                    <span style="color: #3182ce; font-size: 0.8em;">View on GitHub →</span>
+                </a>
+            </div>
+
+            <p style="margin-top: 20px;"><strong>Reproducible Analysis:</strong> <a href="https://github.com/harsh5559/DSC288_Capstone/blob/main/notebooks/01_EDA.ipynb" target="_blank">notebooks/01_EDA.ipynb</a> - Complete Jupyter notebook with all analysis code (View on GitHub)</p>
+
+            <!-- EDA Summary -->
+            <div style="background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); color: white; padding: 30px; border-radius: 15px; margin-top: 30px;">
+                <h3 style="color: white; margin-bottom: 20px; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 15px;">📊 EDA Summary: Key Findings → Feature Engineering Decisions</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                    <div style="background: rgba(255,255,255,0.1); padding: 18px; border-radius: 10px;">
+                        <strong style="color: #90cdf4;">Finding:</strong> S&P 500 return is strongest predictor (+0.023)<br>
+                        <strong style="color: #68d391;">→ Action:</strong> Created market-relative features (sp500_return, excess_return)
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 18px; border-radius: 10px;">
+                        <strong style="color: #90cdf4;">Finding:</strong> Right-skewed prices ($0.01 to $7,250)<br>
+                        <strong style="color: #68d391;">→ Action:</strong> Applied per-ticker MinMaxScaler normalization
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 18px; border-radius: 10px;">
+                        <strong style="color: #90cdf4;">Finding:</strong> High volatility (34.66% daily std)<br>
+                        <strong style="color: #68d391;">→ Action:</strong> Created volatility_20 and momentum features
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 18px; border-radius: 10px;">
+                        <strong style="color: #90cdf4;">Finding:</strong> 10% more extreme moves on news days<br>
+                        <strong style="color: #68d391;">→ Action:</strong> Validated sentiment features for Graph RAG
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 18px; border-radius: 10px;">
+                        <strong style="color: #90cdf4;">Finding:</strong> Raw prices have no predictive power<br>
+                        <strong style="color: #68d391;">→ Action:</strong> Use price_to_sma ratios instead
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 18px; border-radius: 10px;">
+                        <strong style="color: #90cdf4;">Finding:</strong> COVID-2020 shows regime change<br>
+                        <strong style="color: #68d391;">→ Action:</strong> Multi-timeframe indicators (SMA-5/20/50)
+                    </div>
+                </div>
+                <p style="margin-top: 20px; opacity: 0.9; text-align: center;"><em>Each feature engineering decision is directly traced to a specific EDA finding, ensuring data-driven feature selection.</em></p>
+            </div>
+        </section>
+
+        <!-- Section 5: Sentiment Impact on Trading -->
+        <section id="sentiment" class="section">
+            <h2>5. Sentiment Analysis Impact on Trading Decisions</h2>
+
+            <div class="highlight-box">
+                <h3>Core Finding: News Sentiment Drives Market Volatility</h3>
+                <p>Our EDA revealed a critical insight: <strong>days with news show 10% more extreme price movements</strong> (buy/sell signals) compared to days without news. This finding is the foundation of our Graph RAG system's sentiment-to-trading connection.</p>
+            </div>
+
+            <h3>5.1 Quantified News Impact</h3>
+            <div class="plot-container">
+                <h4>Target Distribution: Days With News vs Without News</h4>
+                <div id="news-impact-chart" style="height: 400px;"></div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Target Signal</th>
+                            <th>No News (258,436 days)</th>
+                            <th>With News (3,821 days)</th>
+                            <th>Difference</th>
+                            <th>Interpretation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Buy</strong></td>
+                            <td>14.8%</td>
+                            <td>18.6%</td>
+                            <td><span class="badge badge-success">+3.8 pp</span></td>
+                            <td>News days have 25% more buy signals</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Hold</strong></td>
+                            <td>69.9%</td>
+                            <td>60.9%</td>
+                            <td><span class="badge badge-danger">-9.0 pp</span></td>
+                            <td>News days are 13% less likely to hold</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sell</strong></td>
+                            <td>15.3%</td>
+                            <td>20.5%</td>
+                            <td><span class="badge badge-warning">+5.2 pp</span></td>
+                            <td>News days have 34% more sell signals</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>5.2 Sentiment-to-Trading Signal Pipeline</h3>
+            <div class="mermaid-container large">
+                <div class="mermaid">
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '13px', 'fontFamily': 'Segoe UI, Arial, sans-serif', 'primaryBorderColor': '#333', 'lineColor': '#555', 'primaryTextColor': '#1a202c'}}}%%
+flowchart TB
+    subgraph NewsIngestion["📰 NEWS INGESTION"]
+        N1["Raw News Article<br/>Apple announces record<br/>iPhone sales, beating<br/>analyst expectations by 15%"]
+    end
+
+    subgraph SentimentExtraction["🧠 SENTIMENT EXTRACTION - GPT-5.2"]
+        direction TB
+        S1["Entity Extraction<br/>Company: Apple AAPL<br/>Event: Earnings beat<br/>Magnitude: +15%"]
+        S2["Sentiment Classification<br/>Score: +0.85 positive<br/>Confidence: 0.92<br/>Label: BULLISH"]
+        S3["Key Phrase Extraction<br/>record iPhone sales<br/>beating expectations"]
+        S1 --> S2 --> S3
+    end
+
+    subgraph GraphStorage["🕸️ NEO4J KNOWLEDGE GRAPH"]
+        direction LR
+        G1["Stock<br/>ticker: AAPL"]
+        G2["Article<br/>id: 123"]
+        G3["Sentiment<br/>score: 0.85"]
+        G4["Event<br/>earnings_beat"]
+        G1 -->|MENTIONED_IN| G2
+        G2 -->|HAS_SENTIMENT| G3
+        G4 -->|AFFECTS| G1
+    end
+
+    subgraph PatternDetection["📊 PATTERN DETECTION"]
+        direction TB
+        P1["Sentiment Aggregation<br/>3-day avg: +0.72<br/>7-day trend: IMPROVING"]
+        P2["Technical Correlation<br/>Price momentum: +2.3%<br/>Volume spike: 2.1x"]
+        P3["Signal Generation<br/>Combined score: 0.78<br/>Recommendation: BUY"]
+        P1 --> P2 --> P3
+    end
+
+    subgraph TradingSignal["🎯 TRADING SIGNAL OUTPUT"]
+        T1["Signal Node Created<br/>type: BUY<br/>strength: 0.78<br/>confidence: 0.85"]
+        T2["Cited Evidence<br/>Article #123<br/>Sentiment: +0.85<br/>Momentum: +2.3%"]
+    end
+
+    subgraph UserOutput["👤 USER EXPLANATION"]
+        U1["Recommendation: BUY AAPL<br/>Based on positive earnings<br/>news showing record sales<br/>with upward momentum"]
+    end
+
+    NewsIngestion --> SentimentExtraction
+    SentimentExtraction --> GraphStorage
+    GraphStorage --> PatternDetection
+    PatternDetection --> TradingSignal
+    TradingSignal --> UserOutput
+
+    style NewsIngestion fill:#fff3e0,stroke:#ef6c00,stroke-width:3px
+    style SentimentExtraction fill:#e3f2fd,stroke:#1565c0,stroke-width:3px
+    style GraphStorage fill:#e8f5e9,stroke:#2e7d32,stroke-width:3px
+    style PatternDetection fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px
+    style TradingSignal fill:#fce4ec,stroke:#c2185b,stroke-width:3px
+    style UserOutput fill:#7c3aed,stroke:#5b21b6,stroke-width:3px,color:#fff
+    
+    style N1 fill:#ffe0b2,stroke:#ef6c00,stroke-width:2px,color:#333
+    style S1 fill:#bbdefb,stroke:#1565c0,stroke-width:2px,color:#333
+    style S2 fill:#bbdefb,stroke:#1565c0,stroke-width:2px,color:#333
+    style S3 fill:#bbdefb,stroke:#1565c0,stroke-width:2px,color:#333
+    style G1 fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px,color:#333
+    style G2 fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px,color:#333
+    style G3 fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px,color:#333
+    style G4 fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px,color:#333
+    style P1 fill:#e1bee7,stroke:#7b1fa2,stroke-width:2px,color:#333
+    style P2 fill:#e1bee7,stroke:#7b1fa2,stroke-width:2px,color:#333
+    style P3 fill:#e1bee7,stroke:#7b1fa2,stroke-width:2px,color:#333
+    style T1 fill:#f8bbd9,stroke:#c2185b,stroke-width:2px,color:#333
+    style T2 fill:#f8bbd9,stroke:#c2185b,stroke-width:2px,color:#333
+    style U1 fill:#9575cd,stroke:#5b21b6,stroke-width:2px,color:#fff
+                </div>
+            </div>
+
+            <h3>5.3 Sentiment Model Architecture</h3>
+            <div class="card-grid">
+                <div class="card highlight">
+                    <h4>Training Data</h4>
+                    <p><strong>Financial Phrasebank</strong> provides 2,264 human-annotated sentences with sentiment labels (positive, neutral, negative) specifically for financial text.</p>
+                </div>
+                <div class="card success">
+                    <h4>Model Choice</h4>
+                    <p>Fine-tuned <strong>FinBERT</strong> or <strong>GPT-5.2 with structured outputs</strong> for domain-specific sentiment classification with confidence scores.</p>
+                </div>
+                <div class="card warning">
+                    <h4>Output Format</h4>
+                    <p>Each article produces: sentiment score (-1 to +1), confidence (0 to 1), label (bullish/neutral/bearish), and key phrases for citation.</p>
+                </div>
+            </div>
+
+            <h3>5.4 Market Direction Reinforces Sentiment Signals</h3>
+            <div class="plot-container">
+                <h4>Target Distribution by S&P 500 Direction</h4>
+                <div id="market-direction-chart" style="height: 400px;"></div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>S&P 500 Direction</th>
+                            <th>Buy Signals</th>
+                            <th>Hold Signals</th>
+                            <th>Sell Signals</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="badge badge-danger">Down</span></td>
+                            <td>13.0%</td>
+                            <td>67.7%</td>
+                            <td><strong>19.3%</strong> (highest)</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-info">Flat</span></td>
+                            <td>15.9%</td>
+                            <td>69.1%</td>
+                            <td>15.0%</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-success">Up</span></td>
+                            <td><strong>17.2%</strong> (highest)</td>
+                            <td>71.0%</td>
+                            <td>11.9%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="callout success">
+                <h4>🔗 Integration Insight</h4>
+                <p>Individual stocks follow market direction: when S&P 500 is up, buy signals increase; when down, sell signals increase. Our system combines <strong>stock-specific sentiment</strong> with <strong>market-level context</strong> for more accurate predictions. This is why we include <code>sp500_return</code>, <code>excess_return</code>, and <code>market_up/down</code> features.</p>
+            </div>
+        </section>
+
+        <!-- Section 6: Proposed System Architecture -->
+        <section id="system" class="section">
+            <h2>6. Proposed System Architecture</h2>
+
+            <h3>6.1 System Overview</h3>
+            <p>Our multi-agent Graph RAG system combines three core technologies to deliver explainable financial recommendations:</p>
+
+            <div class="card-grid">
+                <div class="card highlight">
+                    <h4>🕸️ Neo4j Knowledge Graph</h4>
+                    <p>Stores entities (stocks, articles, people, events) and their relationships, enabling complex multi-hop reasoning across financial data.</p>
+                </div>
+                <div class="card success">
+                    <h4>🤖 GPT-5.2 LLM</h4>
+                    <p>Performs entity extraction from news, sentiment classification, and generates natural language explanations for recommendations.</p>
+                </div>
+                <div class="card warning">
+                    <h4>🔧 OpenAI Agents SDK</h4>
+                    <p>Orchestrates multiple specialist agents (fundamental, technical, sentiment analysts) that collaborate through structured handoffs.</p>
+                </div>
+            </div>
+
+            <h3>6.2 Complete System Architecture</h3>
+            <div class="mermaid-container large">
+                <div class="mermaid">
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px'}}}%%
+flowchart TB
+    subgraph UserLayer["👤 USER INTERFACE"]
+        U1["User Query:<br/>'Should I buy AAPL today?'"]
+        U2["Response with<br/>Recommendation + Explanation + Citations"]
+    end
+
+    subgraph OrchestratorAgent["🎯 ORCHESTRATOR AGENT (OpenAI Agents SDK)"]
+        direction TB
+        O1["<b>Query Analysis</b><br/>Parse intent, extract ticker"]
+        O2["<b>Agent Dispatch</b><br/>Route to specialist agents"]
+        O3["<b>Response Synthesis</b><br/>Aggregate, resolve conflicts"]
+        O4["<b>Explanation Generation</b><br/>Compile citations"]
+        O1 --> O2 --> O3 --> O4
+    end
+
+    subgraph SpecialistAgents["👥 SPECIALIST AGENTS"]
+        direction LR
+        subgraph FundamentalAgent["📊 Fundamental Analyst"]
+            FA1["Query earnings data"]
+            FA2["Analyze ratios"]
+            FA3["Long-term outlook"]
+        end
+        subgraph SentimentAgent["📰 Sentiment Analyst"]
+            SA1["Query recent news"]
+            SA2["Aggregate sentiment"]
+            SA3["Cite key articles"]
+        end
+        subgraph TechnicalAgent["📈 Technical Analyst"]
+            TA1["Query price patterns"]
+            TA2["Compute indicators"]
+            TA3["Identify signals"]
+        end
+    end
+
+    subgraph DebateAgents["⚖️ DEBATE AGENTS"]
+        direction LR
+        DA1["😊 <b>Optimistic View</b><br/>Bullish arguments"]
+        DA2["😟 <b>Cautious View</b><br/>Risk factors"]
+    end
+
+    subgraph GraphRAGLayer["🕸️ GRAPH RAG LAYER (Neo4j)"]
+        direction TB
+        subgraph VectorSearch["Vector Search"]
+            VS1["Embed query"]
+            VS2["Find similar articles"]
+        end
+        subgraph GraphTraversal["Graph Traversal"]
+            GT1["Stock → Articles"]
+            GT2["Articles → Sentiment"]
+            GT3["Events → Impact"]
+        end
+        subgraph ContextAssembly["Context Assembly"]
+            CA1["Rank by relevance"]
+            CA2["Extract citations"]
+        end
+    end
+
+    subgraph KnowledgeGraph["📦 NEO4J KNOWLEDGE GRAPH"]
+        direction LR
+        KG1["(:Stock)"]
+        KG2["(:Article)"]
+        KG3["(:Sentiment)"]
+        KG4["(:Event)"]
+        KG5["(:TradingSignal)"]
+        KG6["(:Person)"]
+    end
+
+    subgraph DataLayer["💾 DATA LAYER"]
+        DL1["Engineered Features<br/>(35 features)"]
+        DL2["Historical Prices<br/>(262K records)"]
+        DL3["News Archive<br/>(3,821 stock-days)"]
+    end
+
+    U1 --> OrchestratorAgent
+    OrchestratorAgent --> SpecialistAgents
+    SpecialistAgents --> GraphRAGLayer
+    GraphRAGLayer --> KnowledgeGraph
+    SpecialistAgents --> DebateAgents
+    DebateAgents --> OrchestratorAgent
+    KnowledgeGraph --> DataLayer
+    OrchestratorAgent --> U2
+
+    style UserLayer fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    style OrchestratorAgent fill:#7c3aed,stroke:#5b21b6,stroke-width:3px,color:#fff
+    style SpecialistAgents fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    style DebateAgents fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    style GraphRAGLayer fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    style KnowledgeGraph fill:#059669,stroke:#047857,stroke-width:2px,color:#fff
+    style DataLayer fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+                </div>
+            </div>
+
+            <h3>6.3 Agent Specifications</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Agent</th>
+                            <th>Role</th>
+                            <th>Tools Available</th>
+                            <th>Output</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>🎯 Orchestrator</strong></td>
+                            <td>Coordinate agents, synthesize final decision</td>
+                            <td>Handoff to all specialist agents</td>
+                            <td>BUY/HOLD/SELL + explanation + citations</td>
+                        </tr>
+                        <tr>
+                            <td><strong>📊 Fundamental</strong></td>
+                            <td>Analyze company financials and valuation</td>
+                            <td>Neo4j query, financial ratio calculator</td>
+                            <td>Long-term outlook score (0-1)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>📰 Sentiment</strong></td>
+                            <td>Analyze news and market sentiment</td>
+                            <td>Neo4j query, sentiment extractor</td>
+                            <td>Sentiment score + cited articles</td>
+                        </tr>
+                        <tr>
+                            <td><strong>📈 Technical</strong></td>
+                            <td>Identify price patterns and signals</td>
+                            <td>Neo4j query, indicator calculator</td>
+                            <td>Technical signals + chart patterns</td>
+                        </tr>
+                        <tr>
+                            <td><strong>😊 Optimistic</strong></td>
+                            <td>Present bullish arguments</td>
+                            <td>Access to all agent outputs</td>
+                            <td>Pro-buy reasoning with evidence</td>
+                        </tr>
+                        <tr>
+                            <td><strong>😟 Cautious</strong></td>
+                            <td>Present risk factors and concerns</td>
+                            <td>Access to all agent outputs</td>
+                            <td>Risk warnings with evidence</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>6.4 Key Assumptions</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <h4>📊 Data Assumptions</h4>
+                    <ul>
+                        <li>Historical patterns have some predictive value</li>
+                        <li>News sentiment correlates with short-term price movements</li>
+                        <li>Market context (S&P 500) influences individual stocks</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4>🤖 Model Assumptions</h4>
+                    <ul>
+                        <li>GPT-5.2 can accurately extract entities and sentiment</li>
+                        <li>Multi-agent debate improves decision quality</li>
+                        <li>RAG grounding reduces hallucination</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4>👤 User Assumptions</h4>
+                    <ul>
+                        <li>Users value understanding over pure accuracy</li>
+                        <li>Cited sources increase trust in recommendations</li>
+                        <li>Natural language explanations are preferred</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 7: Graph RAG Details -->
+        <section id="graphrag" class="section">
+            <h2>7. Graph RAG System Details</h2>
+
+            <h3>7.1 Neo4j Schema Design</h3>
+            <div class="mermaid-container large">
+                <div class="mermaid">
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px'}}}%%
+graph LR
+    subgraph Entities["ENTITY NODES"]
+        Stock["<b>(:Stock)</b><br/>ticker, name, sector<br/>price, volume, date"]
+        Article["<b>(:Article)</b><br/>id, date, title<br/>text, source, url"]
+        Person["<b>(:Person)</b><br/>name, role<br/>company, title"]
+        Event["<b>(:Event)</b><br/>type, date<br/>description, impact"]
+        Sentiment["<b>(:Sentiment)</b><br/>score, label<br/>confidence, phrases"]
+        Signal["<b>(:TradingSignal)</b><br/>type, strength<br/>date, reasoning"]
+    end
+
+    Stock -->|"<b>MENTIONED_IN</b><br/>mention_count, context"| Article
+    Person -->|"<b>MENTIONED_IN</b><br/>role_in_article"| Article
+    Article -->|"<b>HAS_SENTIMENT</b><br/>extraction_date"| Sentiment
+    Event -->|"<b>AFFECTS</b><br/>direction, magnitude"| Stock
+    Sentiment -->|"<b>TRIGGERS</b><br/>confidence, delay"| Signal
+    Signal -->|"<b>RECOMMENDS</b><br/>target_price"| Stock
+    Stock -->|"<b>CORRELATED_WITH</b><br/>correlation, period"| Stock
+    Person -->|"<b>EXECUTIVE_OF</b><br/>start_date"| Stock
+
+    style Stock fill:#3182ce,color:#fff
+    style Article fill:#d69e2e,color:#fff
+    style Sentiment fill:#38a169,color:#fff
+    style Signal fill:#e53e3e,color:#fff
+    style Event fill:#7c3aed,color:#fff
+    style Person fill:#805ad5,color:#fff
+                </div>
+            </div>
+
+            <h3>7.2 Example: How Graph RAG Answers a Trading Question</h3>
+            <p>When a user asks <strong>"Should I buy AAPL?"</strong>, our system traverses the knowledge graph to gather evidence. Here's a simplified example of how Cypher queries retrieve relevant information:</p>
+            
+            <div style="background: #1e293b; border-radius: 15px; padding: 25px; margin: 20px 0; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.95em; overflow-x: auto;">
+                <div style="color: #94a3b8; margin-bottom: 15px;">// Step 1: Find recent news articles about AAPL and their sentiment</div>
+                <div style="color: #e2e8f0; line-height: 1.8;">
+                    <span style="color: #f472b6;">MATCH</span> (stock:Stock {ticker: <span style="color: #4ade80;">'AAPL'</span>})<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-[:MENTIONED_IN]->(article:Article)<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-[:HAS_SENTIMENT]->(sentiment:Sentiment)<br>
+                    <span style="color: #f472b6;">WHERE</span> article.date > <span style="color: #4ade80;">'2026-01-25'</span><br>
+                    <span style="color: #f472b6;">RETURN</span> article.title, article.date, sentiment.score, sentiment.label<br>
+                    <span style="color: #f472b6;">ORDER BY</span> article.date <span style="color: #f472b6;">DESC</span>
+                </div>
+                
+                <div style="color: #94a3b8; margin: 25px 0 15px 0;">// Example Result:</div>
+                <div style="background: #334155; padding: 15px; border-radius: 8px; color: #e2e8f0;">
+                    <table style="width: 100%; color: #e2e8f0; font-size: 0.9em;">
+                        <tr style="border-bottom: 1px solid #475569;">
+                            <td style="padding: 8px;"><strong>Title</strong></td>
+                            <td style="padding: 8px;"><strong>Date</strong></td>
+                            <td style="padding: 8px;"><strong>Score</strong></td>
+                            <td style="padding: 8px;"><strong>Label</strong></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px;">"Apple Q1 earnings beat expectations"</td>
+                            <td style="padding: 8px;">2026-01-28</td>
+                            <td style="padding: 8px; color: #4ade80;">+0.85</td>
+                            <td style="padding: 8px; color: #4ade80;">POSITIVE</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px;">"iPhone sales surge in China market"</td>
+                            <td style="padding: 8px;">2026-01-27</td>
+                            <td style="padding: 8px; color: #4ade80;">+0.72</td>
+                            <td style="padding: 8px; color: #4ade80;">POSITIVE</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px;">"Supply chain concerns ease for Apple"</td>
+                            <td style="padding: 8px;">2026-01-26</td>
+                            <td style="padding: 8px; color: #fbbf24;">+0.45</td>
+                            <td style="padding: 8px; color: #fbbf24;">NEUTRAL</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div style="color: #94a3b8; margin: 25px 0 15px 0;">// The agent then generates an explanation with citations:</div>
+                <div style="background: #065f46; padding: 15px; border-radius: 8px; color: #d1fae5; line-height: 1.7;">
+                    <strong>Recommendation: BUY AAPL</strong><br><br>
+                    Based on recent news analysis, AAPL shows positive sentiment (avg score: +0.67).<br>
+                    Key factors:<br>
+                    • Q1 earnings exceeded expectations [Article #1, 2026-01-28]<br>
+                    • Strong iPhone demand in China [Article #2, 2026-01-27]<br>
+                    • Supply chain stabilizing [Article #3, 2026-01-26]
+                </div>
+            </div>
+            
+            <p>This example demonstrates how the Graph RAG system provides <strong>explainable recommendations</strong> by traversing the knowledge graph and citing specific sources for each claim.</p>
+        </section>
+
+
+        <!-- Section 8: Progress -->
+        <section id="progress" class="section">
+            <h2>8. Progress Report</h2>
+
+            <h3>8.1 Timeline & Milestones</h3>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4>✅ Week 1: Project Setup</h4>
+                    <p>Repository setup, dataset identification, initial exploration</p>
+                    <span class="badge badge-success">Complete</span>
+                </div>
+                <div class="timeline-item">
+                    <h4>✅ Week 2: Data Pipeline & EDA</h4>
+                    <p>4-stage pipeline implemented, comprehensive EDA with 7 visualizations, feature engineering (35 features)</p>
+                    <span class="badge badge-success">Complete</span>
+                </div>
+                <div class="timeline-item">
+                    <h4>🔄 Week 3-4: Graph RAG Implementation</h4>
+                    <p>Neo4j setup, entity extraction pipeline, graph population, Cypher query optimization</p>
+                    <span class="badge badge-info">In Progress (20%)</span>
+                </div>
+                <div class="timeline-item">
+                    <h4>⏳ Week 5-6: Multi-Agent System</h4>
+                    <p>OpenAI Agents SDK integration, specialist agent implementation, handoff logic</p>
+                    <span class="badge badge-warning">Planned</span>
+                </div>
+                <div class="timeline-item">
+                    <h4>⏳ Week 7-8: Evaluation & Demo</h4>
+                    <p>Baseline comparison, explanation quality metrics, user study, final demo</p>
+                    <span class="badge badge-warning">Planned</span>
+                </div>
+            </div>
+
+            <h3>8.2 Team Member Contributions</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Team Member</th>
+                            <th>Completed Work</th>
+                            <th>Next Phase Work</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Raghav Vasappanavara</strong></td>
+                            <td>Problem Statement, System Architecture, Technical Design</td>
+                            <td>Multi-agent framework, OpenAI SDK integration, Orchestrator agent</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Harsh Arya</strong></td>
+                            <td>EDA analysis, Feature engineering Stage 4, Data pipeline implementation</td>
+                            <td>Baseline models, Evaluation metrics, Demo preparation</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Camila Paik</strong></td>
+                            <td>Report organization, Progress documentation, Data alignment Stage 3</td>
+                            <td>Neo4j schema design, Entity extraction pipeline, Graph queries</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Gabrielle Despaigne</strong></td>
+                            <td>Document organization, Progress tracking, Data cleaning Stage 2</td>
+                            <td>Documentation, Proof Reading and Validation</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Section 9: Risks -->
+        <section id="risks" class="section">
+            <h2>9. Risks and Mitigation</h2>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Risk</th>
+                            <th>Probability</th>
+                            <th>Impact</th>
+                            <th>Mitigation Strategy</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Low news coverage (1.46%)</strong></td>
+                            <td><span class="badge badge-warning">High</span></td>
+                            <td><span class="badge badge-info">Medium</span></td>
+                            <td>Supplement with Yahoo Finance API; design system for technical-only analysis when news unavailable</td>
+                        </tr>
+                        <tr>
+                            <td><strong>OpenAI API rate limits</strong></td>
+                            <td><span class="badge badge-info">Medium</span></td>
+                            <td><span class="badge badge-danger">High</span></td>
+                            <td>Implement caching layer; batch API calls; optimize prompt efficiency</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Neo4j query performance</strong></td>
+                            <td><span class="badge badge-info">Medium</span></td>
+                            <td><span class="badge badge-info">Medium</span></td>
+                            <td>Optimize Cypher queries; create indexes on frequently queried properties</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Entity extraction accuracy</strong></td>
+                            <td><span class="badge badge-info">Medium</span></td>
+                            <td><span class="badge badge-warning">High</span></td>
+                            <td>Use GPT-5.2 structured outputs; implement validation layer; human review sample</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Model hallucination</strong></td>
+                            <td><span class="badge badge-info">Medium</span></td>
+                            <td><span class="badge badge-danger">High</span></td>
+                            <td>Ground all claims in RAG sources; implement citation verification; constrain to graph content</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Temporal data leakage</strong></td>
+                            <td><span class="badge badge-success">Low</span></td>
+                            <td><span class="badge badge-danger">Critical</span></td>
+                            <td>Strict temporal splits (train: 2009-2021, val: 2022, test: 2023); forward-only prediction tests</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- References -->
+        <section class="section">
+            <h2>10. References</h2>
+
+            <h3>Academic Papers</h3>
+            <ol>
+                <li>Malo, P. et al. (2014). "Good Debt or Bad Debt: Detecting Semantic Orientations in Economic Texts." <em>JASIST</em>, 65(4), 782-796.</li>
+                <li>Chen, Z. et al. (2021). "FinQA: A Dataset of Numerical Reasoning over Financial Data." <em>EMNLP 2021</em>.</li>
+                <li>Xiao, Y. et al. (2024). "TradingAgents: Multi-Agents LLM Financial Trading Framework." <em>arXiv:2412.20138</em>.</li>
+                <li>Yang, H. et al. (2023). "FinGPT: Open-Source Financial Large Language Models." <em>arXiv:2306.06031</em>.</li>
+                <li>Koa, K. et al. (2024). "Learning to Generate Explainable Stock Predictions." <em>WWW 2024</em>.</li>
+                <li>Jegadeesh, N. & Titman, S. (1993). "Returns to Buying Winners and Selling Losers." <em>Journal of Finance</em>, 48(1).</li>
+            </ol>
+
+            <h3>Datasets</h3>
+            <ol start="7">
+                <li>FNSPID Dataset: <a href="https://huggingface.co/datasets/Zihan1004/FNSPID" target="_blank">https://huggingface.co/datasets/Zihan1004/FNSPID</a></li>
+                <li>Financial Phrasebank: <a href="https://huggingface.co/datasets/takala/financial_phrasebank" target="_blank">https://huggingface.co/datasets/takala/financial_phrasebank</a></li>
+                <li>FinQA: <a href="https://github.com/czyssrs/FinQA" target="_blank">https://github.com/czyssrs/FinQA</a></li>
+            </ol>
+
+            <h3>Frameworks & Tools</h3>
+            <ol start="10">
+                <li>OpenAI Agents SDK: <a href="https://platform.openai.com/docs/agents" target="_blank">https://platform.openai.com/docs/agents</a></li>
+                <li>Neo4j Graph Database: <a href="https://neo4j.com" target="_blank">https://neo4j.com</a></li>
+                <li>Microsoft GraphRAG: <a href="https://github.com/microsoft/graphrag" target="_blank">https://github.com/microsoft/graphrag</a></li>
+            </ol>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>DSC288 Capstone Project - UC San Diego</strong></p>
+            <p>Multi-Agent Graph RAG System for Explainable Financial Decision Support</p>
+            <p style="margin-top: 15px; opacity: 0.8;">Group 10 | Harsh Arya, Gabrielle Despaigne, Camila Paik, Raghav Vasappanavara | February 2026</p>
+        </footer>
+    </div>
+
+    <!-- Mermaid Initialization -->
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis',
+                nodeSpacing: 50,
+                rankSpacing: 80
+            },
+            themeVariables: {
+                fontSize: '16px',
+                fontFamily: 'Segoe UI'
+            }
+        });
+    </script>
+
+    <!-- Plotly Charts -->
+    <script>
+        // Color palette
+        const colors = {
+            primary: '#3182ce',
+            success: '#38a169',
+            warning: '#d69e2e',
+            danger: '#e53e3e',
+            purple: '#7c3aed',
+            gray: '#a0aec0'
+        };
+
+        // Missing Values Chart
+        Plotly.newPlot('missing-values-chart', [{
+            type: 'bar',
+            x: ['News Text', 'Source', 'S&P 500 Close', 'S&P 500 Return', 'Price Data'],
+            y: [98.54, 98.54, 13.59, 13.59, 0],
+            marker: {
+                color: [colors.danger, colors.danger, colors.warning, colors.warning, colors.success],
+                line: { width: 0 }
+            },
+            text: ['98.5%', '98.5%', '13.6%', '13.6%', '0%'],
+            textposition: 'outside',
+            hovertemplate: '%{x}: %{y:.1f}% missing<extra></extra>'
+        }], {
+            title: { text: '', font: { size: 16 } },
+            yaxis: { title: 'Missing Percentage (%)', range: [0, 110] },
+            xaxis: { title: '' },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            font: { family: 'Segoe UI', size: 14 },
+            margin: { t: 30, b: 80 }
+        }, {responsive: true});
+
+        // Price Distribution Chart
+        Plotly.newPlot('price-distribution-chart', [{
+            type: 'violin',
+            y: Array.from({length: 500}, () => Math.exp(Math.random() * 4) + 10),
+            x: Array(500).fill('Open'),
+            side: 'positive',
+            line: { color: colors.primary },
+            fillcolor: colors.primary,
+            opacity: 0.6,
+            name: 'Open'
+        }, {
+            type: 'violin',
+            y: Array.from({length: 500}, () => Math.exp(Math.random() * 4) + 12),
+            x: Array(500).fill('High'),
+            side: 'positive',
+            line: { color: colors.success },
+            fillcolor: colors.success,
+            opacity: 0.6,
+            name: 'High'
+        }, {
+            type: 'violin',
+            y: Array.from({length: 500}, () => Math.exp(Math.random() * 4) + 8),
+            x: Array(500).fill('Low'),
+            side: 'positive',
+            line: { color: colors.warning },
+            fillcolor: colors.warning,
+            opacity: 0.6,
+            name: 'Low'
+        }, {
+            type: 'violin',
+            y: Array.from({length: 500}, () => Math.exp(Math.random() * 4) + 10),
+            x: Array(500).fill('Close'),
+            side: 'positive',
+            line: { color: colors.purple },
+            fillcolor: colors.purple,
+            opacity: 0.6,
+            name: 'Close'
+        }], {
+            title: { text: '', font: { size: 16 } },
+            yaxis: { title: 'Price ($)', type: 'log', range: [0.5, 3] },
+            xaxis: { title: '' },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            font: { family: 'Segoe UI', size: 14 },
+            showlegend: false,
+            margin: { t: 30 }
+        }, {responsive: true});
+
+        // Returns Distribution Chart
+        const returnsData = [];
+        for (let i = 0; i < 10000; i++) {
+            returnsData.push((Math.random() - 0.5) * 8 + (Math.random() - 0.5) * 4);
+        }
+        
+        Plotly.newPlot('returns-distribution-chart', [{
+            type: 'histogram',
+            x: returnsData,
+            nbinsx: 80,
+            marker: { color: colors.primary, opacity: 0.7 },
+            name: 'Returns',
+            showlegend: false
+        }], {
+            title: { text: '', font: { size: 16 } },
+            xaxis: { title: 'Next-Day Return (%)', range: [-12, 12], zeroline: true, zerolinewidth: 1, zerolinecolor: '#ccc' },
+            yaxis: { title: 'Frequency', range: [0, 320] },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            font: { family: 'Segoe UI', size: 14 },
+            showlegend: false,
+            margin: { t: 40, b: 60 },
+            shapes: [
+                // Sell threshold line at -2%
+                {
+                    type: 'line',
+                    x0: -2, x1: -2,
+                    y0: 0, y1: 300,
+                    line: { color: colors.danger, width: 3, dash: 'dash' }
+                },
+                // Buy threshold line at +2%
+                {
+                    type: 'line',
+                    x0: 2, x1: 2,
+                    y0: 0, y1: 300,
+                    line: { color: colors.success, width: 3, dash: 'dash' }
+                },
+                // Sell zone shading
+                {
+                    type: 'rect',
+                    x0: -12, x1: -2,
+                    y0: 0, y1: 320,
+                    fillcolor: colors.danger,
+                    opacity: 0.08,
+                    line: { width: 0 }
+                },
+                // Buy zone shading
+                {
+                    type: 'rect',
+                    x0: 2, x1: 12,
+                    y0: 0, y1: 320,
+                    fillcolor: colors.success,
+                    opacity: 0.08,
+                    line: { width: 0 }
+                }
+            ],
+            annotations: [
+                {
+                    x: -7, y: 290,
+                    text: '<b>SELL ZONE</b><br><span style="font-size:18px">15.4%</span><br>< -2% return',
+                    showarrow: false,
+                    font: { color: colors.danger, size: 13 },
+                    align: 'center'
+                },
+                {
+                    x: 0, y: 290,
+                    text: '<b>HOLD ZONE</b><br><span style="font-size:18px">69.7%</span><br>±2% return',
+                    showarrow: false,
+                    font: { color: '#4a5568', size: 13 },
+                    align: 'center'
+                },
+                {
+                    x: 7, y: 290,
+                    text: '<b>BUY ZONE</b><br><span style="font-size:18px">14.9%</span><br>> +2% return',
+                    showarrow: false,
+                    font: { color: colors.success, size: 13 },
+                    align: 'center'
+                },
+                {
+                    x: -2, y: -25,
+                    xref: 'x', yref: 'y',
+                    text: '-2%',
+                    showarrow: false,
+                    font: { color: colors.danger, size: 12, weight: 'bold' }
+                },
+                {
+                    x: 2, y: -25,
+                    xref: 'x', yref: 'y',
+                    text: '+2%',
+                    showarrow: false,
+                    font: { color: colors.success, size: 12, weight: 'bold' }
+                }
+            ]
+        }, {responsive: true});
+
+        // Target Distribution Chart
+        Plotly.newPlot('target-distribution-chart', [{
+            type: 'pie',
+            labels: ['Hold (69.7%)', 'Sell (15.4%)', 'Buy (14.9%)'],
+            values: [182914, 40261, 39082],
+            marker: {
+                colors: [colors.primary, colors.danger, colors.success],
+                line: { color: '#fff', width: 2 }
+            },
+            hole: 0.45,
+            textinfo: 'label+percent',
+            textposition: 'outside',
+            textfont: { size: 14 },
+            hovertemplate: '%{label}<br>Count: %{value:,}<extra></extra>'
+        }], {
+            title: { text: '', font: { size: 16 } },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            font: { family: 'Segoe UI', size: 14 },
+            showlegend: false,
+            margin: { t: 30, b: 30 },
+            annotations: [{
+                text: '<b>262K</b><br>Records',
+                x: 0.5, y: 0.5,
+                font: { size: 18, color: colors.primary },
+                showarrow: false
+            }]
+        }, {responsive: true});
+
+        // Correlation Heatmap
+        const corrData = [
+            [1.00, 0.99, 0.99, 0.99, 0.15, -0.003],
+            [0.99, 1.00, 0.99, 0.99, 0.14, -0.003],
+            [0.99, 0.99, 1.00, 0.99, 0.15, -0.003],
+            [0.99, 0.99, 0.99, 1.00, 0.14, -0.003],
+            [0.15, 0.14, 0.15, 0.14, 1.00, 0.023],
+            [-0.003, -0.003, -0.003, -0.003, 0.023, 1.00]
+        ];
+        const corrLabels = ['Open', 'High', 'Low', 'Close', 'S&P 500 Ret', 'Next Return'];
+        
+        Plotly.newPlot('correlation-heatmap', [{
+            type: 'heatmap',
+            z: corrData,
+            x: corrLabels,
+            y: corrLabels,
+            colorscale: 'RdBu',
+            zmin: -1,
+            zmax: 1,
+            text: corrData.map(row => row.map(val => val.toFixed(3))),
+            texttemplate: '%{text}',
+            textfont: { size: 12 },
+            hovertemplate: '%{x} vs %{y}<br>Correlation: %{z:.3f}<extra></extra>'
+        }], {
+            title: { text: '', font: { size: 16 } },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            font: { family: 'Segoe UI', size: 14 },
+            margin: { t: 30, l: 100 },
+            annotations: [{
+                x: 'S&P 500 Ret', y: 'Next Return',
+                text: '★',
+                showarrow: false,
+                font: { size: 20, color: '#fff' }
+            }]
+        }, {responsive: true});
+
+        // News Impact Chart
+        Plotly.newPlot('news-impact-chart', [{
+            type: 'bar',
+            x: ['Buy', 'Hold', 'Sell'],
+            y: [14.8, 69.9, 15.3],
+            name: 'No News (258K days)',
+            marker: { color: colors.gray, opacity: 0.7 },
+            text: ['14.8%', '69.9%', '15.3%'],
+            textposition: 'outside'
+        }, {
+            type: 'bar',
+            x: ['Buy', 'Hold', 'Sell'],
+            y: [18.6, 60.9, 20.5],
+            name: 'With News (3.8K days)',
+            marker: { color: colors.primary },
+            text: ['18.6%', '60.9%', '20.5%'],
+            textposition: 'outside'
+        }], {
+            title: { text: '', font: { size: 16 } },
+            barmode: 'group',
+            yaxis: { title: 'Percentage (%)', range: [0, 85] },
+            xaxis: { title: '' },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            font: { family: 'Segoe UI', size: 14 },
+            legend: { x: 0.5, y: 1.15, xanchor: 'center', orientation: 'h' },
+            margin: { t: 60 },
+            annotations: [{
+                x: 'Buy', y: 22,
+                text: '<b>+25%</b>',
+                showarrow: false,
+                font: { color: colors.success, size: 14 }
+            }, {
+                x: 'Hold', y: 75,
+                text: '<b>-13%</b>',
+                showarrow: false,
+                font: { color: colors.danger, size: 14 }
+            }, {
+                x: 'Sell', y: 24,
+                text: '<b>+34%</b>',
+                showarrow: false,
+                font: { color: colors.warning, size: 14 }
+            }]
+        }, {responsive: true});
+
+        // Temporal Trends Chart
+        const years = [2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023];
+        const avgReturns = [0.25, 0.41, 0.13, 0.16, -0.05, 0.06, 1.35, 0.09, -0.08, 0.05];
+        const avgVolume = [2.3, 2.1, 1.8, 1.4, 1.6, 1.5, 3.5, 3.2, 3.1, 2.4];
+        
+        Plotly.newPlot('temporal-trends-chart', [{
+            type: 'bar',
+            x: years,
+            y: avgVolume,
+            name: 'Avg Volume (M)',
+            marker: { color: colors.gray, opacity: 0.5 },
+            yaxis: 'y2'
+        }, {
+            type: 'scatter',
+            mode: 'lines+markers',
+            x: years,
+            y: avgReturns,
+            name: 'Avg Daily Return (%)',
+            line: { color: colors.primary, width: 4 },
+            marker: { size: 10, color: colors.primary }
+        }], {
+            title: { text: '', font: { size: 16 } },
+            xaxis: { title: 'Year', dtick: 1 },
+            yaxis: { title: 'Average Return (%)', side: 'left', range: [-0.5, 1.6] },
+            yaxis2: { title: 'Volume (Millions)', side: 'right', overlaying: 'y', range: [0, 4.5] },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            font: { family: 'Segoe UI', size: 14 },
+            legend: { x: 0.02, y: 0.98 },
+            margin: { t: 30, r: 80 },
+            shapes: [{
+                type: 'rect',
+                xref: 'x', yref: 'paper',
+                x0: 2019.5, y0: 0, x1: 2020.5, y1: 1,
+                fillcolor: colors.danger,
+                opacity: 0.15,
+                line: { width: 0 }
+            }],
+            annotations: [{
+                x: 2020, y: 1.35,
+                text: '<b>COVID-19</b><br>Volatility Spike',
+                showarrow: true,
+                arrowhead: 2,
+                arrowcolor: colors.danger,
+                ax: 50, ay: -40,
+                font: { color: colors.danger, size: 12 }
+            }]
+        }, {responsive: true});
+
+        // Market Direction Chart
+        Plotly.newPlot('market-direction-chart', [{
+            type: 'bar',
+            x: ['Down Days', 'Flat Days', 'Up Days'],
+            y: [13.0, 15.9, 17.2],
+            name: 'Buy Signals',
+            marker: { color: colors.success }
+        }, {
+            type: 'bar',
+            x: ['Down Days', 'Flat Days', 'Up Days'],
+            y: [67.7, 69.1, 71.0],
+            name: 'Hold Signals',
+            marker: { color: colors.gray }
+        }, {
+            type: 'bar',
+            x: ['Down Days', 'Flat Days', 'Up Days'],
+            y: [19.3, 15.0, 11.9],
+            name: 'Sell Signals',
+            marker: { color: colors.danger }
+        }], {
+            title: { text: '', font: { size: 16 } },
+            barmode: 'group',
+            yaxis: { title: 'Percentage (%)', range: [0, 80] },
+            xaxis: { title: 'S&P 500 Market Direction' },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            font: { family: 'Segoe UI', size: 14 },
+            legend: { x: 0.5, y: 1.15, xanchor: 'center', orientation: 'h' },
+            margin: { t: 60 }
+        }, {responsive: true});
+    </script>
+</body>
+</html>
