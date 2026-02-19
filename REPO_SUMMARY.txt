@@ -1,0 +1,372 @@
+================================================================================
+  DSC288R CAPSTONE PROJECT - REPO SUMMARY
+  Multi-Agent Graph RAG System for Explainable Financial Decision Support
+  Group 10 | UC San Diego | February 2026
+  Team: Harsh Arya, Gabrielle Despaigne, Camila Paik, Raghav Vasappanavara
+================================================================================
+
+--------------------------------------------------------------------------------
+WHAT IS THIS PROJECT?
+--------------------------------------------------------------------------------
+
+This is a capstone research project building an AI-powered stock trading
+recommendation system. The key differentiator is EXPLAINABILITY. Instead of
+saying "BUY: 0.73", the system says:
+
+  "Recommendation: BUY AAPL
+   Based on positive earnings news showing record sales (Article #1, 2026-01-28)
+   and upward price momentum. Risks include supply chain concerns."
+
+Every recommendation is grounded in specific cited sources with a full audit
+trail, and a multi-agent debate ensures both bullish and bearish perspectives
+are presented before a final decision is made.
+
+--------------------------------------------------------------------------------
+THE CORE PROBLEM BEING SOLVED
+--------------------------------------------------------------------------------
+
+Existing AI trading tools are "black boxes":
+  - Users can't verify if recommendations are sound or flawed
+  - When trades fail, there is no audit trail to learn from
+  - Investors remain dependent without building financial literacy
+
+Target users: Intermediate and beginner retail investors who value UNDERSTANDING
+recommendations, not just receiving them.
+
+--------------------------------------------------------------------------------
+THE TECHNOLOGY STACK (Three Pillars)
+--------------------------------------------------------------------------------
+
+1. NEO4J KNOWLEDGE GRAPH
+   - Stores entities: Stocks, Articles, People, Events, Sentiment, TradingSignals
+   - Relationships enable multi-hop queries like:
+       "Find all stocks mentioned positively by analysts who were bearish on
+        AAPL last quarter"
+   - Unlike vector-only RAG systems, Neo4j stores EXPLICIT relationships
+
+2. GPT-5.2 + OPENAI AGENTS SDK
+   - Production-grade multi-agent orchestration (not custom LangChain)
+   - Specialist agents hand off to each other with full context preservation
+   - Used for: entity extraction, sentiment classification, explanation generation
+
+3. SENTIMENT-TO-SIGNAL MODELING
+   - Creates auditable graph edges: News Article → Sentiment Score → Trading Signal
+   - Every recommendation is traceable back to the specific articles/data that
+     influenced it
+
+--------------------------------------------------------------------------------
+HOW THE FINAL SYSTEM WILL WORK (Architecture)
+--------------------------------------------------------------------------------
+
+User asks: "Should I buy AAPL today?"
+         |
+         v
+ORCHESTRATOR AGENT (OpenAI Agents SDK)
+  - Parses intent, extracts ticker
+  - Dispatches to specialist agents
+  - Aggregates results, resolves conflicts
+  - Compiles citations
+         |
+    _____|______________________
+   |          |                |
+   v          v                v
+FUNDAMENTAL  SENTIMENT      TECHNICAL
+ANALYST      ANALYST        ANALYST
+(earnings,   (news query    (price patterns,
+ ratios,      + sentiment    SMAs, momentum,
+ long-term)   + citations)   indicators)
+   |          |                |
+   |__________|________________|
+         |
+         v
+DEBATE AGENTS
+  - Optimistic Agent: presents bullish arguments
+  - Cautious Agent: presents risk factors
+         |
+         v
+ORCHESTRATOR synthesizes → Final response:
+  BUY/HOLD/SELL + natural language explanation + cited sources
+
+The agents query the Neo4j graph using Cypher, for example:
+
+  MATCH (stock:Stock {ticker: 'AAPL'})
+        -[:MENTIONED_IN]->(article:Article)
+        -[:HAS_SENTIMENT]->(sentiment:Sentiment)
+  WHERE article.date > '2026-01-25'
+  RETURN article.title, sentiment.score, sentiment.label
+  ORDER BY article.date DESC
+
+--------------------------------------------------------------------------------
+NEO4J KNOWLEDGE GRAPH SCHEMA
+--------------------------------------------------------------------------------
+
+NODE TYPES:
+  (:Stock)         - ticker, name, sector, price, volume, date
+  (:Article)       - id, date, title, text, source, url
+  (:Person)        - name, role, company, title
+  (:Event)         - type, date, description, impact
+  (:Sentiment)     - score, label, confidence, phrases
+  (:TradingSignal) - type, strength, date, reasoning
+
+RELATIONSHIPS:
+  Stock      -[:MENTIONED_IN]->   Article
+  Article    -[:HAS_SENTIMENT]->  Sentiment
+  Sentiment  -[:TRIGGERS]->       TradingSignal
+  TradingSignal -[:RECOMMENDS]->  Stock
+  Event      -[:AFFECTS]->        Stock
+  Person     -[:EXECUTIVE_OF]->   Stock
+  Person     -[:MENTIONED_IN]->   Article
+  Stock      -[:CORRELATED_WITH]->Stock
+
+--------------------------------------------------------------------------------
+HOW IT DIFFERS FROM PRIOR WORK
+--------------------------------------------------------------------------------
+
+Feature              | TradingAgents | FinGPT | Traditional RAG | OUR SYSTEM
+---------------------|---------------|--------|-----------------|------------------
+Knowledge Graph      | No            | No     | No (vector only)| YES (Neo4j)
+Entity Relationships | Implicit only | None   | Flat docs        | Explicit edges
+Sentiment→Signal link| Not traceable | Basic  | Not modeled     | Graph edges + audit
+Citation Provenance  | Basic         | None   | Chunk-level     | Entity-level
+Production Framework | Custom code   | Custom | Various         | OpenAI Agents SDK
+Multi-Hop Reasoning  | Single-hop    | Single | Limited         | Graph traversal
+
+--------------------------------------------------------------------------------
+DATASETS (Already Collected)
+--------------------------------------------------------------------------------
+
+1. FNSPID (HuggingFace: Zihan1004/FNSPID)
+   - 460,293 stock price records (OHLCV) for Fortune 500 companies
+   - 20,000 financial news articles (2009-2023)
+   - Used for: primary price data + news entity extraction
+
+2. Financial Phrasebank (HuggingFace: takala/financial_phrasebank)
+   - 2,264 human-annotated sentences with sentiment labels
+   - Labels: positive / neutral / negative
+   - Used for: training/validating the sentiment classification model
+
+3. Yahoo Finance S&P 500 (Local CSV)
+   - 6,289 trading days of index data (1999-2023)
+   - Used for: market-relative features and benchmarking
+
+4. FinQA (GitHub: czyssrs/FinQA)
+   - 8,281 financial question-answering pairs
+   - Used for: evaluating explanation quality of the final system
+
+--------------------------------------------------------------------------------
+DATA PIPELINE (COMPLETE - 4 Stages)
+--------------------------------------------------------------------------------
+
+All 4 pipeline stages are implemented in scripts/ and have been run successfully.
+Outputs are stored in data/processed/ as Parquet files.
+
+STAGE 1 - DATA LOADING (scripts/01_load_data.py)
+  Input:  Raw CSV/JSON/Parquet files from 5 sources
+  Output: 5 standardized Parquet files
+  Key:    Sampled 100 tickers for validation scope
+  Stats:  460K price records, 20K news articles, 2,264 phrasebank sentences
+
+STAGE 2 - DATA CLEANING (scripts/02_clean_data.py)
+  Input:  Raw Parquets
+  Output: Clean Parquets
+  Key operations:
+    - Forward-fill NULL prices
+    - Removed 278 duplicate articles (by content hash)
+    - Removed 951 outlier records (daily price changes >50%)
+    - Filtered non-positive prices, zero/negative volume
+  Results:
+    - 93% price record retention (428,243 records)
+    - 49% news retention (9,721 clean articles)
+
+STAGE 3 - TEMPORAL ALIGNMENT (scripts/03_align_data.py)
+  Input:  Clean Parquets
+  Output: data/processed/data_aligned.parquet
+  Key operations:
+    - Filtered to 2009-2023 (period where news data exists)
+    - Merged news + prices on (ticker, date)
+    - Added S&P 500 market context
+    - Created BUY/HOLD/SELL target labels:
+        BUY  = next-day return > +2%
+        SELL = next-day return < -2%
+        HOLD = everything in between
+  Results:
+    - 262,257 stock-day observations
+    - 100 unique tickers
+    - Date range: Oct 7, 2009 - Dec 14, 2023
+    - Only 1.46% of stock-days have news (3,821 records)
+    - 86.4% of records have S&P 500 context
+  Target distribution:
+    - Hold: 182,914 (69.7%)
+    - Sell:  40,261 (15.4%)
+    - Buy:   39,082 (14.9%)
+
+STAGE 4 - FEATURE ENGINEERING (scripts/04_feature_engineering.py)
+  Input:  data_aligned.parquet
+  Output: data/processed/data_engineered.parquet
+  Total features: 35 (16 original + 19 new)
+  New features breakdown:
+    - Normalized prices/volume/returns (6 features):
+        open_norm, high_norm, low_norm, close_norm  → MinMaxScaler per ticker
+        volume_norm, return_norm                    → StandardScaler per ticker
+    - Technical indicators (9 features):
+        sma_5, sma_20, sma_50
+        price_to_sma5, price_to_sma20
+        momentum_5, momentum_20
+        volatility_20, volume_ma_20
+    - Market-relative features (3 features):
+        excess_return, market_up, market_down
+    - Price ratios (2 features):
+        volume_ratio (vs 20-day avg)
+
+  Why normalize PER TICKER: Stocks range from $0.01 to $7,250 — cross-stock
+  comparison without normalization would make high-priced stocks dominate.
+
+--------------------------------------------------------------------------------
+KEY EDA FINDINGS (From notebooks/01_EDA.ipynb)
+--------------------------------------------------------------------------------
+
+1. NEWS DRIVES VOLATILITY (+10% more extreme moves on news days)
+   - Days with news: 18.6% buy, 20.5% sell, 60.9% hold
+   - Days without:  14.8% buy, 15.3% sell, 69.9% hold
+   → Validates the core premise: news sentiment matters for trading signals
+
+2. MARKET DIRECTION REINFORCES INDIVIDUAL STOCKS
+   - S&P 500 up days:   17.2% buy, 11.9% sell
+   - S&P 500 down days: 13.0% buy, 19.3% sell
+   → Justifies including market context (excess_return, market_up/down) features
+
+3. PRICE DISTRIBUTIONS ARE RIGHT-SKEWED
+   - Raw prices have no predictive power across stocks
+   → Justifies using price_to_sma ratios instead of raw prices
+
+4. HIGH VOLATILITY (34.7% daily std in returns)
+   → Justifies creating volatility_20 feature and standardizing returns
+
+5. REGIME CHANGES EXIST (e.g., COVID-2020 crash + recovery)
+   → Justifies multi-timeframe indicators (SMA-5, SMA-20, SMA-50)
+
+EDA outputs are saved in: notebooks/eda_outputs/ (7 PNG charts + 2 JSON files)
+
+--------------------------------------------------------------------------------
+SENTIMENT MODEL PLAN
+--------------------------------------------------------------------------------
+
+Training data: Financial Phrasebank (2,264 annotated sentences)
+Model choice: Fine-tuned FinBERT OR GPT-5.2 with structured outputs
+Output per article:
+  - sentiment score: -1 (bearish) to +1 (bullish)
+  - confidence: 0 to 1
+  - label: bullish / neutral / bearish
+  - key phrases: for citation in recommendations
+
+--------------------------------------------------------------------------------
+CURRENT PROJECT STATUS (as of February 2026)
+--------------------------------------------------------------------------------
+
+  Week 1 [DONE]   - Repo setup, dataset identification, initial exploration
+  Week 2 [DONE]   - 4-stage data pipeline, EDA (7 visualizations), 35 features
+  Week 3-4 [20%]  - Graph RAG: Neo4j setup, entity extraction, graph population
+  Week 5-6 [TODO] - Multi-Agent System: OpenAI Agents SDK, specialist agents
+  Week 7-8 [TODO] - Evaluation, baseline comparison, user study, final demo
+
+Train/Val/Test split plan:
+  - Train: 2009-2021
+  - Validation: 2022
+  - Test: 2023
+
+--------------------------------------------------------------------------------
+WHAT'S NEXT (After Current State)
+--------------------------------------------------------------------------------
+
+IMMEDIATE (Weeks 3-4):
+  1. Set up Neo4j database instance
+  2. Build entity extraction pipeline using GPT-5.2
+     - Extract: company names, people, events from news articles
+  3. Populate Knowledge Graph with historical data
+  4. Optimize Cypher queries + create indexes
+  5. Fine-tune/configure FinBERT or GPT-5.2 for sentiment scoring
+
+UPCOMING (Weeks 5-6):
+  6. Integrate OpenAI Agents SDK
+  7. Implement specialist agents (Fundamental, Sentiment, Technical)
+  8. Implement debate agents (Optimistic, Cautious)
+  9. Build Orchestrator agent for synthesis + citation compilation
+  10. Test agent handoffs end-to-end
+
+FINAL (Weeks 7-8):
+  11. Baseline comparison (vs TradingAgents, FinGPT, traditional RAG)
+  12. Evaluation metrics for explanation quality
+  13. User study with retail investors
+  14. Final demo
+
+--------------------------------------------------------------------------------
+FILE STRUCTURE QUICK REFERENCE
+--------------------------------------------------------------------------------
+
+F:\288r\
+  scripts/
+    download_data.py         - Downloads datasets (FNSPID, Phrasebank, S&P500)
+    test_download.py         - Tests HuggingFace + yfinance downloads
+    01_load_data.py          - Stage 1: Load raw data → Parquet [IMPLEMENTED]
+    02_clean_data.py         - Stage 2: Clean data [IMPLEMENTED]
+    03_align_data.py         - Stage 3: Align data, create targets [IMPLEMENTED]
+    04_feature_engineering.py- Stage 4: Engineer 35 features [IMPLEMENTED]
+    05_merge_and_split.py    - Train/val/test splitting [IMPLEMENTED]
+    run_pipeline.py          - Runs all stages end-to-end
+
+  data/
+    raw/
+      fnspid/                - Stock prices + news articles
+      financial_phrasebank/  - Sentiment-labeled sentences
+      finqa/                 - Q&A evaluation pairs
+      yahoo_sp500/           - S&P 500 index history
+    processed/
+      financial_phrasebank_raw.parquet   - 2,264 records
+      financial_phrasebank_clean.parquet - 2,259 records
+      fnspid_news_raw.parquet            - 20,000 articles
+      fnspid_news_clean.parquet          - 9,721 articles
+      fnspid_prices_raw.parquet          - 460,293 records
+      fnspid_prices_clean.parquet        - 428,243 records
+      sp500_raw.parquet                  - 6,289 trading days
+      sp500_clean.parquet                - 6,289 trading days
+      data_aligned.parquet               - 262,257 stock-day records (Stage 3 output)
+      data_engineered.parquet            - 262,257 x 35 features (Stage 4 output)
+      01_loading_summary.json            - Stage 1 validation metrics
+      02_cleaning_summary.json           - Stage 2 validation metrics
+      03_alignment_summary.json          - Stage 3 validation metrics
+      04_feature_engineering_summary.json- Stage 4 validation metrics
+
+  notebooks/
+    01_EDA.ipynb             - Full EDA (runs on actual data or generates sample)
+    eda_outputs/             - 7 PNG charts + 2 JSON summary files
+
+  DSC288_Progress_Report.html  - Full milestone 2 progress report (open in browser)
+  requirements.txt             - Python dependencies
+
+--------------------------------------------------------------------------------
+KNOWN RISKS & MITIGATIONS
+--------------------------------------------------------------------------------
+
+Risk: Low news coverage (only 1.46% of stock-days have news)
+  → Supplement with Yahoo Finance API; design system to work with technical-only
+    analysis when news is unavailable
+
+Risk: OpenAI API rate limits
+  → Implement caching layer; batch API calls; optimize prompt efficiency
+
+Risk: Neo4j query performance at scale
+  → Optimize Cypher; add indexes on frequently queried properties (ticker, date)
+
+Risk: Entity extraction accuracy
+  → Use GPT-5.2 structured outputs; add validation layer
+
+Risk: LLM hallucination in explanations
+  → Ground ALL claims in RAG sources; implement citation verification;
+    constrain model to graph content only
+
+Risk: Temporal data leakage (critical!)
+  → Strict temporal splits (2009-2021 / 2022 / 2023); forward-only predictions
+
+================================================================================
+END OF SUMMARY
+================================================================================

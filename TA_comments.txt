@@ -1,0 +1,38 @@
+First Progress Report Rubric
+Criteria	Ratings	Pts
+Data Pipeline
+view longer description
+Comments
+You say you align news with stock prices at the stock-day level using (ticker, date), but it is not clearly stated what happens when there are multiple news articles for one stock-day, or when there is no news for a stock-day. Do you aggregate (count/mean sentiment), pick top-k, or keep all articles? Please state the rule.
+
+You remove “extreme price outliers” defined as daily changes > 50%. It is not clear why 50% is the right cutoff or how many outliers are valid events (splits, major news) vs errors. Please justify the rule or show a quick check that this filtering does not remove real signal.
+
+
+The pipeline describes “buy/hold/sell targets based on next-day returns,” but it does not clearly define the exact thresholds for buy/hold/sell, and whether thresholds are fixed or tuned. Please give the exact labeling rule in simple terms.
+4.1 / 5 pts
+EDA
+view longer description
+Comments
+You say EDA covered anomalies/outliers and relationships, but the report does not clearly state one concrete anomaly rule and result for each major data type (prices, volume, news). Example: “X% of rows have missing SP500,” “Y% days have no news,” “Z% have extreme volume spikes,” and what you do about each. Add a small table with these counts.
+
+The correlation statement (“S&P 500 return is strongest predictor, correlation ≈ 0.023”) is very small in size, so it is unclear what it means. Please explain in simple words whether this effect is meaningful, and whether you will rely on correlation or use other checks
+4.2 / 5 pts
+Feature Identification from EDA
+view longer description
+Comments
+You list technical indicators and news features, but it is not clear how sentiment features are computed (which sentiment model, what output score, how aggregated per stock-day). Please define the sentiment feature pipeline clearly.
+
+you don’t show the exact rule for features that use rolling windows (moving averages, volatility). Please state the simple rule: “only past days used,” and confirm how the first N days are handled (drop or fill).
+2 / 2 pts
+Quality and comprehensiveness of the Report
+view longer description
+Comments
+You list dataset links, but the report does not clearly state the exact subset and version you use (which exact date range per source, what “sample of 100 stocks” and how chosen). Please specify the selection rule so the dataset is reproducible.
+
+the report does not clearly state the evaluation metrics you will use for buy/hold/sell prediction (example: accuracy, macro F1, class-wise precision/recall, and also a simple trading metric if relevant). Please list your metric plan and why it matches your project goal.
+
+You say you enforce “strict temporal splits,” but you do not specify what dates are train/val/test or the split method (rolling window vs fixed). Please define the split clearly to prove no leakage.
+
+For the LLM “explanation quality,” you mention FinQA for evaluation, but it is unclear how FinQA connects to your output (buy/hold/sell explanation grounded in news). Please define what “good explanation” means and how you will score it (human rubric, citation correctness, faithfulness, etc.).
+3 / 3 pts
+Total Points: 13.3
