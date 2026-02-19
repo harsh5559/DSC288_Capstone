@@ -352,14 +352,16 @@ F:\288r\
     eda_outputs/             - 7 PNG charts + 2 JSON summary files
 
   DSC288_Progress_Report.html        - Full milestone 2 progress report (open in browser)
-  REPO_SUMMARY.txt                   - This file: detailed technical reference
   Addressing_TA_Comments.md          - Response plan for TA milestone 2 feedback
-  TA_comments.txt                    - Raw TA feedback text
   PROJECT_OVERVIEW.txt               - Plain-English project overview
 
-  archived progress reports/
-    PROGRESS_REPORT_GUIDE.md         - Week 2 milestone reference (archived)
-    requirements.txt                 - Python dependencies (pip install -r ...)
+  Progress report files/
+    EDA_REPORT.md                    - Full written EDA with tables and plots
+    PIPELINE_SUMMARY.md              - Full pipeline documentation
+    PROGRESS_REPORT_GUIDE.md         - Week 2 milestone reference
+    REPO_SUMMARY.txt                 - This file: detailed technical reference
+    TA_comments.txt                  - Raw TA feedback text
+    requirements.txt                 - Python dependencies (pip install -r "Progress report files/requirements.txt")
 
 --------------------------------------------------------------------------------
 ACADEMIC REFERENCES

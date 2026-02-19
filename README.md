@@ -1,7 +1,7 @@
 # DSC288 Capstone: Multi-Agent LLM Framework for Explainable Financial Decision Support
 
-**Team Members**: Harsh Arya, Gabrielle Despaigne, Camila Paik, Raghav Vasappanavara  
-**Course**: DSC288 - Capstone Project  
+**Team Members**: Harsh Arya, Gabrielle Despaigne, Camila Paik, Raghav Vasappanavara
+**Course**: DSC288 - Capstone Project
 **Institution**: UC San Diego
 
 ## Project Overview
@@ -25,9 +25,9 @@ This project develops a multi-agent LLM-based system for financial decision supp
 
 We have implemented a 4-stage data pipeline that integrates structured market data with unstructured financial text:
 
-**Stage 1: Data Loading** - Loads 5 data sources into standardized parquet format  
-**Stage 2: Data Cleaning** - Handles NULLs, duplicates, outliers, date formats  
-**Stage 3: Temporal Alignment** - Merges news with prices, adds market context, creates targets  
+**Stage 1: Data Loading** - Loads 5 data sources into standardized parquet format
+**Stage 2: Data Cleaning** - Handles NULLs, duplicates, outliers, date formats
+**Stage 3: Temporal Alignment** - Merges news with prices, adds market context, creates targets
 **Stage 4: Feature Engineering** - Normalizes features, creates 9 technical indicators
 
 **Pipeline Output:**
@@ -37,7 +37,7 @@ We have implemented a 4-stage data pipeline that integrates structured market da
 - 35 total features (16 original + 19 engineered)
 - Runtime: ~3 minutes for validation
 
-**Documentation:** See `PIPELINE_SUMMARY.md` for complete pipeline details and validation results.
+**Documentation:** See `Progress report files/PIPELINE_SUMMARY.md` for complete pipeline details and validation results.
 
 ## Data Sources
 
@@ -47,8 +47,8 @@ All datasets have been downloaded and are stored locally in `data/raw/` (gitigno
 - Source: https://huggingface.co/datasets/Zihan1004/FNSPID
 - Usage: Primary source for stock prices (2009-2023) and financial news articles
 
-**2. Financial Phrasebank** - Sentiment-labeled financial news sentences
-- Source: https://huggingface.co/datasets/takala/financial_phrasebank  
+**2. Financial Phrasebank** - Sentiment-labeled financial news sentences (2,264 sentences)
+- Source: https://huggingface.co/datasets/takala/financial_phrasebank
 - Usage: Training data for sentiment analysis model
 
 **3. Yahoo Finance S&P 500** - Market index data
@@ -68,17 +68,17 @@ Comprehensive EDA covering all rubric requirements:
 - **Correlations:** S&P 500 return strongest predictor (+0.023)
 - **Key Insight:** 10% more extreme moves on days with news
 
-**Documentation:** See `EDA_REPORT.md` for complete analysis with 7 visualizations and 15 data tables.
+**Documentation:** See `Progress report files/EDA_REPORT.md` for complete analysis with 7 visualizations and 15 data tables.
 
 ## Feature Engineering
 
 Based on EDA findings, we engineered 19 features:
 
-**Technical Indicators (9):** SMA-5/20/50, momentum-5/20, volatility-20, volume ratio, price-to-SMA ratios  
-**Market-Relative (4):** S&P 500 return, excess return, market direction indicators  
+**Technical Indicators (9):** SMA-5/20/50, momentum-5/20, volatility-20, volume ratio, price-to-SMA ratios
+**Market-Relative (4):** S&P 500 return, excess return, market direction indicators
 **Normalization (6):** MinMaxScaler for prices, StandardScaler for volume/returns (per ticker)
 
-Each feature is justified by specific EDA findings (see feature engineering implications throughout `EDA_REPORT.md`).
+Each feature is justified by specific EDA findings (see `Progress report files/EDA_REPORT.md`).
 
 ## Repository Structure
 
@@ -99,6 +99,7 @@ Each feature is justified by specific EDA findings (see feature engineering impl
 │   ├── 02_clean_data.py                  # Stage 2: Clean data
 │   ├── 03_align_data.py                  # Stage 3: Temporal alignment
 │   ├── 04_feature_engineering.py         # Stage 4: Feature engineering
+│   ├── 05_merge_and_split.py             # Stage 5: Train/val/test split
 │   ├── run_pipeline.py                   # Pipeline orchestrator
 │   └── README.md                         # Scripts documentation
 ├── notebooks/
@@ -106,10 +107,16 @@ Each feature is justified by specific EDA findings (see feature engineering impl
 │   └── eda_outputs/                      # EDA plots and summaries
 │       ├── *.png                         # 7 visualizations
 │       └── *.json                        # 2 summary files
-├── PIPELINE_SUMMARY.md                   # Pipeline documentation
-├── EDA_REPORT.md                         # EDA documentation
-├── PROGRESS_REPORT_GUIDE.md              # Week 2 progress reference
-├── requirements.txt                      # Python dependencies
+├── Progress report files/                # Milestone docs and reference files
+│   ├── EDA_REPORT.md                     # EDA documentation
+│   ├── PIPELINE_SUMMARY.md               # Pipeline documentation
+│   ├── PROGRESS_REPORT_GUIDE.md          # Week 2 milestone reference
+│   ├── REPO_SUMMARY.txt                  # Detailed technical repo reference
+│   ├── TA_comments.txt                   # TA feedback on milestone 2
+│   └── requirements.txt                  # Python dependencies
+├── DSC288_Progress_Report.html           # Milestone 2 progress report (open in browser)
+├── Addressing_TA_Comments.md             # Response plan for TA feedback
+├── PROJECT_OVERVIEW.txt                  # Plain-English project overview
 └── README.md                             # This file
 ```
 
@@ -117,7 +124,7 @@ Each feature is justified by specific EDA findings (see feature engineering impl
 
 ### Prerequisites
 ```bash
-pip install -r requirements.txt
+pip install -r "Progress report files/requirements.txt"
 ```
 
 ### Run the Complete Pipeline
@@ -142,15 +149,16 @@ python scripts/04_feature_engineering.py
 ```
 
 ### View EDA
-Open `notebooks/01_EDA.ipynb` in Jupyter or view `EDA_REPORT.md` for the complete analysis.
+Open `notebooks/01_EDA.ipynb` in Jupyter or view `Progress report files/EDA_REPORT.md` for the complete analysis.
 
 ## Key Documentation Files
 
 | File | Description |
 |------|-------------|
-| `PIPELINE_SUMMARY.md` | Complete pipeline description with validation results |
-| `EDA_REPORT.md` | Comprehensive EDA with 7 plots and 15 tables |
-| `PROGRESS_REPORT_GUIDE.md` | Week 2 milestone reference (quick stats, rubric checklist) |
+| `Progress report files/PIPELINE_SUMMARY.md` | Complete pipeline description with validation results |
+| `Progress report files/EDA_REPORT.md` | Comprehensive EDA with 7 plots and 15 tables |
+| `Progress report files/REPO_SUMMARY.txt` | Detailed technical reference for the whole repo |
+| `Addressing_TA_Comments.md` | Response plan for TA milestone 2 feedback |
 | `scripts/README.md` | Detailed documentation for each pipeline script |
 
 ## Dependencies
@@ -163,7 +171,7 @@ Open `notebooks/01_EDA.ipynb` in Jupyter or view `EDA_REPORT.md` for the complet
 - matplotlib, seaborn (visualization)
 - tqdm (progress bars)
 
-See `requirements.txt` for complete list with versions.
+See `Progress report files/requirements.txt` for complete list with versions.
 
 ## Next Steps (Post Week 2 Milestone)
 
