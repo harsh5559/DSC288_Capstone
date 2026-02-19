@@ -243,7 +243,18 @@ KEY EDA FINDINGS (From notebooks/01_EDA.ipynb)
    → Justifies creating volatility_20 feature and standardizing returns
 
 5. REGIME CHANGES EXIST (e.g., COVID-2020 crash + recovery)
+   - 2020 avg daily return spiked to +1.35% (recovery rally after March crash)
+   - 2020 avg daily volume doubled to ~3.5M (vs ~1.5-2.3M in surrounding years)
+   - 2022 avg daily return was -0.08% (rate-hike bear market)
    → Justifies multi-timeframe indicators (SMA-5, SMA-20, SMA-50)
+
+6. PRICE COLUMNS ARE HIGHLY CORRELATED WITH EACH OTHER (not with target)
+   - Open, High, Low, Close are all ~0.99 correlated with each other (same price)
+   - Raw price columns vs next-day return: correlation ≈ -0.003 (near zero)
+   - S&P 500 return vs next-day return: correlation ≈ 0.023 (strongest but still small)
+   - Pearson r is a poor tool here because our target is categorical; the directional
+     effect of S&P 500 is real (buy/sell rates shift 3-5pp) even if raw correlation is low
+   → Justifies using price_to_sma RATIOS and market_up/down FLAGS instead of raw values
 
 EDA outputs are saved in: notebooks/eda_outputs/ (7 PNG charts + 2 JSON files)
 
@@ -340,8 +351,38 @@ F:\288r\
     01_EDA.ipynb             - Full EDA (runs on actual data or generates sample)
     eda_outputs/             - 7 PNG charts + 2 JSON summary files
 
-  DSC288_Progress_Report.html  - Full milestone 2 progress report (open in browser)
-  requirements.txt             - Python dependencies
+  DSC288_Progress_Report.html        - Full milestone 2 progress report (open in browser)
+  REPO_SUMMARY.txt                   - This file: detailed technical reference
+  Addressing_TA_Comments.md          - Response plan for TA milestone 2 feedback
+  TA_comments.txt                    - Raw TA feedback text
+  PROJECT_OVERVIEW.txt               - Plain-English project overview
+
+  archived progress reports/
+    PROGRESS_REPORT_GUIDE.md         - Week 2 milestone reference (archived)
+    requirements.txt                 - Python dependencies (pip install -r ...)
+
+--------------------------------------------------------------------------------
+ACADEMIC REFERENCES
+--------------------------------------------------------------------------------
+
+Papers the project builds on or compares against:
+  1. Malo et al. (2014) — "Good Debt or Bad Debt: Detecting Semantic Orientations
+     in Economic Texts." JASIST 65(4). [Financial Phrasebank dataset paper]
+  2. Chen et al. (2021) — "FinQA: A Dataset of Numerical Reasoning over Financial
+     Data." EMNLP 2021. [FinQA dataset paper]
+  3. Xiao et al. (2024) — "TradingAgents: Multi-Agents LLM Financial Trading
+     Framework." arXiv:2412.20138. [closest prior work]
+  4. Yang et al. (2023) — "FinGPT: Open-Source Financial Large Language Models."
+     arXiv:2306.06031. [prior work for comparison]
+  5. Koa et al. (2024) — "Learning to Generate Explainable Stock Predictions."
+     WWW 2024. [explainability motivation]
+  6. Jegadeesh & Titman (1993) — "Returns to Buying Winners and Selling Losers."
+     Journal of Finance 48(1). [momentum indicator justification]
+
+Tools & Frameworks:
+  - OpenAI Agents SDK:     https://platform.openai.com/docs/agents
+  - Neo4j Graph Database:  https://neo4j.com
+  - Microsoft GraphRAG:    https://github.com/microsoft/graphrag  [design inspiration]
 
 --------------------------------------------------------------------------------
 KNOWN RISKS & MITIGATIONS

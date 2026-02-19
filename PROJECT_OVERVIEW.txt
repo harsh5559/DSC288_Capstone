@@ -35,6 +35,15 @@ the broader market is trending upward -- see Article X and Indicator Y."
 This system is not yet built. The current repo is the data preparation work that
 has to come first.
 
+The three core technologies being assembled:
+  - Neo4j Knowledge Graph: stores stocks, articles, people, events, sentiment,
+    and their relationships so agents can traverse connections across the data
+  - OpenAI Agents SDK: orchestrates 6 specialist agents (Orchestrator,
+    Fundamental Analyst, Sentiment Analyst, Technical Analyst, Optimistic,
+    Cautious) that hand off to each other before a final decision is made
+  - Sentiment-to-Signal pipeline: traces every recommendation back to the
+    exact news articles that drove it, creating an auditable chain
+
 
 WHAT IS IN THE REPO RIGHT NOW
 -------------------------------
@@ -54,8 +63,8 @@ Four datasets were downloaded into data/raw/:
                   articles tied to those companies and dates.
                   This is the backbone of the project.
 
-  Financial       About 5,000 financial news sentences hand-labeled as
-  Phrasebank      positive, neutral, or negative sentiment.
+  Financial       2,264 financial news sentences hand-labeled as positive,
+  Phrasebank      neutral, or negative sentiment (all-annotator-agreement subset).
                   Will be used to train the sentiment model inside the news agent.
 
   Yahoo S&P 500   Daily closing values for the S&P 500 index, 1999-2023.
@@ -170,8 +179,10 @@ data/processed/data_engineered.parquet  Stage 4 output (35 columns, model-ready)
 notebooks/01_EDA.ipynb             Interactive exploratory analysis
 notebooks/eda_outputs/             7 plots + 2 JSON summaries
 
-EDA_REPORT.md                      Full written EDA with tables and plots
-PIPELINE_SUMMARY.md                Full pipeline documentation
-PROGRESS_REPORT_GUIDE.md           Week 2 milestone reference for the team
-README.md                          Project overview
-requirements.txt                   Python dependencies (pip install -r requirements.txt)
+DSC288_Progress_Report.html        Full milestone 2 progress report (open in browser)
+REPO_SUMMARY.txt                   Detailed technical reference for the whole repo
+Addressing_TA_Comments.md          Response plan for TA feedback on milestone 2
+TA_comments.txt                    Raw TA feedback text
+
+archived progress reports/         Older reference docs (PROGRESS_REPORT_GUIDE.md,
+                                   requirements.txt)
