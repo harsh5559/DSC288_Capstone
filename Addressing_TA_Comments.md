@@ -51,32 +51,53 @@ The recommended approach for our Graph RAG system is **Option 4**: in the tabula
 
 > *"You remove 'extreme price outliers' defined as daily changes > 50%. It is not clear why 50% is the right cutoff or how many outliers are valid events (splits, major news) vs errors. Please justify the rule or show a quick check that this filtering does not remove real signal."*
 
-**Can we address it?** ✅ Yes — analysis complete (Harsh).
+**Can we address it?** ✅ Yes — analysis complete, run against actual local data (Harsh).
 
-**Analysis results (from pipeline run + EDA outputs):**
+**Analysis results (run directly against `data/raw/fnspid/` — 100 tickers, 460,292 records):**
 
 | Metric | Value |
 |--------|-------|
 | Records removed at >50% threshold | **951** |
-| Pre-filter total records | 429,194 |
-| Records lost as % of dataset | **0.22%** |
-| Max return seen in raw data | **+12,950%** |
-| Min return seen in raw data | **-98.27%** |
-| Total extreme moves >10% (kept) | 4,444 (1.7%) |
-| Extreme gains >10% (kept) | 2,626 (1.0%) |
-| Extreme losses >10% (kept) | 1,818 (0.7%) |
+| Total records loaded | 460,292 |
+| Records lost as % of dataset | **0.207%** |
+| Max single-day return in raw data | **+16,370%** (ACB, 2014-07-15) |
+| Min single-day return in raw data | **−99.2%** (ACB, 2020-07-02) |
+| Positive outliers (>+50%) | 547 |
+| Negative outliers (<−50%) | 404 |
+
+**Magnitude breakdown of the 951 removed records:**
+
+| Return magnitude | Count |
+|-----------------|-------|
+| 50% – 100% | 534 |
+| 100% – 200% | 72 |
+| 200% – 500% | 110 |
+| > 500% | **235** |
+
+**Where do the outliers come from?**
+The outliers are not random — they are overwhelmingly concentrated in a handful of tickers:
+
+| Ticker | Outlier records | % of all outliers |
+|--------|----------------|-------------------|
+| **ACB** | **616** | **64.8%** |
+| ACI | 85 | 8.9% |
+| AC | 85 | 8.9% |
+| ACER | 27 | 2.8% |
+| ADMP | 25 | 2.6% |
+| *(other 15 tickers)* | 113 | 11.9% |
+
+**ACB (Aurora Cannabis)** accounts for **65% of all outliers alone**. Its close price oscillates between $0.11 and $18.46 on consecutive days across 2006–2020 — definitively unadjusted stock split/reverse split data, not real trading moves. ACI and AC show the same pattern.
 
 **Why 50% is the right cutoff:**
-- The raw data contains returns as extreme as +12,950% in a single day — these are physically impossible as real market moves and are definitively data errors
-- Even the largest single-day crashes in history (Black Monday 1987: −22.6% for the S&P 500 index; individual stocks during the 2020 COVID crash) are well below 50%
-- The EDA explicitly flagged ticker **ACI** as having prices reaching $7,250 with large day-to-day swings in 2019-2020, confirmed as a data quality issue (likely unadjusted stock splits)
-- The 4,444 records with moves between 10% and 50% are **kept** — these include legitimate extreme events like COVID-19 and earnings surprises, which are real signal
-- Only 951 records (0.22%) were removed — essentially no meaningful data loss
+- 235 records have moves above 500% in a single day — physically impossible as real market events
+- Even the most extreme legitimate single-day moves in history (Black Monday 1987: −22.6% for the S&P 500; individual stocks during COVID-19) are well below 50%
+- The 50% threshold preserves all legitimate extreme events (COVID-19 volatility, earnings surprises, etc.) which sit in the 10–50% range
+- Only 0.207% of records removed — no meaningful information loss
 
 **Conclusion for report:**
-> "The 50% daily-change threshold removed 951 records (0.22% of data). The raw dataset contains returns as extreme as +12,950% in a single day — physically impossible without a data error or unadjusted stock split. We retain all moves between 10-50% (4,444 records, 1.7% of data), which includes legitimate extreme events such as COVID-19 and major earnings surprises. The 50% threshold is therefore conservative: it removes only obvious data errors while preserving all real signal."
+> "The >50% daily-change filter removed 951 records (0.207% of data). Analysis of the removed records shows that 64.8% come from a single ticker (ACB — Aurora Cannabis) whose raw data contains unadjusted stock splits, producing physically impossible day-to-day swings exceeding 16,000%. A further 235 records across other tickers exceed 500% moves in a single day. All legitimate extreme market events (COVID-19 volatility, major earnings) fall in the 10–50% range and are retained. The 50% threshold is therefore conservative and appropriate."
 
-> **💬 Harsh:** I ran the numbers from the EDA and pipeline outputs. The +12,950% max return is a smoking gun — nothing more to justify. 50% is the right cutoff and I'd keep it.
+> **💬 Harsh:** I ran this directly on the raw data files. ACB alone is 65% of all the removed records — it's obviously unadjusted split data. The 50% threshold is correct and I'm not changing it.
 
 ---
 
@@ -108,43 +129,52 @@ Simply add this exact table to the report and state: "Thresholds are **fixed at 
 
 > *"You say EDA covered anomalies/outliers and relationships, but the report does not clearly state one concrete anomaly rule and result for each major data type (prices, volume, news). Add a small table with these counts."*
 
-**Can we address it?** ✅ Yes — analysis complete (Harsh).
+**Can we address it?** ✅ Yes — analysis complete, run against actual local data (Harsh).
 
-**Volume anomaly analysis results (from EDA outputs):**
+**Volume analysis results (run directly against `data/raw/fnspid/` — 100 tickers, 459,341 clean records):**
 
 | Metric | Value |
 |--------|-------|
-| 99th percentile volume threshold | **50.1M shares/day** |
-| Stock-days above 99th percentile | **2,623 (1.0% of records)** |
-| Mean daily volume across dataset | 2.6M shares |
-| Max daily volume | 470M shares |
-| Volume ratio at 99th pct | ~19× mean daily volume |
-| Stage 2 volume filter applied? | **No** — only non-positive volumes removed |
-| Stage 4 feature added | `volume_ratio` = volume / 20-day MA (captures relative spikes) |
+| Mean daily volume | 3.64M shares |
+| Median daily volume | 0.32M shares *(heavy right skew)* |
+| 90th percentile | 4.92M (1.4× mean) |
+| 95th percentile | 9.90M (2.7× mean) |
+| 99th percentile | 76.50M (21× mean) |
+| Max daily volume | 1,047.62M shares |
+| Stage 2 volume filter applied? | **No** — only non-positive (≤0) volumes removed |
+| Stage 4 feature added | `volume_ratio` = volume / 20-day MA |
+| Max `volume_ratio` in dataset | **19.97×** |
+
+**Volume spike counts by `volume_ratio` threshold (volume ÷ 20-day MA):**
+
+| Threshold | Records | % of dataset |
+|-----------|---------|-------------|
+| ≥ 3× MA | 11,832 | 2.71% |
+| ≥ 5× MA | 3,465 | 0.79% |
+| ≥ 10× MA | 522 | 0.12% |
+| ≥ 20× MA | 0 | 0.00% |
 
 **What was actually done with volume:**
-- Stage 2 only removed records where volume ≤ 0 (a handful of records)
-- No hard spike threshold was applied — intentionally, because high-volume days carry real signal (earnings announcements, major news events, COVID-19 crash)
-- Stage 4 engineered `volume_ratio` (volume ÷ 20-day moving average) to let the model learn from relative volume spikes rather than filtering them out
+- Stage 2 only removed records with volume ≤ 0; no spike threshold was applied — high-volume days carry real signal (earnings, news events, COVID-19)
+- Stage 4 engineered `volume_ratio` (volume ÷ 20-day MA) so the model learns from relative spikes rather than raw levels
 
 **Complete anomaly table for the report:**
 
 | Data Type | Anomaly / Missing Rule | Count / Rate | Action Taken |
 |-----------|----------------------|--------------|--------------|
 | Stock Prices | Missing values | 0 (0%) | None needed |
-| Stock Prices | Daily change > 50% | 951 records (0.22%) | Removed |
+| Stock Prices | Daily change > 50% | 951 (0.21%) | Removed |
 | Stock Prices | Non-positive prices or zero volume | Small number | Removed |
-| Stock Prices | IQR outliers (close > $110.58) | 25,372 (9.67%) | **Kept** — high prices are real (expensive stocks), flagged only |
-| Stock Prices | Extreme returns > ±10% | 4,444 (1.7%) | **Kept** — real events (COVID, earnings) |
+| Stock Prices | Extreme returns > ±10% (kept) | 4,444 (1.7%) | **Kept** — real events (COVID, earnings) |
 | News Articles | Duplicate articles (exact text match) | ~278 | Removed |
 | News Articles | No news for a stock-day | 258,436 (98.54%) | Text = null, news_count = 0 |
 | S&P 500 | Missing market context | 35,645 (13.6%) | Left as NaN; market_up/market_down = 0 |
-| Volume | Days in top 1% (>50.1M shares) | 2,623 (1.0%) | **Kept** — real signal; captured via `volume_ratio` feature |
+| Volume | Days with ≥ 5× 20-day MA | 3,465 (0.79%) | **Kept** — real signal; captured via `volume_ratio` feature |
 
 **Conclusion for report:**
-> "Volume spikes were not filtered out — high-volume days (top 1%, >50.1M shares/day, ~19× mean) represent real market events such as earnings announcements and major news days, which are meaningful signal for our system. Instead of removing them, Stage 4 engineered a `volume_ratio` feature (volume ÷ 20-day moving average) so the model can learn from relative volume anomalies directly."
+> "No volume outlier filter was applied. High-volume days (3,465 records with volume ≥ 5× their 20-day moving average) represent real market events — earnings releases, major news, index rebalancing — and are meaningful signal for our system. Instead of filtering, Stage 4 engineered the `volume_ratio` feature (volume ÷ 20-day MA, max observed: 19.97×) so the model can directly learn from relative volume spikes."
 
-> **💬 Harsh:** I ran the numbers. 2,623 high-volume days at 19× average volume — these are real events and we should keep them. The `volume_ratio` feature handles this cleanly. No filter needed.
+> **💬 Harsh:** I ran this on the actual data. Volume spikes up to 20× are real market events, not errors. The `volume_ratio` feature captures this perfectly. No filter needed, and I'm satisfied with this justification.
 
 ---
 
