@@ -1,0 +1,177 @@
+DSC288 CAPSTONE - PROJECT OVERVIEW
+====================================
+Team: Harsh Arya, Gabrielle Despaigne, Camila Paik, Raghav Vasappanavara
+UC San Diego
+
+
+THE MAIN QUESTION
+-----------------
+Can a system built from multiple AI agents give beginner/intermediate retail investors
+a clear, trustworthy buy/hold/sell recommendation -- not just a number, but an actual
+explanation of WHY, backed by cited sources?
+
+The problem with most financial models is that they spit out a prediction with no
+reasoning. This project tries to fix that by building a multi-agent LLM framework
+where different specialized agents each look at one piece of the picture (news,
+technicals, fundamentals), then collaborate to produce a recommendation with a
+natural-language explanation grounded in real data via RAG (Retrieval-Augmented
+Generation).
+
+
+WHAT THE SYSTEM WILL ULTIMATELY DO
+-----------------------------------
+Given a stock ticker and a date, the system will:
+  1. Have a Technical Analyst Agent look at price/volume patterns
+  2. Have a News/Sentiment Agent look at recent news headlines
+  3. Have a Fundamental Analyst Agent look at broader financials
+  4. Have Optimistic and Cautious viewpoint agents debate
+  5. Synthesize all of the above into a single buy/hold/sell recommendation
+     with a written explanation that cites the actual news articles and data
+     it used (via RAG), so the investor understands the reasoning
+
+This is the end goal. The current state of the repo covers the data preparation
+work needed before any of that modeling begins.
+
+
+WHERE THE REPO IS RIGHT NOW
+----------------------------
+The codebase so far is entirely the DATA PIPELINE -- loading, cleaning, aligning,
+and feature-engineering the historical financial data that will eventually train
+and run the agents.  The modeling/agent/RAG work is planned but not yet built.
+
+
+THE DATA SOURCES (what we're working with)
+-------------------------------------------
+1. FNSPID  (Hugging Face)
+   - Stock price data (OHLCV) for Fortune 500 companies, 2002-2023
+   - Financial news articles tied to those same companies/dates
+   - This is the backbone: ~100 stocks, ~262K daily records after filtering
+
+2. Financial Phrasebank  (Hugging Face)
+   - ~5,000 financial news sentences hand-labeled as positive/neutral/negative
+   - Will be used to train the sentiment analysis model for the news agent
+
+3. Yahoo Finance S&P 500
+   - Daily S&P 500 index values (market context)
+   - Added to each stock-day record so the model knows if the broader market
+     was up or down on any given day
+
+4. FinQA  (GitHub benchmark)
+   - Financial question-answering pairs
+   - Will be used later to evaluate how well the agents explain their reasoning
+
+
+THE PIPELINE  (scripts/01 through 05)
+--------------------------------------
+Raw data --> 5 staged scripts --> a clean, feature-rich parquet file ready for modeling
+
+STAGE 1  |  01_load_data.py
+  Reads all four raw sources and writes them out as standardized parquet files.
+  Samples 100 stocks and 20K news articles to keep processing time reasonable.
+
+STAGE 2  |  02_clean_data.py
+  - Forward-fills missing prices
+  - Drops rows with missing critical fields
+  - Removes 951 records with >50% single-day price changes (likely bad data)
+  - Removes 278 duplicate news articles
+  - Strips HTML tags from news text
+  - Result: 93% of price records survive, 49% of news records survive
+
+STAGE 3  |  03_align_data.py
+  This is the key merging step.
+  - Filters everything to 2009-2023, the period where BOTH prices AND news exist
+    (before 2009 there is price data but no news, so those years can't be used
+     for explainable recommendations)
+  - Joins news articles to price records on (ticker, date)
+  - Attaches S&P 500 daily return to each record
+  - Creates the PREDICTION TARGET: if next-day return > +2% -> "buy",
+    < -2% -> "sell", otherwise -> "hold"
+  - No look-ahead bias: the target uses only the NEXT day's close,
+    and only historical data is used to generate features
+  - Output: data_aligned.parquet  (262,257 stock-day records)
+
+STAGE 4  |  04_feature_engineering.py
+  Takes the aligned data and adds 19 engineered features:
+  - Normalization: MinMaxScaler on prices (per ticker), StandardScaler on
+    volume and returns (per ticker) -- needed because stocks trade at wildly
+    different price scales
+  - Technical indicators: SMA-5/20/50, momentum-5/20, volatility-20,
+    volume ratio, price-to-SMA ratios
+  - Market-relative: excess return (stock minus market), market direction flags
+  - Output: data_engineered.parquet  (262,257 records, 35 total features)
+
+STAGE 5  |  05_merge_and_split.py  [planned, script exists]
+  - Selects the model-ready feature columns
+  - Does a TEMPORAL split (not random) to prevent future data leaking into training:
+      Train:      2009 - 2021
+      Validation: 2022
+      Test:       2023
+  - Creates rag_context.parquet: a lookup table of (ticker, date, news_text, source)
+    that the RAG system will search at inference time to find supporting citations
+  - Output: train_final.parquet, val_final.parquet, test_final.parquet,
+            rag_context.parquet
+
+
+THE EDA  (notebooks/01_EDA.ipynb, EDA_REPORT.md)
+--------------------------------------------------
+Before feature engineering, an EDA was run on the Stage 3 output to understand
+the data and justify the features chosen in Stage 4.  Key findings:
+
+  - S&P 500 return is the strongest single predictor of next-day stock direction
+    (correlation +0.023), which justified adding market-relative features
+  - Days with news have 10% more extreme buy/sell moves than days without news,
+    validating that news sentiment is worth modeling
+  - Price distributions are right-skewed and span $0.01 to $7,250 across stocks,
+    which is why per-ticker normalization was necessary
+  - COVID-19 (2020) shows clearly in the data: volume doubled, returns spiked.
+    The temporal indicators (SMA, momentum) were partly motivated by this
+  - Target distribution: 70% hold, 15% buy, 15% sell -- reasonably balanced
+    for a 3-class classification problem
+
+Seven visualizations are saved in notebooks/eda_outputs/.
+
+
+HOW IT ALL CONNECTS TO THE MAIN QUESTION
+-----------------------------------------
+The main question is: can an AI system explain its financial recommendations in
+a way a regular investor can trust and understand?
+
+The pipeline answers the "where does the data come from?" part of that question:
+
+  raw market prices  +  financial news  +  market context
+           |
+     cleaned, aligned, and filtered to the period where all three exist
+           |
+     feature-engineered into a format suitable for training ML models
+           |
+     split temporally so the evaluation reflects real-world conditions
+           |
+     rag_context file preserves the original news text so agents can
+     CITE the specific articles they used when explaining a recommendation
+
+Everything built so far is infrastructure.  The next steps are:
+  1. Train a sentiment classifier on Financial Phrasebank
+  2. Build the individual agents using OpenAI API
+  3. Wire up the RAG retrieval so agents can quote real sources
+  4. Evaluate explanations for faithfulness and consistency
+
+
+FILE MAP (quick reference)
+---------------------------
+scripts/01_load_data.py          -- Stage 1: load raw sources
+scripts/02_clean_data.py         -- Stage 2: clean
+scripts/03_align_data.py         -- Stage 3: merge + create targets
+scripts/04_feature_engineering.py-- Stage 4: indicators + normalization
+scripts/05_merge_and_split.py    -- Stage 5: train/val/test split + RAG file
+scripts/run_pipeline.py          -- runs all stages in order
+
+data/processed/data_aligned.parquet      -- Stage 3 output
+data/processed/data_engineered.parquet   -- Stage 4 output (35 features, model-ready)
+
+notebooks/01_EDA.ipynb           -- exploratory analysis
+notebooks/eda_outputs/           -- 7 plots + 2 JSON summaries
+
+EDA_REPORT.md                    -- full written EDA with tables
+PIPELINE_SUMMARY.md              -- full pipeline documentation
+README.md                        -- project overview
+requirements.txt                 -- Python dependencies
