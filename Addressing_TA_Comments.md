@@ -396,27 +396,50 @@ Add this metrics plan:
 
 > *"You say you enforce 'strict temporal splits,' but you do not specify what dates are train/val/test or the split method (rolling window vs fixed). Please define the split clearly to prove no leakage."*
 
-**Can we address it?** ✅ Yes — the plan already exists, just needs to be stated explicitly.
+**Can we address it?** ✅ Yes — confirmed from code, with two leakage issues flagged (Harsh).
 
-**How to address it:**
-State the following clearly in the report:
+**✅ CONFIRMED FROM CODE (`05_merge_and_split.py`) — checked by Harsh:**
 
-> **Split Method: Fixed temporal cutoff (not rolling window)**
->
-> | Split | Date Range | Records (approx) | Purpose |
-> |-------|-----------|------------------|---------|
-> | Train | Oct 2009 – Dec 2021 | ~220,000 | Model training |
-> | Validation | Jan 2022 – Dec 2022 | ~25,000 | Hyperparameter tuning, early stopping |
-> | Test | Jan 2023 – Dec 2023 | ~17,000 | Final evaluation, reported metrics |
->
-> **No-leakage guarantee:** (1) Rolling features (SMA, volatility) are computed on training data only, with test-set values computed using a walk-forward approach. (2) All scalers (MinMax, StandardScaler) are fit on the training set only and applied to val/test. (3) The target label uses next-day return, and all splits are by date so tomorrow's data is never in today's training set.
+```python
+def create_temporal_split(df, train_end='2021-12-31', val_end='2022-12-31'):
+    train_df = df[df['date'] <= train_end].copy()
+    val_df   = df[(df['date'] > train_end) & (df['date'] <= val_end)].copy()
+    test_df  = df[df['date'] > val_end].copy()
+```
+
+**Split method: Fixed temporal cutoff — not rolling window.**
+
+| Split | Date Range | Purpose |
+|-------|-----------|---------|
+| Train | Oct 2009 – Dec 31 2021 | Model training |
+| Validation | Jan 1 2022 – Dec 31 2022 | Hyperparameter tuning, early stopping |
+| Test | Jan 1 2023 – Dec 14 2023 | Final evaluation, reported metrics |
+
+The split is strictly date-based with no shuffling — no future data can leak into training rows through the split itself.
+
+**What to write in the report:**
+> "Data is split using fixed temporal cutoffs: training on Oct 2009 – Dec 2021, validation on Jan–Dec 2022, and test on Jan–Dec 2023. The split is strictly date-ordered with no shuffling, ensuring no future information is present in any training record."
+
+---
+
+**⚠️ LEAKAGE ISSUE 1 — Scaler fitted on full dataset (needs fixing):**
+
+In Stage 4, `MinMaxScaler` and `StandardScaler` are fit on the **entire dataset** before the split occurs in Stage 5. This means the scalers have seen validation and test data when normalising the training set — a real leakage violation.
+
+**Fix required:** Move scaler fitting to Stage 5, after the split. Fit scalers on the training set only, then `transform()` (not `fit_transform()`) on val and test.
+
+**⚠️ LEAKAGE ISSUE 2 — `ffill()` applied before the split (minor):**
+
+In `select_model_features()`, `df.ffill().fillna(0)` is called on the whole dataset *before* `create_temporal_split()`. If any NaN values sit right at the train/val boundary (Dec 2021), a training row could be forward-filled with a value that originated in the validation period.
+
+**Fix required:** Run `ffill()` separately within each split after splitting, or clip ffill to within each split's date range.
+
+---
 
 **⚠️ DECISION NEEDED:**
-Should we use a **fixed split** or a **rolling/expanding window**? 
-- Fixed split is simpler and more standard in academic work.
-- Rolling window (e.g., train on 2009-2018, test 2019; then train 2009-2019, test 2020, etc.) is more rigorous and shows performance across different market regimes.
+Both leakage issues require pipeline changes before the final model is trained. The fixes are straightforward but need someone to implement them in Stage 4 and Stage 5. Who picks this up?
 
-Recommend **fixed split for the report** (simpler to explain and defend) with a note that rolling-window evaluation is future work. The team should confirm.
+> **💬 Harsh:** The split dates and method are exactly what I'd have chosen — fixed cutoff is the right call for the report. The two leakage issues are real and need to be fixed before we train. Scaler leakage is the more serious one. Flagging for the team to assign.
 
 ---
 
