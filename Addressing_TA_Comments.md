@@ -189,7 +189,7 @@ Add this statement to the report:
 
 > "All rolling window features (SMA-5, SMA-20, SMA-50, momentum_5, momentum_20, volatility_20, volume_ma_20) use **only past trading days** — the window looks backward only (e.g., SMA-5 on day T uses days T-5 through T-1). No future data is used in any feature computation."
 
-**✅ CONFIRMED FROM CODE (`04_feature_engineering.py`):**
+**✅ CONFIRMED FROM CODE (`04_feature_engineering.py`) — checked by Harsh:**
 All rolling window features use **`min_periods=1`** (partial windows). The script does NOT drop any rows. Specifically:
 ```python
 ticker_df['sma_5']  = ticker_df['close'].rolling(window=5,  min_periods=1).mean()
@@ -235,7 +235,7 @@ Add a dataset specification table to the report:
 | Yahoo S&P 500 | `^GSPC` via yfinance, downloaded Jan 2026 | Jan 1999 – Dec 2023 | Full index history |
 | FinQA | GitHub `czyssrs/FinQA`, accessed Jan 2026 | N/A (static dataset) | Train + validation + test splits |
 
-**✅ CONFIRMED FROM CODE (`01_load_data.py`):**
+**✅ CONFIRMED FROM CODE (`01_load_data.py`) — checked by Harsh:**
 ```python
 csv_files = list(price_dir.glob("*.csv"))
 for csv_file in tqdm(csv_files[:100], desc="Loading prices"):  # Start with first 100 stocks for validation
