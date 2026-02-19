@@ -19,31 +19,50 @@ team needs to make before writing the fixes.
 
 > *"You say you align news with stock prices at the stock-day level using (ticker, date), but it is not clearly stated what happens when there are multiple news articles for one stock-day, or when there is no news for a stock-day. Do you aggregate (count/mean sentiment), pick top-k, or keep all articles? Please state the rule."*
 
-**Can we address it?** ✅ Yes — straightforward clarification needed.
+**Can we address it?** ✅ Yes — rules confirmed from code (Harsh).
 
 **What we know already:**
 - 3,821 stock-days have at least one news article (~1.46% of all records)
 - Average of 2.42 articles per news day when news exists
 - ~98.54% of stock-days have no news at all
 
-**How to address it:**
-We need to explicitly state two rules:
+**✅ CONFIRMED FROM CODE (`03_align_data.py`) — checked by Harsh:**
 
-1. **When there is NO news for a stock-day:** The `text` column is `None`/`NaN` and `news_count = 0`. The row still exists (price data is present). The system falls back to technical-only analysis for that day. This should already be the case in the pipeline — we just need to say it clearly in the report.
+**Rule 1 — No news for a stock-day:**
+```python
+aligned_df = prices_df.merge(news_grouped, on=['ticker', 'date'], how='left')
+aligned_df['news_count'] = aligned_df['news_count'].fillna(0).astype(int)
+```
+A left join on prices keeps every stock-day. When there's no news: `text` = NaN, `news_count` = 0.
 
-2. **When there are MULTIPLE articles for one stock-day:** This is the part that needs a concrete rule defined and implemented. Options:
+**Rule 2 — Multiple articles on the same stock-day:**
+```python
+news_grouped = news_df.groupby(['ticker', 'date']).agg({
+    'text': lambda x: ' | '.join(x.astype(str)),  # all articles concatenated
+    'source': lambda x: ', '.join(set(x.astype(str)))
+}).reset_index()
+news_grouped['news_count'] = news_df.groupby(['ticker', 'date']).size().values
+```
+All articles are **concatenated into one string with ` | ` as the separator**. The number of articles is stored in `news_count`. One row per stock-day is preserved.
 
-| Option | Pros | Cons |
-|--------|------|------|
-| Keep all as separate records (one row per article) | No information loss, best for Graph RAG (each article = its own node) | Inflates dataset size; breaks the stock-day structure |
-| Concatenate text, aggregate sentiment (mean score) | Clean one-row-per-stock-day structure; easy for tabular models | Loses individual article signal; mean can be misleading |
-| Pick the single highest-confidence article (top-1) | Clean structure; keeps best signal | Arbitrary; discards valid information |
-| Keep one row but store `news_count` + `mean_sentiment` + full article list in graph | Best of both worlds for Graph RAG architecture | More complex pipeline |
+**What was actually implemented is Option 2** — concatenate text + store `news_count`, one row per stock-day. Option 4 (individual article nodes in Neo4j) is the planned graph layer but has not been built yet.
+
+**Options recap:**
+
+| Option | Description | Status |
+|--------|-------------|--------|
+| 1 | One row per article (separate records) | ❌ Not implemented |
+| **2** | **Concatenate all article text with `\|`, store `news_count`** | **✅ Currently implemented** |
+| 3 | Pick single highest-confidence article (top-1) | ❌ Not implemented |
+| 4 | One tabular row with `news_count` + full articles as individual nodes in Neo4j graph | 🔲 Planned (graph layer not built yet) |
+
+**What to write in the report (based on what's actually implemented):**
+> "When multiple news articles exist for the same stock-day, all article texts are concatenated into a single `text` field using a ` | ` separator, and the total count is stored in `news_count`. This preserves a clean one-row-per-stock-day structure for the tabular pipeline while retaining all text content for downstream sentiment scoring. When no news exists for a stock-day, `text` = NaN and `news_count` = 0; the row is kept using a left join on prices."
 
 **⚠️ DECISION NEEDED:**
-The recommended approach for our Graph RAG system is **Option 4**: in the tabular dataset, store `news_count` and `mean_sentiment_score` per stock-day; in Neo4j, store each article as a separate `(:Article)` node linked to the stock and date. This way the flat dataset stays one-row-per-stock-day, and the full article detail lives in the graph. The team should confirm this is what was implemented (or update the pipeline if not).
+The pipeline currently implements **Option 2**. Our Graph RAG architecture calls for **Option 4** (individual article nodes in Neo4j). Should we update the report to describe Option 2 as the tabular implementation with Option 4 as the planned graph extension — or should we change the pipeline to explicitly implement Option 4 now?
 
-> **💬 Harsh:** Option 4 is the best given our pipeline is not that complex, and we don't have enough data to justify dropping any records if we can avoid it.
+> **💬 Harsh:** I checked the code — we're on Option 2 right now. Do we keep it as-is and describe Option 4 as the planned graph layer, or do we move to Option 4 in the pipeline before the next milestone? Team please weigh in.
 
 ---
 
