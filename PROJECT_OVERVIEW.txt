@@ -1,0 +1,177 @@
+﻿DSC288 CAPSTONE - PROJECT OVERVIEW
+====================================
+Team: Harsh Arya, Gabrielle Despaigne, Camila Paik, Raghav Vasappanavara
+UC San Diego
+
+
+THE MAIN GOAL
+-------------
+Build an AI system that tells a regular investor whether to buy, hold, or sell a
+stock -- and explains WHY in plain English, citing the actual news and data it used.
+
+The target user is a beginner or intermediate retail investor who wants to understand
+a recommendation, not just receive a number they have to trust blindly.
+
+Most financial models are black boxes. This project's core contribution is
+explainability: every recommendation comes with a written explanation grounded in
+cited sources, produced by multiple specialized AI agents working together.
+
+
+HOW THE FINISHED SYSTEM WILL WORK
+-----------------------------------
+A user provides a stock ticker. The system then:
+
+  1. A Technical Analyst agent looks at price and volume patterns
+  2. A News/Sentiment agent reads recent financial news about that stock
+  3. A Fundamental Analyst agent looks at broader financial context
+  4. An Optimistic agent and a Cautious agent each argue their case
+  5. A final agent synthesizes all of the above into a buy/hold/sell decision
+     with a written explanation that quotes the specific news articles and data
+     it drew from (this is the RAG step -- Retrieval-Augmented Generation)
+
+The investor sees not just "buy" but "buy, because earnings beat expectations and
+the broader market is trending upward -- see Article X and Indicator Y."
+
+This system is not yet built. The current repo is the data preparation work that
+has to come first.
+
+
+WHAT IS IN THE REPO RIGHT NOW
+-------------------------------
+Everything in the repo so far is the DATA PIPELINE -- collecting, cleaning, and
+preparing historical financial data so that the agents will eventually have
+something real to work with.
+
+Think of the pipeline as building the library that the agents will search through.
+
+
+THE DATA SOURCES
+-----------------
+Four datasets were downloaded into data/raw/:
+
+  FNSPID          Stock price data (open/high/low/close/volume) for about 500
+                  Fortune 500 companies, 2002-2023. Also contains financial news
+                  articles tied to those companies and dates.
+                  This is the backbone of the project.
+
+  Financial       About 5,000 financial news sentences hand-labeled as
+  Phrasebank      positive, neutral, or negative sentiment.
+                  Will be used to train the sentiment model inside the news agent.
+
+  Yahoo S&P 500   Daily closing values for the S&P 500 index, 1999-2023.
+                  Gives each stock-day record a market-wide context
+                  (was the whole market up or down that day?).
+
+  FinQA           Financial question-and-answer pairs from real earnings reports.
+                  Will be used later to test whether the agents explain things
+                  accurately.
+
+
+THE PIPELINE  (scripts/01 through 05)
+---------------------------------------
+Five scripts run in order. Run them all at once with: python scripts/run_pipeline.py
+
+  Stage 1 -- 01_load_data.py
+    Reads the raw files and converts them into a consistent format (parquet).
+    Samples 100 stocks and 20,000 news rows so the pipeline runs in a few minutes
+    rather than hours.
+
+  Stage 2 -- 02_clean_data.py
+    Removes bad data: duplicate articles, missing prices, and records where a
+    stock's price changed by more than 50% in a single day (almost certainly errors).
+    Also strips HTML from news text.
+
+  Stage 3 -- 03_align_data.py
+    The critical merging step. Joins news to price records by (ticker, date),
+    attaches the S&P 500 return for that day, and filters everything to 2009-2023
+    -- the period where we have both prices AND news (before 2009 there is no
+    news data, so those years are useless for an explainable recommendation).
+    Creates the prediction target: if the stock goes up >2% the next day it is
+    labeled "buy", down >2% is "sell", otherwise "hold".
+    Output: data_aligned.parquet -- 262,257 stock-day records.
+
+  Stage 4 -- 04_feature_engineering.py
+    Adds 19 derived features that models need:
+    - Normalizes prices per ticker (stocks trade at very different scales, so
+      a $5 stock and a $500 stock need to be put on the same footing)
+    - Normalizes volume and returns using z-scores
+    - Adds technical indicators: moving averages, momentum, volatility, volume ratio
+    - Adds market-relative features: how did this stock do versus the S&P 500?
+    Output: data_engineered.parquet -- same 262,257 records, 35 total features.
+
+  Stage 5 -- 05_merge_and_split.py  (script exists, not yet run)
+    Splits data temporally into train (2009-2021), validation (2022), test (2023).
+    The split is time-based on purpose -- you cannot train on 2022 data and
+    test on 2021, because that would let the model see the future.
+    Also creates rag_context.parquet: a lookup table of (ticker, date, news text)
+    that the RAG system will search at inference time to find real citations.
+
+
+THE EDA  (notebooks/01_EDA.ipynb and EDA_REPORT.md)
+-----------------------------------------------------
+Before building features, an Exploratory Data Analysis was run on the Stage 3
+output to understand the data and justify the engineering choices.
+
+Key things found:
+  - Price values span from under $1 to over $7,000 across different stocks,
+    which is why per-ticker normalization is necessary
+  - Days with news attached show 10% more extreme price moves than days without,
+    confirming that news is worth modeling
+  - The S&P 500 return is the single strongest predictor of next-day direction,
+    which is why market-relative features were added
+  - The 2020 COVID period is clearly visible: volume doubled and returns spiked,
+    which motivated adding momentum and volatility indicators
+  - Target labels are roughly balanced: 70% hold, 15% buy, 15% sell
+
+Seven plots are saved in notebooks/eda_outputs/. EDA_REPORT.md has the full
+written analysis with tables.
+
+
+HOW IT ALL CONNECTS BACK TO THE MAIN GOAL
+-------------------------------------------
+The goal is explainable recommendations grounded in real data.
+
+For that to work the system needs:
+  (a) Real historical stock prices  -->  FNSPID + pipeline Stages 1-2
+  (b) News articles tied to those   -->  FNSPID aligned in Stage 3
+      same stocks and dates
+  (c) A clean prediction target     -->  created in Stage 3
+  (d) Features a model can learn    -->  Stage 4
+  (e) A fair train/test split       -->  Stage 5
+  (f) A retrievable record of the   -->  rag_context.parquet from Stage 5
+      original news text so agents
+      can quote it in explanations
+
+Everything built so far serves one of those six purposes.
+
+
+WHAT COMES NEXT
+----------------
+  1. Run Stage 5 to produce the final train/val/test files
+  2. Fine-tune a sentiment classifier on Financial Phrasebank
+     (this becomes the core of the news/sentiment agent)
+  3. Build the individual agents using the OpenAI API
+  4. Wire up RAG so agents can retrieve and cite real news at inference time
+  5. Evaluate: do recommendations make sense? are explanations faithful to sources?
+
+
+FILE MAP
+---------
+scripts/01_load_data.py            Load raw sources into parquet
+scripts/02_clean_data.py           Clean and deduplicate
+scripts/03_align_data.py           Merge news + prices, create targets
+scripts/04_feature_engineering.py  Add indicators and normalization
+scripts/05_merge_and_split.py      Temporal split + RAG context file
+scripts/run_pipeline.py            Runs all stages in order
+
+data/processed/data_aligned.parquet     Stage 3 output (16 columns)
+data/processed/data_engineered.parquet  Stage 4 output (35 columns, model-ready)
+
+notebooks/01_EDA.ipynb             Interactive exploratory analysis
+notebooks/eda_outputs/             7 plots + 2 JSON summaries
+
+EDA_REPORT.md                      Full written EDA with tables and plots
+PIPELINE_SUMMARY.md                Full pipeline documentation
+PROGRESS_REPORT_GUIDE.md           Week 2 milestone reference for the team
+README.md                          Project overview
+requirements.txt                   Python dependencies (pip install -r requirements.txt)
