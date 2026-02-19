@@ -43,6 +43,8 @@ We need to explicitly state two rules:
 **⚠️ DECISION NEEDED:**
 The recommended approach for our Graph RAG system is **Option 4**: in the tabular dataset, store `news_count` and `mean_sentiment_score` per stock-day; in Neo4j, store each article as a separate `(:Article)` node linked to the stock and date. This way the flat dataset stays one-row-per-stock-day, and the full article detail lives in the graph. The team should confirm this is what was implemented (or update the pipeline if not).
 
+> **💬 Harsh:** Option 4 is the best given our pipeline is not that complex, and we don't have enough data to justify dropping any records if we can avoid it.
+
 ---
 
 ### Comment 1.2 — Justification for the 50% Outlier Cutoff
@@ -63,6 +65,8 @@ We need to add a short analysis (can go in the report or a notebook cell) that s
 
 **⚠️ DECISION NEEDED:**
 Should we run a quick spot-check on the 951 removed records and include a small table in the report showing the breakdown (e.g., "X were likely splits, Y were data errors, Z were unidentified")? This is the cleanest way to satisfy the TA. Alternatively, we can simply add a written justification with a citation (e.g., noting that even the most extreme single-day moves in market history, like 1987's Black Monday at -22%, are well below 50%). The team should decide whether to add the analysis or rely on written justification.
+
+> **💬 Harsh:** I'm willing to do the analysis — look at the patterns in the data we cut off via the 50% threshold and change the cutoff if the analysis justifies it.
 
 ---
 
@@ -112,6 +116,8 @@ Add this table to the EDA section of the report:
 **⚠️ DECISION NEEDED:**
 The volume spike row is TBD. We should either (a) add a quick check in the EDA notebook to quantify extreme volume days and report that number, or (b) remove that row from the table if we didn't apply a volume outlier filter. The team should clarify what was actually done with volume outliers.
 
+> **💬 Harsh:** I'm willing to run the analysis to see if we can justify flagging/removing a volume spike anomaly threshold.
+
 ---
 
 ### Comment 2.2 — Correlation of 0.023 — Is It Meaningful?
@@ -132,6 +138,8 @@ We need to be honest here: a Pearson correlation of 0.023 between S&P 500 return
 
 **⚠️ DECISION NEEDED:**
 Should we add a mutual information score or point-biserial correlation as a supplementary check in the EDA notebook to replace or complement the Pearson correlation? This would be a stronger justification. Recommend yes — it's a one-liner in sklearn.
+
+> **💬 Harsh:** I will implement a mutual information score and point-biserial correlation — the Pearson correlation being so low makes a stronger supplementary check essential.
 
 ---
 
@@ -166,6 +174,8 @@ Which sentiment model will we use? Two options:
 
 **Recommendation:** Use FinBERT for the bulk sentiment scoring of the historical dataset (cheap, fast, reproducible). Use GPT-5.2 only for live/real-time inference in the final demo system. The team should confirm this split approach.
 
+> **💬 Harsh:** I will let Raghav make this decision.
+
 ---
 
 ### Comment 3.2 — Rolling Window Lookahead Guarantee
@@ -179,16 +189,28 @@ Add this statement to the report:
 
 > "All rolling window features (SMA-5, SMA-20, SMA-50, momentum_5, momentum_20, volatility_20, volume_ma_20) use **only past trading days** — the window looks backward only (e.g., SMA-5 on day T uses days T-5 through T-1). No future data is used in any feature computation."
 
+**✅ CONFIRMED FROM CODE (`04_feature_engineering.py`):**
+All rolling window features use **`min_periods=1`** (partial windows). The script does NOT drop any rows. Specifically:
+```python
+ticker_df['sma_5']  = ticker_df['close'].rolling(window=5,  min_periods=1).mean()
+ticker_df['sma_20'] = ticker_df['close'].rolling(window=20, min_periods=1).mean()
+ticker_df['sma_50'] = ticker_df['close'].rolling(window=50, min_periods=1).mean()
+ticker_df['volatility_20'] = returns.rolling(window=20, min_periods=1).std()
+```
+The `momentum_5` and `momentum_20` features (via `pct_change`) do produce NaN for the first 5/20 rows per ticker, which are forward-filled downstream. No rows are dropped due to rolling window initialisation.
+
+**What to write in the report:**
+> "All rolling window features (SMA-5, SMA-20, SMA-50, momentum_5, momentum_20, volatility_20, volume_ma_20) use only past trading days — the window looks backward only. For the first N days of each ticker's history where the full window isn't yet available, partial windows are used (e.g., SMA-50 on day 3 = mean of 3 days). No rows are dropped due to rolling window initialisation."
+
 **⚠️ DECISION NEEDED:**
-What happens for the first N days of each ticker's history where the full window isn't available?
+Now that we know `min_periods=1` (partial windows) is what was implemented, should we keep this or switch to dropping the first 50 rows?
 
-| Option | Approach |
-|--------|----------|
-| **Drop** | Remove the first 50 rows per ticker (SMA-50 needs 50 days). Clean but loses ~5,000 records. |
-| **Fill with NaN then drop** | Same result as above but more explicit |
-| **Partial windows** | Use available days (e.g., SMA-50 on day 10 = mean of 10 days). Keeps all records but early values are less reliable. |
+| Option | Approach | Records lost |
+|--------|----------|-------------|
+| **Partial windows (current)** | Use available days; keeps all records but early SMA values are less reliable | 0 |
+| **Drop first 50 rows per ticker** | Clean — SMA-50 is always a real 50-day average | ~5,000 (~1.9%) |
 
-The team needs to confirm which approach was used in `04_feature_engineering.py` (since that script appears to be currently empty) and state it clearly. **Recommend: Drop the first 50 rows per ticker** — it's the cleanest approach and only removes ~1.9% of records.
+> **💬 Harsh:** I think we simply drop. Cleaner approach and 1.9% record loss is nothing.
 
 ---
 
@@ -213,13 +235,22 @@ Add a dataset specification table to the report:
 | Yahoo S&P 500 | `^GSPC` via yfinance, downloaded Jan 2026 | Jan 1999 – Dec 2023 | Full index history |
 | FinQA | GitHub `czyssrs/FinQA`, accessed Jan 2026 | N/A (static dataset) | Train + validation + test splits |
 
-**⚠️ DECISION NEEDED:**
-How exactly were the 100 tickers chosen? This is the key reproducibility question. Looking at the pipeline, it appears to sample 100 stocks — but was this:
-- (a) the 100 tickers that appear in **both** the prices and news subsets (intersection)?
-- (b) a random sample of 100 from all available tickers?
-- (c) the top 100 by trading volume or some other criterion?
+**✅ CONFIRMED FROM CODE (`01_load_data.py`):**
+```python
+csv_files = list(price_dir.glob("*.csv"))
+for csv_file in tqdm(csv_files[:100], desc="Loading prices"):  # Start with first 100 stocks for validation
+```
+The 100 tickers are the **first 100 CSV files returned by `glob("*.csv")`** on the FNSPID price directory. On most filesystems, `glob()` returns files in alphabetical order by filename, so this is effectively the **first 100 tickers alphabetically**. There is **no random sampling and no random seed** — the selection is deterministic.
 
-The team needs to confirm the exact rule from the `01_load_data.py` script and state it clearly. If it was random, provide the random seed used.
+However, the comment in the script says "for validation" suggesting this was intended as a starting point. The dataset specification table above should be corrected to reflect the actual rule.
+
+**What to write in the report:**
+> "The 100 stock tickers were selected by taking the first 100 CSV files in alphabetical order from the FNSPID price directory. This selection is deterministic and fully reproducible — no random sampling was used."
+
+**⚠️ DECISION NEEDED:**
+Should we keep this "first 100 alphabetically" selection, or should we define a more principled subset (e.g., S&P 100 by market cap, or 100 tickers present in both price AND news data)?
+
+> **💬 Harsh:** I will let Raghav make this decision.
 
 ---
 
