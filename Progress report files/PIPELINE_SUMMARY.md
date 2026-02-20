@@ -3,11 +3,12 @@
 ## Quick Reference
 
 ### What We Built
-A 4-stage data pipeline that:
+A 5-stage data pipeline that:
 1. **Loads** financial data from 5 sources
 2. **Cleans** data (removes NULLs, duplicates, outliers)
 3. **Aligns** news with prices temporally, filtered to 2009-2023 (news-available period)
-4. **Engineers features** with normalization and technical indicators
+4. **Engineers features** — technical indicators and market-relative features (un-normalized)
+5. **Splits and normalizes** — temporal train/val/test split with scalers fitted on train only (no leakage)
 
 ### Validation Results
 ✅ **Tested with:** 100 stocks, 20K news articles  
@@ -15,7 +16,7 @@ A 4-stage data pipeline that:
 ✅ **Output:** 262,257 aligned stock-day observations (2009-2023)  
 ✅ **Quality:** 93% data retention after cleaning  
 ✅ **Features:** 35 total (16 original + 19 engineered)  
-✅ **Normalized:** Prices (min-max), volume & returns (z-score)
+✅ **Normalized:** Prices (min-max), volume & returns (z-score) — fitted on train split only (Stage 5, no leakage)
 
 ### Key Numbers for Report
 
@@ -39,7 +40,7 @@ A 4-stage data pipeline that:
 The goal of the pipeline is to align structured market data with relevant financial text during the period where both are available (2009-2023), so that the multi-agent LLM system can make explainable buy/hold/sell recommendations grounded in actual news sources via RAG.
 
 ### Pipeline Design
-We designed and implemented a 4-stage pipeline that integrates multiple financial data sources:
+We designed and implemented a 5-stage pipeline that integrates multiple financial data sources:
 
 **Stage 1 (Loading):** Loads raw data from FNSPID (stock prices + news), Financial Phrasebank (sentiment data), Yahoo Finance (S&P 500 market context), and FinQA (Q&A benchmarks). For validation, we sample 100 stocks and 20,000 news articles to ensure reasonable processing time.
 
@@ -47,7 +48,9 @@ We designed and implemented a 4-stage pipeline that integrates multiple financia
 
 **Stage 3 (Alignment):** **Filters to 2009-2023 period** where both stock prices AND news are available (critical for explainable recommendations); merges news articles with stock prices by (ticker, date); adds S&P 500 market context (86.4% coverage); creates prediction targets (buy/hold/sell) based on next-day returns using ±2% thresholds; ensures no look-ahead bias by using only historical data.
 
-**Stage 4 (Feature Engineering & Normalization):** Normalizes price features using MinMaxScaler (0-1 range per ticker); standardizes volume and returns using StandardScaler (z-score per ticker); creates 9 technical indicators (SMA-5/20/50, momentum-5/20, volatility-20, volume ratio, price-to-SMA ratios); adds market-relative features (excess return, market direction indicators). Total: 35 features (16 original + 19 engineered).
+**Stage 4 (Feature Engineering):** Creates 9 technical indicators (SMA-5/20/50, momentum-5/20, volatility-20, volume ratio, price-to-SMA ratios); adds market-relative features (excess return, market direction indicators). Total: 35 features (16 original + 19 engineered). **Normalization is intentionally deferred to Stage 5** to prevent look-ahead bias — scalers must be fitted only on training data.
+
+**Stage 5 (Train/Val/Test Split & Normalization):** Splits data temporally (Train: Oct 2009–Dec 2021, Val: Jan–Dec 2022, Test: Jan–Dec 2023). Fits MinMaxScaler (prices) and StandardScaler (volume, returns) on training data only, then transforms all three splits. Applies forward-fill independently within each split. Creates final model-ready datasets and RAG context file.
 
 ### Data Merging
 We combine historical stock price data with corresponding financial news articles from the same date/time period, sentiment scores derived from Financial Phrasebank analysis, and market-level context (S&P 500 performance). The merging is done on a (ticker, date) key, ensuring that all information available up to day T is used to make predictions for day T+1. **Critically, we filter to 2009-2023, the period where FNSPID news is available**, reducing the dataset from 428K to 262K observations but ensuring every record can potentially be explained using both technical analysis AND news content.
@@ -59,10 +62,10 @@ We handle NULL values through forward-filling for prices and dropping for news i
 We create derived features including: next-day returns and targets (buy/hold/sell); news counts per stock-day; S&P 500 daily returns; 9 technical indicators (moving averages, momentum, volatility, volume ratios); price-to-SMA ratios; excess returns (stock return minus market return); market direction indicators.
 
 ### Data Normalization
-All features are normalized for model training: **Price features** (open, high, low, close) are min-max scaled to [0,1] range per ticker to account for different price scales; **Volume** is standardized to z-scores per ticker to handle varying trading volumes; **Returns** are standardized to z-scores per ticker for consistent volatility measures. Normalization is done per ticker to preserve relative patterns while enabling cross-stock comparison.
+All features are normalized for model training — but critically, **normalization happens in Stage 5, after the train/val/test split**, to prevent look-ahead bias. Scalers are fitted on training data only and applied via `transform()` to validation and test sets: **Price features** (open, high, low, close) are min-max scaled to [0,1] range per ticker; **Volume** is standardized to z-scores per ticker; **Returns** are standardized to z-scores per ticker. Normalization is done per ticker to preserve relative patterns while enabling cross-stock comparison.
 
 ### Description of Outputs
-**Final Dataset:** Deduplicated records with one row per (ticker, date) combination containing aligned multi-modal data (prices + news + market context + technical indicators + normalized features). Time-series ordered to prevent data leakage. 
+**Final Dataset:** Three temporal splits (train/val/test) with one row per (ticker, date) combination containing aligned multi-modal data (prices + news + market context + technical indicators + normalized features). Scalers fitted on train only — no leakage. Time-series ordered throughout. 
 
 **Statistics:**
 - **262,257 observations** across 100 stocks from October 2009 to December 2023 (14.2 years)
@@ -74,7 +77,10 @@ All features are normalized for model training: **Price features** (open, high, 
 
 **Files Generated:**
 - `data_aligned.parquet` - Cleaned and aligned data (Stage 3 output)
-- `data_engineered.parquet` - Feature-engineered and normalized data (Stage 4 output, ready for modeling)
+- `data_engineered.parquet` - Feature-engineered data (Stage 4 output, un-normalized)
+- `train_final.parquet` - Training split, normalized (Stage 5 output)
+- `val_final.parquet` - Validation split, normalized (Stage 5 output)
+- `test_final.parquet` - Test split, normalized (Stage 5 output)
 - `*_summary.json` - Stage-by-stage statistics for pipeline validation
 
 All intermediate outputs saved as Parquet files for efficient downstream processing.
@@ -108,21 +114,25 @@ All intermediate outputs saved as Parquet files for efficient downstream process
 - **Runtime:** ~15 seconds
 - **Key Decision:** Focus on period where we have BOTH prices AND news
 
-### Stage 4: Feature Engineering & Normalization ✅
+### Stage 4: Feature Engineering ✅
 - **Script:** `scripts/04_feature_engineering.py`
 - **Operations:**
-  - Normalize prices (MinMaxScaler per ticker)
-  - Standardize volume/returns (StandardScaler per ticker)
-  - Add 9 technical indicators
-  - Add 4 market-relative features
-- **Output:** `data_engineered.parquet` (262,257 records, 35 features)
+  - Add 9 technical indicators (SMA-5/20/50, momentum-5/20, volatility-20, volume ratio, price-to-SMA ratios)
+  - Add 4 market-relative features (excess return, market direction indicators)
+  - **Normalization intentionally deferred to Stage 5** (prevents look-ahead bias)
+- **Output:** `data_engineered.parquet` (262,257 records, 35 features, un-normalized)
 - **Runtime:** ~30 seconds
-- **Key Achievement:** All features on comparable scales for modeling
 
-### Stage 5: Train/Val/Test Split ⏳
-- **Status:** Planned (not required for Week 2 progress report)
-- **Design:** Temporal split (e.g., train: 2009-2019, val: 2020-2021, test: 2022-2023)
-- **Purpose:** Prevent look-ahead bias in model evaluation
+### Stage 5: Train/Val/Test Split & Normalization ✅
+- **Script:** `scripts/05_merge_and_split.py`
+- **Operations:**
+  - Temporal split: Train (Oct 2009–Dec 2021), Val (Jan–Dec 2022), Test (Jan–Dec 2023)
+  - Fit MinMaxScaler (prices) and StandardScaler (volume, returns) on train only
+  - Transform all splits — no leakage
+  - Apply forward-fill independently per split — no leakage
+  - Create RAG context file for explainability
+- **Output:** `train_final.parquet`, `val_final.parquet`, `test_final.parquet`, `rag_context.parquet`
+- **Runtime:** ~15 seconds
 
 ---
 
@@ -132,7 +142,10 @@ All intermediate outputs saved as Parquet files for efficient downstream process
 - `PIPELINE_VALIDATION.md` - Full technical validation report
 - `data/processed/*_summary.json` - Stage-by-stage statistics
 - `data/processed/data_aligned.parquet` - Aligned dataset (Stage 3)
-- `data/processed/data_engineered.parquet` - Feature-engineered dataset (Stage 4)
+- `data/processed/data_engineered.parquet` - Feature-engineered dataset, un-normalized (Stage 4)
+- `data/processed/train_final.parquet` - Training split, normalized (Stage 5)
+- `data/processed/val_final.parquet` - Validation split, normalized (Stage 5)
+- `data/processed/test_final.parquet` - Test split, normalized (Stage 5)
 
 ### For Inspection:
 ```python
@@ -156,9 +169,9 @@ print([col for col in df.columns if '_norm' in col])
 ✅ **Data Integration:** Successfully merged 5 diverse financial data sources  
 ✅ **Quality Filtering:** 93% retention for core price data  
 ✅ **Temporal Alignment:** Aligned news with prices, filtered to news-available period (2009-2023)  
-✅ **Feature Engineering:** 19 new features including normalized, technical, and market-relative  
-✅ **Normalization:** All features on comparable scales (min-max for prices, z-score for volume/returns)  
-✅ **No Data Leakage:** Temporal ordering preserved, only historical data used for predictions  
+✅ **Feature Engineering:** 19 new features including technical indicators and market-relative features  
+✅ **Normalization (leakage-free):** Scalers fitted on train split only, applied to val/test via transform()  
+✅ **No Data Leakage:** Temporal split before normalization and ffill; only historical data used for predictions  
 ✅ **Scalability:** Pipeline tested with 100 stocks, can scale to full dataset  
 
 ---
@@ -185,12 +198,13 @@ print([col for col in df.columns if '_norm' in col])
 - Targets use only historical data (no look-ahead bias)
 - Next-day predictions properly offset by 1 day
 
-**Test 4: Feature Engineering**
-- All 19 engineered features successfully created
-- Normalized features have correct scale:
-  - Prices: [0, 1] range (MinMaxScaler)
-  - Volume/Returns: z-scores (StandardScaler)
+**Test 4: Feature Engineering & Normalization**
+- All 19 engineered features successfully created (Stage 4)
+- Normalization applied post-split in Stage 5:
+  - Prices: [0, 1] range (MinMaxScaler, fitted on train only)
+  - Volume/Returns: z-scores (StandardScaler, fitted on train only)
 - Technical indicators calculated correctly per ticker
+- Forward-fill applied independently per split (no leakage)
 
 **Test 5: Pipeline Performance**
 - **Total runtime:** ~3 minutes for 100 stocks
@@ -200,11 +214,11 @@ print([col for col in df.columns if '_norm' in col])
 ### Validation Evidence
 - `data/processed/*_summary.json` - Quantitative metrics for each stage
 - `data/processed/data_engineered.parquet` - Final validated dataset
-- `scripts/01-04_*.py` - Reproducible pipeline code
+- `scripts/01-05_*.py` - Reproducible pipeline code
 
 ---
 
 ## For Progress Report
 
 ### Summary Statement:
-> "We implemented a 4-stage data pipeline that loads data from 5 financial sources, cleans and standardizes formats, aligns news with stock prices during the 2009-2023 period where both are available (critical for explainable recommendations), and engineers 19 new features with proper normalization. The final dataset contains 262,257 observations across 100 stocks with 35 features (6 normalized, 9 technical indicators, 4 market-relative), ready for multi-agent LLM model development."
+> "We implemented a 5-stage data pipeline that loads data from 5 financial sources, cleans and standardizes formats, aligns news with stock prices during the 2009-2023 period where both are available (critical for explainable recommendations), engineers 19 new features (9 technical indicators, 4 market-relative, 6 normalized), and splits into temporal train/val/test sets with normalization fitted on training data only to prevent look-ahead bias. The final dataset contains 262,257 observations across 100 stocks with 35 features, ready for multi-agent LLM model development."

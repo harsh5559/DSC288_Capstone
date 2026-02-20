@@ -99,7 +99,7 @@ next_day_return : -0.04%
 target          : hold
 ```
 
-**Note:** When news is available (1.46% of records), the `text` column contains concatenated article text and `source` contains the news source(s). Stage 4 of the pipeline adds 19 engineered features including technical indicators (SMA, momentum, volatility) and normalized price/volume features, bringing the total to **35 features**.
+**Note:** When news is available (1.46% of records), the `text` column contains concatenated article text and `source` contains the news source(s). Stage 4 of the pipeline adds 19 engineered features including technical indicators (SMA, momentum, volatility) and market-relative features, bringing the total to **35 features**. Normalization (MinMaxScaler for prices, StandardScaler for volume/returns) is applied in Stage 5 after the train/val/test split to prevent look-ahead bias.
 
 ---
 
@@ -167,7 +167,7 @@ target          : hold
 - Typical stock price around $27, but mean inflated by high-priced stocks
 - Volume varies by several orders of magnitude across stocks
 
-**Feature Engineering Implication:** The right-skewed price distributions and wide range ($0.01 to $7,250) justify per-ticker MinMaxScaler normalization to bring all stocks to a comparable 0-1 scale. The high variance in volume across stocks similarly motivates StandardScaler for volume features.
+**Feature Engineering Implication:** The right-skewed price distributions and wide range ($0.01 to $7,250) justify per-ticker MinMaxScaler normalization to bring all stocks to a comparable 0-1 scale. The high variance in volume across stocks similarly motivates StandardScaler for volume features. Both normalizations are applied in Stage 5 (post-split) to prevent look-ahead bias.
 
 ### Next-Day Returns Distribution
 
@@ -192,7 +192,7 @@ target          : hold
 - Distribution roughly symmetric around zero
 - Extreme outliers present (max return likely data error or stock split)
 
-**Feature Engineering Implication:** High volatility (34.7% std) motivates the creation of `volatility_20` (rolling 20-day standard deviation) as a feature to capture risk. The extreme outliers justify StandardScaler normalization for returns to reduce the impact of anomalies on model training.
+**Feature Engineering Implication:** High volatility (34.7% std) motivates the creation of `volatility_20` (rolling 20-day standard deviation) as a feature to capture risk. The extreme outliers justify StandardScaler normalization for returns to reduce the impact of anomalies on model training. This normalization is applied in Stage 5 (post-split) to prevent look-ahead bias.
 
 ### Target Variable Distribution
 
@@ -476,5 +476,5 @@ Based on EDA findings, the following features are justified:
    - `news_count`, sentiment scores from Financial Phrasebank
 
 5. **Normalization** (prices vary widely across stocks)
-   - MinMaxScaler for prices (per ticker)
-   - StandardScaler for volume and returns (per ticker)
+   - MinMaxScaler for prices (per ticker) — applied in Stage 5 post-split
+   - StandardScaler for volume and returns (per ticker) — applied in Stage 5 post-split

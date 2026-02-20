@@ -101,17 +101,21 @@ Five scripts run in order. Run them all at once with: python scripts/run_pipelin
 
   Stage 4 -- 04_feature_engineering.py
     Adds 19 derived features that models need:
-    - Normalizes prices per ticker (stocks trade at very different scales, so
-      a $5 stock and a $500 stock need to be put on the same footing)
-    - Normalizes volume and returns using z-scores
-    - Adds technical indicators: moving averages, momentum, volatility, volume ratio
-    - Adds market-relative features: how did this stock do versus the S&P 500?
-    Output: data_engineered.parquet -- same 262,257 records, 35 total features.
+    - Technical indicators: SMA-5/20/50, momentum-5/20, volatility-20, volume ratio,
+      price-to-SMA ratios
+    - Market-relative features: how did this stock do versus the S&P 500?
+    NOTE: Normalization is intentionally NOT done here. Scalers must be fitted only
+    on training data (after the split) to prevent look-ahead bias. See Stage 5.
+    Output: data_engineered.parquet -- same 262,257 records, 35 total features (un-normalized).
 
-  Stage 5 -- 05_merge_and_split.py  (script exists, not yet run)
-    Splits data temporally into train (2009-2021), validation (2022), test (2023).
-    The split is time-based on purpose -- you cannot train on 2022 data and
-    test on 2021, because that would let the model see the future.
+  Stage 5 -- 05_merge_and_split.py
+    Splits data temporally into train (Oct 2009-Dec 2021), validation (Jan-Dec 2022),
+    test (Jan-Dec 2023). The split is time-based on purpose -- you cannot train on
+    2022 data and test on 2021, because that would let the model see the future.
+    After splitting, normalizes each split using scalers fitted on training data only:
+    - MinMaxScaler for prices (per ticker)
+    - StandardScaler for volume and returns (per ticker)
+    Forward-fill is also applied independently within each split to prevent leakage.
     Also creates rag_context.parquet: a lookup table of (ticker, date, news text)
     that the RAG system will search at inference time to find real citations.
 
@@ -123,7 +127,7 @@ output to understand the data and justify the engineering choices.
 
 Key things found:
   - Price values span from under $1 to over $7,000 across different stocks,
-    which is why per-ticker normalization is necessary
+    which is why per-ticker normalization is applied in Stage 5
   - Days with news attached show 10% more extreme price moves than days without,
     confirming that news is worth modeling
   - The S&P 500 return is the single strongest predictor of next-day direction,
@@ -156,8 +160,7 @@ Everything built so far serves one of those six purposes.
 
 WHAT COMES NEXT
 ----------------
-  1. Run Stage 5 to produce the final train/val/test files
-  2. Fine-tune a sentiment classifier on Financial Phrasebank
+  1. Fine-tune a sentiment classifier on Financial Phrasebank
      (this becomes the core of the news/sentiment agent)
   3. Build the individual agents using the OpenAI API
   4. Wire up RAG so agents can retrieve and cite real news at inference time
@@ -169,12 +172,15 @@ FILE MAP
 scripts/01_load_data.py            Load raw sources into parquet
 scripts/02_clean_data.py           Clean and deduplicate
 scripts/03_align_data.py           Merge news + prices, create targets
-scripts/04_feature_engineering.py  Add indicators and normalization
+scripts/04_feature_engineering.py  Add technical indicators and market-relative features (un-normalized)
 scripts/05_merge_and_split.py      Temporal split + RAG context file
 scripts/run_pipeline.py            Runs all stages in order
 
 data/processed/data_aligned.parquet     Stage 3 output (16 columns)
-data/processed/data_engineered.parquet  Stage 4 output (35 columns, model-ready)
+data/processed/data_engineered.parquet  Stage 4 output (35 columns, un-normalized)
+data/processed/train_final.parquet      Stage 5 output: training split (normalized)
+data/processed/val_final.parquet        Stage 5 output: validation split (normalized)
+data/processed/test_final.parquet       Stage 5 output: test split (normalized)
 
 notebooks/01_EDA.ipynb             Interactive exploratory analysis
 notebooks/eda_outputs/             7 plots + 2 JSON summaries

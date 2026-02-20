@@ -57,23 +57,27 @@ python scripts/05_merge_and_split.py
 - **Output:** `data_aligned.parquet`
 
 ### Stage 4: Feature Engineering (`04_feature_engineering.py`)
-- Calculates technical indicators:
-  - Moving averages (SMA, EMA)
-  - MACD, RSI, Bollinger Bands
-  - Momentum and volatility
-- Trains sentiment model on Financial Phrasebank
-- Adds sentiment scores to news text
-- Creates lag features
-- **Output:** `data_with_features.parquet`, `sentiment_model.pkl`
+- Calculates 9 technical indicators per ticker:
+  - SMA-5, SMA-20, SMA-50 (simple moving averages)
+  - Momentum-5, Momentum-20 (price change over N days)
+  - Volatility-20 (rolling 20-day standard deviation)
+  - Volume ratio (current volume / 20-day average volume)
+  - Price-to-SMA-20 ratio, Price-to-SMA-50 ratio
+- Adds 4 market-relative features: excess return, market direction indicators
+- **NOTE: Normalization is intentionally deferred to Stage 5** to prevent look-ahead bias. Stage 4 outputs un-normalized data.
+- **Output:** `data_engineered.parquet` (35 features, un-normalized)
 
 ### Stage 5: Merging and Splitting (`05_merge_and_split.py`)
-- Selects model-ready features
 - Creates temporal train/val/test splits:
-  - Train: data up to 2021-12-31
-  - Validation: 2022-01-01 to 2022-12-31
-  - Test: 2023-01-01 onwards
+  - Train: Oct 2009 - Dec 2021
+  - Validation: Jan 2022 - Dec 2022
+  - Test: Jan 2023 - Dec 2023
+- **Normalizes after splitting (no leakage):**
+  - Fits `MinMaxScaler` (prices) and `StandardScaler` (volume, returns) on train only
+  - Transforms val and test using the train-fitted scalers
+- Applies forward-fill independently within each split (no leakage)
 - Creates RAG context file for explainability
-- **Output:** `train_final.parquet`, `val_final.parquet`, `test_final.parquet`
+- **Output:** `train_final.parquet`, `val_final.parquet`, `test_final.parquet`, `rag_context.parquet`
 
 ## Pipeline Output
 

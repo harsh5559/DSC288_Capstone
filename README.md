@@ -15,20 +15,22 @@ This project develops a multi-agent LLM-based system for financial decision supp
 ## Current Status
 
 **Week 2 Milestone (January 2026)** - Completed
-- Data pipeline implemented (4 stages)
+- Data pipeline implemented (5 stages, leakage-free)
 - Exploratory data analysis completed
-- Feature engineering with normalization
+- Feature engineering (technical indicators & market-relative features)
+- Normalization fitted on train split only (Stage 5, no leakage)
 - 262,257 observations across 100 stocks (2009-2023)
 - Ready for model training phase
 
 ## Data Pipeline
 
-We have implemented a 4-stage data pipeline that integrates structured market data with unstructured financial text:
+We have implemented a 5-stage data pipeline that integrates structured market data with unstructured financial text:
 
 **Stage 1: Data Loading** - Loads 5 data sources into standardized parquet format
 **Stage 2: Data Cleaning** - Handles NULLs, duplicates, outliers, date formats
 **Stage 3: Temporal Alignment** - Merges news with prices, adds market context, creates targets
-**Stage 4: Feature Engineering** - Normalizes features, creates 9 technical indicators
+**Stage 4: Feature Engineering** - Creates 9 technical indicators and market-relative features (un-normalized)
+**Stage 5: Train/Val/Test Split** - Temporal split; normalizes via scalers fitted on train only (no leakage)
 
 **Pipeline Output:**
 - 262,257 observations (stock-day records)
@@ -76,7 +78,7 @@ Based on EDA findings, we engineered 19 features:
 
 **Technical Indicators (9):** SMA-5/20/50, momentum-5/20, volatility-20, volume ratio, price-to-SMA ratios
 **Market-Relative (4):** S&P 500 return, excess return, market direction indicators
-**Normalization (6):** MinMaxScaler for prices, StandardScaler for volume/returns (per ticker)
+**Normalization (6):** MinMaxScaler for prices, StandardScaler for volume/returns (per ticker) — applied in Stage 5, fitted on train split only to prevent leakage
 
 Each feature is justified by specific EDA findings (see `Progress report files/EDA_REPORT.md`).
 
@@ -92,7 +94,10 @@ Each feature is justified by specific EDA findings (see `Progress report files/E
 │   │   └── finqa/
 │   └── processed/                        # Pipeline outputs (gitignored)
 │       ├── data_aligned.parquet          # Stage 3 output (262K records)
-│       ├── data_engineered.parquet       # Stage 4 output (35 features)
+│       ├── data_engineered.parquet       # Stage 4 output (35 features, un-normalized)
+│       ├── train_final.parquet           # Stage 5 output: training split (normalized)
+│       ├── val_final.parquet             # Stage 5 output: validation split (normalized)
+│       ├── test_final.parquet            # Stage 5 output: test split (normalized)
 │       └── *_summary.json                # Pipeline statistics
 ├── scripts/                              # Data pipeline scripts
 │   ├── 01_load_data.py                   # Stage 1: Load raw data
@@ -132,13 +137,14 @@ pip install -r "Progress report files/requirements.txt"
 python scripts/run_pipeline.py
 ```
 
-This executes all 4 stages sequentially:
+This executes all 5 stages sequentially:
 1. Loads data from `data/raw/`
 2. Cleans and processes data
 3. Aligns news with prices, creates targets
-4. Engineers features and normalizes
+4. Engineers features (technical indicators, un-normalized)
+5. Splits into train/val/test and normalizes (scalers fitted on train only)
 
-**Output:** `data/processed/data_engineered.parquet` (ready for model training)
+**Output:** `data/processed/train_final.parquet`, `val_final.parquet`, `test_final.parquet`
 
 ### Run Individual Stages
 ```bash
@@ -146,6 +152,7 @@ python scripts/01_load_data.py
 python scripts/02_clean_data.py
 python scripts/03_align_data.py
 python scripts/04_feature_engineering.py
+python scripts/05_merge_and_split.py
 ```
 
 ### View EDA
@@ -165,7 +172,7 @@ Open `notebooks/01_EDA.ipynb` in Jupyter or view `Progress report files/EDA_REPO
 
 - Python 3.8+
 - pandas, numpy
-- scikit-learn (normalization, feature engineering)
+- scikit-learn (normalization in Stage 5, feature engineering)
 - yfinance (Yahoo Finance data)
 - datasets (HuggingFace)
 - matplotlib, seaborn (visualization)
@@ -175,8 +182,7 @@ See `Progress report files/requirements.txt` for complete list with versions.
 
 ## Next Steps (Post Week 2 Milestone)
 
-1. **Stage 5: Train/Validation/Test Split** - Temporal split to avoid look-ahead bias
-2. **Sentiment Model Training** - Fine-tune on Financial Phrasebank data
+1. **Sentiment Model Training** - Fine-tune on Financial Phrasebank data
 3. **Multi-Agent Implementation** - Build agent framework using OpenAI API
 4. **RAG System** - Implement retrieval-augmented generation for grounding explanations
 5. **Evaluation** - Temporal consistency, baseline comparison, explanation faithfulness

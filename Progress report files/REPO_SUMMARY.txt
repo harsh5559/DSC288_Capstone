@@ -202,12 +202,9 @@ STAGE 3 - TEMPORAL ALIGNMENT (scripts/03_align_data.py)
 
 STAGE 4 - FEATURE ENGINEERING (scripts/04_feature_engineering.py)
   Input:  data_aligned.parquet
-  Output: data/processed/data_engineered.parquet
+  Output: data/processed/data_engineered.parquet (un-normalized)
   Total features: 35 (16 original + 19 new)
   New features breakdown:
-    - Normalized prices/volume/returns (6 features):
-        open_norm, high_norm, low_norm, close_norm  → MinMaxScaler per ticker
-        volume_norm, return_norm                    → StandardScaler per ticker
     - Technical indicators (9 features):
         sma_5, sma_20, sma_50
         price_to_sma5, price_to_sma20
@@ -217,6 +214,22 @@ STAGE 4 - FEATURE ENGINEERING (scripts/04_feature_engineering.py)
         excess_return, market_up, market_down
     - Price ratios (2 features):
         volume_ratio (vs 20-day avg)
+
+  NOTE: Normalization is intentionally NOT applied here. Scalers must be fitted
+  only on training data after the train/val/test split to prevent look-ahead bias.
+  Normalization is handled in Stage 5.
+
+STAGE 5 - TRAIN/VAL/TEST SPLIT & NORMALIZATION (scripts/05_merge_and_split.py)
+  Input:  data_engineered.parquet
+  Output: data/processed/train_final.parquet   (Train: Oct 2009 – Dec 2021)
+          data/processed/val_final.parquet     (Val:   Jan 2022 – Dec 2022)
+          data/processed/test_final.parquet    (Test:  Jan 2023 – Dec 2023)
+          data/processed/rag_context.parquet   (News lookup for RAG)
+  Normalization (fitted on train only, no leakage):
+    - Normalized prices/volume/returns (6 features):
+        open_norm, high_norm, low_norm, close_norm  → MinMaxScaler per ticker
+        volume_norm, return_norm                    → StandardScaler per ticker
+  Forward-fill applied independently per split (no leakage).
 
   Why normalize PER TICKER: Stocks range from $0.01 to $7,250 — cross-stock
   comparison without normalization would make high-priced stocks dominate.
@@ -321,8 +334,8 @@ F:\288r\
     01_load_data.py          - Stage 1: Load raw data → Parquet [IMPLEMENTED]
     02_clean_data.py         - Stage 2: Clean data [IMPLEMENTED]
     03_align_data.py         - Stage 3: Align data, create targets [IMPLEMENTED]
-    04_feature_engineering.py- Stage 4: Engineer 35 features [IMPLEMENTED]
-    05_merge_and_split.py    - Train/val/test splitting [IMPLEMENTED]
+    04_feature_engineering.py- Stage 4: Engineer 35 features, un-normalized [IMPLEMENTED]
+    05_merge_and_split.py    - Stage 5: Temporal split + normalize post-split [IMPLEMENTED]
     run_pipeline.py          - Runs all stages end-to-end
 
   data/
@@ -341,7 +354,10 @@ F:\288r\
       sp500_raw.parquet                  - 6,289 trading days
       sp500_clean.parquet                - 6,289 trading days
       data_aligned.parquet               - 262,257 stock-day records (Stage 3 output)
-      data_engineered.parquet            - 262,257 x 35 features (Stage 4 output)
+      data_engineered.parquet            - 262,257 x 35 features, un-normalized (Stage 4 output)
+      train_final.parquet                - Training split, normalized (Stage 5 output)
+      val_final.parquet                  - Validation split, normalized (Stage 5 output)
+      test_final.parquet                 - Test split, normalized (Stage 5 output)
       01_loading_summary.json            - Stage 1 validation metrics
       02_cleaning_summary.json           - Stage 2 validation metrics
       03_alignment_summary.json          - Stage 3 validation metrics

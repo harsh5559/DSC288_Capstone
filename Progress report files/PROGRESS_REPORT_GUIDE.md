@@ -35,12 +35,12 @@
 | **(a) Data Merging** | ✅ | 5 sources merged on (ticker, date) - `PIPELINE_SUMMARY.md` |
 | **(b) Data Cleansing** | ✅ | NULLs, duplicates, outliers handled - `scripts/02_clean_data.py` |
 | **(c) Data Augmentation** | ✅ | 19 new features created - `scripts/04_feature_engineering.py` |
-| **(d) Data Normalization** | ✅ | MinMaxScaler + StandardScaler per ticker - Stage 4 |
+| **(d) Data Normalization** | ✅ | MinMaxScaler + StandardScaler per ticker - Stage 5 (post-split, no leakage) |
 
 **Key Evidence Files:**
 - `PIPELINE_SUMMARY.md` - Complete pipeline documentation
-- `scripts/01-04_*.py` - All pipeline code
-- `data/processed/04_feature_engineering_summary.json` - Normalization proof
+- `scripts/01-05_*.py` - All pipeline code
+- `data/processed/04_feature_engineering_summary.json` - Feature engineering proof
 
 ### 2. EDA (5/5)
 
@@ -67,7 +67,7 @@
 
 | Requirement | Status | Evidence |
 |------------|--------|----------|
-| Comprehensive work | ✅ | 4 pipeline stages, full EDA, all documented |
+| Comprehensive work | ✅ | 5 pipeline stages, full EDA, all documented |
 | On track for completion | ✅ | Clear path to model training |
 
 **TOTAL: 15/15** ✅
@@ -81,7 +81,7 @@
 2. **`EDA_REPORT.md`** - Complete EDA with tables and plots
 
 ### Supporting Evidence
-- `scripts/04_feature_engineering.py` - Normalization code
+- `scripts/05_merge_and_split.py` - Normalization code (post-split)
 - `data/processed/*_summary.json` - Stage-by-stage statistics
 - `notebooks/eda_outputs/*.png` - All 7 visualizations
 - `notebooks/01_EDA.ipynb` - Reproducible analysis code
@@ -92,9 +92,9 @@
 
 ### Data Pipeline Section
 
-> We implemented a 4-stage data pipeline that integrates 5 financial data sources. **Stage 1** loads FNSPID stock prices and news, Financial Phrasebank sentiment data, Yahoo S&P 500 market context, and FinQA benchmarks. **Stage 2** cleans data by handling NULL values (forward-fill for prices), removing 951 outliers with >50% price changes, removing 278 duplicate news articles, and standardizing date formats - achieving 93% retention for price data. **Stage 3** filters to 2009-2023 (when news is available), merges news with prices by (ticker, date), adds S&P 500 context (86.4% coverage), and creates buy/hold/sell targets using ±2% return thresholds. **Stage 4** normalizes features using MinMaxScaler for prices (0-1 range per ticker) and StandardScaler for volume/returns (z-scores per ticker), and engineers 19 new features including 9 technical indicators (SMA, momentum, volatility) and 4 market-relative features (excess return, market direction). The final dataset contains 262,257 observations with 35 features, ready for model training.
+> We implemented a 5-stage data pipeline that integrates 5 financial data sources. **Stage 1** loads FNSPID stock prices and news, Financial Phrasebank sentiment data, Yahoo S&P 500 market context, and FinQA benchmarks. **Stage 2** cleans data by handling NULL values (forward-fill for prices), removing 951 outliers with >50% price changes, removing 278 duplicate news articles, and standardizing date formats - achieving 93% retention for price data. **Stage 3** filters to 2009-2023 (when news is available), merges news with prices by (ticker, date), adds S&P 500 context (86.4% coverage), and creates buy/hold/sell targets using ±2% return thresholds. **Stage 4** engineers 19 new features including 9 technical indicators (SMA, momentum, volatility) and 4 market-relative features (excess return, market direction). **Stage 5** splits data temporally (train: Oct 2009–Dec 2021, val: Jan–Dec 2022, test: Jan–Dec 2023) and normalizes using MinMaxScaler for prices and StandardScaler for volume/returns — scalers fitted on training data only to prevent look-ahead bias. The final dataset contains 262,257 observations with 35 features, ready for model training.
 
-**Evidence:** `PIPELINE_SUMMARY.md`, `scripts/01-04_*.py`, `data/processed/*_summary.json`
+**Evidence:** `PIPELINE_SUMMARY.md`, `scripts/01-05_*.py`, `data/processed/*_summary.json`
 
 ### EDA Section
 
@@ -110,7 +110,7 @@
 
 ---
 
-## Pipeline Details (4 Stages)
+## Pipeline Details (5 Stages)
 
 ### Stage 1: Data Loading
 - **Input:** 5 raw data sources
@@ -130,11 +130,17 @@
 - **Runtime:** ~15 seconds  
 - **Key Numbers:** 262K observations, 1.46% news coverage, 86.4% S&P 500 coverage
 
-### Stage 4: Feature Engineering & Normalization
-- **Operations:** Normalize prices/volume/returns, create 9 technical indicators, add 4 market features
-- **Output:** `data_engineered.parquet`
+### Stage 4: Feature Engineering
+- **Operations:** Create 9 technical indicators, add 4 market-relative features (no normalization here)
+- **Output:** `data_engineered.parquet` (un-normalized)
 - **Runtime:** ~30 seconds
-- **Key Numbers:** 35 total features (6 normalized, 9 technical, 4 market-relative)
+- **Key Numbers:** 35 total features (9 technical, 4 market-relative, plus 16 original)
+
+### Stage 5: Train/Val/Test Split & Normalization
+- **Operations:** Temporal split, fit scalers on train only, transform all splits, ffill per split
+- **Output:** `train_final.parquet`, `val_final.parquet`, `test_final.parquet`
+- **Runtime:** ~15 seconds
+- **Key Numbers:** Train (Oct 2009–Dec 2021), Val (Jan–Dec 2022), Test (Jan–Dec 2023); 6 normalized features
 
 **Total Pipeline Runtime:** ~3 minutes for 100 stocks
 
