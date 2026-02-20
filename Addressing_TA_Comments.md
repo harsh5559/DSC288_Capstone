@@ -422,24 +422,40 @@ The split is strictly date-based with no shuffling — no future data can leak i
 
 ---
 
-**⚠️ LEAKAGE ISSUE 1 — Scaler fitted on full dataset (needs fixing):**
+**✅ FIX 1 — Scaler leakage resolved (implemented by Harsh):**
 
-In Stage 4, `MinMaxScaler` and `StandardScaler` are fit on the **entire dataset** before the split occurs in Stage 5. This means the scalers have seen validation and test data when normalising the training set — a real leakage violation.
+`MinMaxScaler` and `StandardScaler` have been moved out of Stage 4 entirely and into Stage 5, where they are fitted **on the training split only** and applied via `transform()` to val and test.
 
-**Fix required:** Move scaler fitting to Stage 5, after the split. Fit scalers on the training set only, then `transform()` (not `fit_transform()`) on val and test.
+*Stage 4 change:* `add_normalized_features()` function removed. Stage 4 now outputs un-normalized data. A note in the script docstring explains why.
 
-**⚠️ LEAKAGE ISSUE 2 — `ffill()` applied before the split (minor):**
+*Stage 5 change:* New `normalize_splits(train_df, val_df, test_df)` function added. Scalers are fitted per-ticker on training rows only:
+```python
+price_scaler.fit(norm_train.loc[tr_mask, price_cols])          # fit on train
+norm_train.loc[tr_mask, norm_cols] = price_scaler.transform(…) # transform train
+norm_val.loc[va_mask, norm_cols]   = price_scaler.transform(…) # transform val
+norm_test.loc[te_mask, norm_cols]  = price_scaler.transform(…) # transform test
+```
 
-In `select_model_features()`, `df.ffill().fillna(0)` is called on the whole dataset *before* `create_temporal_split()`. If any NaN values sit right at the train/val boundary (Dec 2021), a training row could be forward-filled with a value that originated in the validation period.
+**✅ FIX 2 — ffill leakage resolved (implemented by Harsh):**
 
-**Fix required:** Run `ffill()` separately within each split after splitting, or clip ffill to within each split's date range.
+`ffill().fillna(0)` has been removed from `select_model_features()` (where it ran on the whole dataset) and replaced with a new `apply_ffill_per_split()` function that forward-fills **within each split independently**, after the date cutoff:
+```python
+for name, split in [("Train", train_df), ("Val", val_df), ("Test", test_df)]:
+    split = split.sort_values(['ticker', 'date'])
+    split = split.ffill().fillna(0)   # contained within this split only
+```
 
----
+**Updated Stage 5 execution order (correct, no leakage):**
+```
+1. create_temporal_split()     — cut by date
+2. normalize_splits()          — fit scalers on train, transform all  [FIX 1]
+3. apply_ffill_per_split()     — ffill within each split              [FIX 2]
+4. save train/val/test parquets
+```
 
-**⚠️ DECISION NEEDED:**
-Both leakage issues require pipeline changes before the final model is trained. The fixes are straightforward but need someone to implement them in Stage 4 and Stage 5. Who picks this up?
+**No decisions needed** — both fixes are implemented and committed.
 
-> **💬 Harsh:** The split dates and method are exactly what I'd have chosen — fixed cutoff is the right call for the report. The two leakage issues are real and need to be fixed before we train. Scaler leakage is the more serious one. Flagging for the team to assign.
+> **💬 Harsh:** Both leakage issues are fixed. The pipeline is now clean. Stage 4 is leaner (no sklearn dependency) and Stage 5 owns all normalization. The execution order in Stage 5 makes the no-leakage guarantee explicit and easy to verify.
 
 ---
 

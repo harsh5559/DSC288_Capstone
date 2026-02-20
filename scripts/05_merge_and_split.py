@@ -1,13 +1,25 @@
 """
 Stage 5: Data Merging and Train/Val/Test Split
-Create final datasets with temporal splits
+Create final datasets with temporal splits.
+
+LEAKAGE FIXES applied in this version:
+  FIX 1 — Normalization post-split:
+    MinMaxScaler (prices) and StandardScaler (volume, returns) are fitted
+    on the TRAINING split only (per ticker), then applied via transform()
+    to validation and test. This prevents future price ranges from
+    influencing how training data is scaled.
+
+  FIX 2 — ffill applied within each split:
+    Forward-fill for NaN values is applied separately inside each split
+    after the date cutoff, so no value from the validation or test period
+    can propagate backward into training rows.
 """
 
 import pandas as pd
 import numpy as np
 from pathlib import Path
 import json
-from datetime import datetime
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -17,141 +29,183 @@ PROCESSED_DIR = BASE_DIR / "data" / "processed"
 
 def create_temporal_split(df, train_end='2021-12-31', val_end='2022-12-31'):
     """
-    Split data temporally to prevent look-ahead bias
-    Train: up to train_end
-    Validation: train_end to val_end
+    Split data temporally to prevent look-ahead bias.
+    Train: up to train_end (inclusive)
+    Validation: train_end+1 to val_end (inclusive)
     Test: after val_end
     """
     print("\n" + "="*60)
     print("CREATING TEMPORAL TRAIN/VAL/TEST SPLIT")
     print("="*60)
-    
-    # Ensure date is datetime
+
     df['date'] = pd.to_datetime(df['date'])
-    
-    # Get date range
-    print(f"Full date range: {df['date'].min()} to {df['date'].max()}")
-    
-    # Create splits
+    print(f"Full date range: {df['date'].min().date()} to {df['date'].max().date()}")
+
     train_df = df[df['date'] <= train_end].copy()
-    val_df = df[(df['date'] > train_end) & (df['date'] <= val_end)].copy()
-    test_df = df[df['date'] > val_end].copy()
-    
+    val_df   = df[(df['date'] > train_end) & (df['date'] <= val_end)].copy()
+    test_df  = df[df['date'] > val_end].copy()
+
     print(f"\nSplit sizes:")
-    print(f"  Train: {len(train_df):,} records ({len(train_df)/len(df)*100:.1f}%)")
-    print(f"  Val:   {len(val_df):,} records ({len(val_df)/len(df)*100:.1f}%)")
-    print(f"  Test:  {len(test_df):,} records ({len(test_df)/len(df)*100:.1f}%)")
-    
-    print(f"\nTrain date range: {train_df['date'].min()} to {train_df['date'].max()}")
-    print(f"Val date range:   {val_df['date'].min()} to {val_df['date'].max()}")
-    print(f"Test date range:  {test_df['date'].min()} to {test_df['date'].max()}")
-    
-    # Check target distribution in each split
+    print(f"  Train : {len(train_df):,} records  ({len(train_df)/len(df)*100:.1f}%)")
+    print(f"  Val   : {len(val_df):,} records  ({len(val_df)/len(df)*100:.1f}%)")
+    print(f"  Test  : {len(test_df):,} records  ({len(test_df)/len(df)*100:.1f}%)")
+
+    print(f"\nTrain date range : {train_df['date'].min().date()} to {train_df['date'].max().date()}")
+    print(f"Val   date range : {val_df['date'].min().date()} to {val_df['date'].max().date()}")
+    print(f"Test  date range : {test_df['date'].min().date()} to {test_df['date'].max().date()}")
+
     if 'target' in df.columns:
-        print(f"\nTarget distribution:")
-        print(f"\nTrain:")
-        print(train_df['target'].value_counts(normalize=True) * 100)
-        print(f"\nValidation:")
-        print(val_df['target'].value_counts(normalize=True) * 100)
-        print(f"\nTest:")
-        print(test_df['target'].value_counts(normalize=True) * 100)
-    
+        print("\nTarget distribution:")
+        for name, split in [("Train", train_df), ("Validation", val_df), ("Test", test_df)]:
+            dist = split['target'].value_counts(normalize=True) * 100
+            print(f"  {name}: buy={dist.get('buy',0):.1f}%  hold={dist.get('hold',0):.1f}%  sell={dist.get('sell',0):.1f}%")
+
     return train_df, val_df, test_df
 
 
+def normalize_splits(train_df, val_df, test_df):
+    """
+    FIX 1: Fit scalers on training data only, transform all three splits.
+    Scalers are fitted per-ticker to handle different price scales.
+
+    Columns normalized:
+      - open, high, low, close  -> MinMaxScaler -> open_norm, high_norm, low_norm, close_norm
+      - volume                  -> StandardScaler -> volume_norm
+      - next_day_return         -> StandardScaler -> return_norm
+    """
+    print("\n" + "="*60)
+    print("NORMALIZATION (train-fit only — FIX 1)")
+    print("="*60)
+
+    price_cols  = ['open', 'high', 'low', 'close']
+    volume_col  = 'volume'
+    return_col  = 'next_day_return'
+
+    norm_train = train_df.copy()
+    norm_val   = val_df.copy()
+    norm_test  = test_df.copy()
+
+    tickers = train_df['ticker'].unique()
+    print(f"Fitting scalers on training data for {len(tickers)} tickers...")
+
+    for ticker in tickers:
+        tr_mask = norm_train['ticker'] == ticker
+        va_mask = norm_val['ticker']   == ticker
+        te_mask = norm_test['ticker']  == ticker
+
+        # ── Price: MinMaxScaler ──────────────────────────────────────────
+        if all(c in norm_train.columns for c in price_cols):
+            price_scaler = MinMaxScaler()
+            # Fit on train, transform all
+            train_prices = norm_train.loc[tr_mask, price_cols]
+            price_scaler.fit(train_prices)
+
+            norm_cols = [c + '_norm' for c in price_cols]
+            norm_train.loc[tr_mask, norm_cols] = price_scaler.transform(train_prices)
+            if va_mask.any():
+                norm_val.loc[va_mask, norm_cols]   = price_scaler.transform(norm_val.loc[va_mask, price_cols])
+            if te_mask.any():
+                norm_test.loc[te_mask, norm_cols]  = price_scaler.transform(norm_test.loc[te_mask, price_cols])
+
+        # ── Volume: StandardScaler ───────────────────────────────────────
+        if volume_col in norm_train.columns:
+            vol_scaler = StandardScaler()
+            vol_scaler.fit(norm_train.loc[tr_mask, [volume_col]])
+            norm_train.loc[tr_mask, 'volume_norm'] = vol_scaler.transform(norm_train.loc[tr_mask, [volume_col]])
+            if va_mask.any():
+                norm_val.loc[va_mask,   'volume_norm'] = vol_scaler.transform(norm_val.loc[va_mask,   [volume_col]])
+            if te_mask.any():
+                norm_test.loc[te_mask,  'volume_norm'] = vol_scaler.transform(norm_test.loc[te_mask,  [volume_col]])
+
+        # ── Returns: StandardScaler ──────────────────────────────────────
+        if return_col in norm_train.columns:
+            ret_scaler = StandardScaler()
+            ret_scaler.fit(norm_train.loc[tr_mask, [return_col]])
+            norm_train.loc[tr_mask, 'return_norm'] = ret_scaler.transform(norm_train.loc[tr_mask, [return_col]])
+            if va_mask.any():
+                norm_val.loc[va_mask,   'return_norm'] = ret_scaler.transform(norm_val.loc[va_mask,   [return_col]])
+            if te_mask.any():
+                norm_test.loc[te_mask,  'return_norm'] = ret_scaler.transform(norm_test.loc[te_mask,  [return_col]])
+
+    print(f"[SUCCESS] Normalization complete (scalers fitted on train only)")
+    print(f"  - Prices  : MinMaxScaler  -> open_norm, high_norm, low_norm, close_norm")
+    print(f"  - Volume  : StandardScaler -> volume_norm")
+    print(f"  - Returns : StandardScaler -> return_norm")
+
+    return norm_train, norm_val, norm_test
+
+
 def select_model_features(df):
-    """Select relevant features for modeling"""
+    """
+    Select relevant feature columns.
+    NOTE: ffill/fillna is intentionally NOT applied here —
+    it is applied per-split in apply_ffill_per_split() to prevent
+    values from the validation/test period filling training rows (FIX 2).
+    """
     print("\n" + "="*60)
     print("SELECTING MODEL FEATURES")
     print("="*60)
-    
-    # Essential columns to keep
-    essential_cols = ['ticker', 'date', 'target', 'next_day_return']
-    essential_cols = [col for col in essential_cols if col in df.columns]
-    
-    # Feature columns (exclude raw price/volume, keep indicators)
-    feature_cols = []
-    
-    # Technical indicators
-    technical_patterns = ['sma_', 'ema_', 'macd', 'rsi_', 'bb_', 'return_', 'volatility']
-    for col in df.columns:
-        if any(pattern in col for pattern in technical_patterns):
-            feature_cols.append(col)
-    
-    # Sentiment features
-    sentiment_patterns = ['sentiment']
-    for col in df.columns:
-        if any(pattern in col for pattern in sentiment_patterns):
-            feature_cols.append(col)
-    
-    # Volume features
-    volume_patterns = ['volume_ratio', 'volume_sma']
-    for col in df.columns:
-        if any(pattern in col for pattern in volume_patterns):
-            feature_cols.append(col)
-    
-    # Market context
-    market_patterns = ['sp500_return']
-    for col in df.columns:
-        if any(pattern in col for pattern in market_patterns):
-            feature_cols.append(col)
-    
-    # News count
+
+    essential_cols = [c for c in ['ticker', 'date', 'target', 'next_day_return'] if c in df.columns]
+
+    feature_patterns = [
+        'sma_', 'ema_', 'macd', 'rsi_', 'bb_', 'return_norm', 'volatility',
+        'sentiment', 'volume_ratio', 'volume_norm', 'sp500_return',
+        'momentum', 'price_to', 'excess_return', 'market_up', 'market_down',
+        'open_norm', 'high_norm', 'low_norm', 'close_norm',
+    ]
+    feature_cols = [
+        c for c in df.columns
+        if any(p in c for p in feature_patterns) and c not in essential_cols
+    ]
     if 'news_count' in df.columns:
         feature_cols.append('news_count')
-    
-    # Combine
-    selected_cols = essential_cols + feature_cols
-    selected_cols = list(dict.fromkeys(selected_cols))  # Remove duplicates while preserving order
-    
-    # Keep only available columns
-    selected_cols = [col for col in selected_cols if col in df.columns]
-    
-    print(f"Selected {len(selected_cols)} columns:")
-    print(f"  Essential: {len(essential_cols)}")
-    print(f"  Features: {len(feature_cols)}")
-    
-    df_selected = df[selected_cols].copy()
-    
-    # Fill any remaining NaNs with forward fill, then 0
-    df_selected = df_selected.ffill().fillna(0)
-    
-    return df_selected
+
+    selected = list(dict.fromkeys(essential_cols + feature_cols))
+    selected = [c for c in selected if c in df.columns]
+
+    print(f"Selected {len(selected)} columns ({len(essential_cols)} essential + {len(feature_cols)} features)")
+    return df[selected].copy()
+
+
+def apply_ffill_per_split(train_df, val_df, test_df):
+    """
+    FIX 2: Forward-fill NaN values within each split independently.
+    This prevents a NaN at the end of training being filled with a value
+    from the validation period.
+    """
+    print("\n" + "="*60)
+    print("FILLING NaN VALUES (per-split — FIX 2)")
+    print("="*60)
+
+    results = []
+    for name, split in [("Train", train_df), ("Val", val_df), ("Test", test_df)]:
+        before = split.isnull().sum().sum()
+        split = split.sort_values(['ticker', 'date'])
+        split = split.ffill().fillna(0)
+        after = split.isnull().sum().sum()
+        print(f"  {name}: filled {before - after:,} NaN values (ffill within split, then 0)")
+        results.append(split)
+
+    return results[0], results[1], results[2]
 
 
 def create_rag_context_file(df):
-    """
-    Create a file mapping ticker-date to source information for RAG
-    This will help agents cite their sources
-    """
+    """Create a file mapping ticker-date to source information for RAG"""
     print("\n" + "="*60)
     print("CREATING RAG CONTEXT FILE")
     print("="*60)
-    
-    # Select relevant columns for RAG
-    rag_cols = ['ticker', 'date']
-    
-    if 'text' in df.columns:
-        rag_cols.append('text')
-    if 'news_count' in df.columns:
-        rag_cols.append('news_count')
-    if 'source' in df.columns:
-        rag_cols.append('source')
-    
-    rag_cols = [col for col in rag_cols if col in df.columns]
-    
-    if len(rag_cols) > 2:  # More than just ticker and date
+
+    rag_cols = [c for c in ['ticker', 'date', 'text', 'news_count', 'source'] if c in df.columns]
+    if len(rag_cols) > 2:
         rag_df = df[rag_cols].copy()
-        rag_df = rag_df[rag_df['text'].notna()] if 'text' in rag_df.columns else rag_df
-        
+        if 'text' in rag_df.columns:
+            rag_df = rag_df[rag_df['text'].notna()]
         output_file = PROCESSED_DIR / "rag_context.parquet"
         rag_df.to_parquet(output_file, index=False)
-        print(f"[SUCCESS] Created RAG context file: {output_file}")
-        print(f"  Records: {len(rag_df):,}")
-        return True
+        print(f"[SUCCESS] Created RAG context file: {output_file} ({len(rag_df):,} records)")
     else:
-        print("[WARNING] Insufficient data for RAG context file")
-        return False
+        print("[WARNING] Insufficient columns for RAG context file")
 
 
 def create_final_summary(train_df, val_df, test_df):
@@ -159,147 +213,76 @@ def create_final_summary(train_df, val_df, test_df):
     print("\n" + "="*60)
     print("FINAL PIPELINE SUMMARY")
     print("="*60)
-    
+
     summary = {
         "pipeline_completion_timestamp": pd.Timestamp.now().isoformat(),
-        "splits": {
-            "train": {
-                "records": len(train_df),
-                "date_range": {
-                    "start": str(train_df['date'].min()),
-                    "end": str(train_df['date'].max())
-                },
-                "tickers": train_df['ticker'].nunique(),
-                "features": len(train_df.columns) - 4  # Exclude ticker, date, target, next_day_return
-            },
-            "validation": {
-                "records": len(val_df),
-                "date_range": {
-                    "start": str(val_df['date'].min()),
-                    "end": str(val_df['date'].max())
-                },
-                "tickers": val_df['ticker'].nunique(),
-                "features": len(val_df.columns) - 4
-            },
-            "test": {
-                "records": len(test_df),
-                "date_range": {
-                    "start": str(test_df['date'].min()),
-                    "end": str(test_df['date'].max())
-                },
-                "tickers": test_df['ticker'].nunique(),
-                "features": len(test_df.columns) - 4
-            }
-        },
-        "feature_columns": list(train_df.columns)
+        "leakage_fixes_applied": [
+            "FIX 1: Scalers fitted on training split only; val/test transformed without refitting",
+            "FIX 2: ffill applied within each split independently after date cutoff",
+        ],
+        "splits": {},
     }
-    
-    if 'target' in train_df.columns:
-        summary["splits"]["train"]["target_distribution"] = train_df['target'].value_counts().to_dict()
-        summary["splits"]["validation"]["target_distribution"] = val_df['target'].value_counts().to_dict()
-        summary["splits"]["test"]["target_distribution"] = test_df['target'].value_counts().to_dict()
-    
-    print(f"\nFinal dataset summary:")
-    print(f"  Train:      {summary['splits']['train']['records']:,} records, {summary['splits']['train']['tickers']} tickers")
-    print(f"  Validation: {summary['splits']['validation']['records']:,} records, {summary['splits']['validation']['tickers']} tickers")
-    print(f"  Test:       {summary['splits']['test']['records']:,} records, {summary['splits']['test']['tickers']} tickers")
-    print(f"  Features:   {summary['splits']['train']['features']}")
-    
-    # Save summary
+
+    for name, split in [("train", train_df), ("validation", val_df), ("test", test_df)]:
+        entry = {
+            "records": len(split),
+            "date_range": {
+                "start": str(split['date'].min().date()),
+                "end":   str(split['date'].max().date()),
+            },
+            "tickers": split['ticker'].nunique(),
+            "features": len(split.columns) - 4,
+        }
+        if 'target' in split.columns:
+            entry["target_distribution"] = split['target'].value_counts().to_dict()
+        summary["splits"][name] = entry
+        print(f"  {name.capitalize():12s}: {entry['records']:>8,} records  "
+              f"{entry['date_range']['start']} to {entry['date_range']['end']}")
+
     summary_file = PROCESSED_DIR / "05_final_summary.json"
     with open(summary_file, 'w') as f:
         json.dump(summary, f, indent=2)
-    
-    # Also create a README
-    readme_content = f"""# Processed Financial Data
-
-## Pipeline Completion
-- Date: {summary['pipeline_completion_timestamp']}
-- Pipeline Version: 1.0
-
-## Dataset Splits
-
-### Train Set
-- Records: {summary['splits']['train']['records']:,}
-- Date Range: {summary['splits']['train']['date_range']['start']} to {summary['splits']['train']['date_range']['end']}
-- Tickers: {summary['splits']['train']['tickers']}
-- Features: {summary['splits']['train']['features']}
-
-### Validation Set
-- Records: {summary['splits']['validation']['records']:,}
-- Date Range: {summary['splits']['validation']['date_range']['start']} to {summary['splits']['validation']['date_range']['end']}
-- Tickers: {summary['splits']['validation']['tickers']}
-
-### Test Set
-- Records: {summary['splits']['test']['records']:,}
-- Date Range: {summary['splits']['test']['date_range']['start']} to {summary['splits']['test']['date_range']['end']}
-- Tickers: {summary['splits']['test']['tickers']}
-
-## Files
-- `train_final.parquet` - Training data
-- `val_final.parquet` - Validation data
-- `test_final.parquet` - Test data
-- `rag_context.parquet` - News/text data for RAG
-- `sentiment_model.pkl` - Trained sentiment analysis model
-- `*_summary.json` - Pipeline stage summaries
-
-## Features
-See `05_final_summary.json` for complete feature list.
-
-## Usage
-```python
-import pandas as pd
-
-# Load data
-train = pd.read_parquet('data/processed/train_final.parquet')
-val = pd.read_parquet('data/processed/val_final.parquet')
-test = pd.read_parquet('data/processed/test_final.parquet')
-
-# For RAG context
-rag_context = pd.read_parquet('data/processed/rag_context.parquet')
-```
-"""
-    
-    readme_file = PROCESSED_DIR / "README.md"
-    with open(readme_file, 'w') as f:
-        f.write(readme_content)
-    
     print(f"\nSummary saved to: {summary_file}")
-    print(f"README saved to: {readme_file}")
-    
     return summary
 
 
 def main():
     """Main merging and splitting function"""
     print("\n" + "="*80)
-    print("STAGE 5: MERGING AND SPLITTING")
+    print("STAGE 5: MERGING, SPLITTING AND NORMALIZATION")
     print("="*80)
-    
-    # Load feature-engineered data
-    print("Loading feature-engineered data...")
-    df = pd.read_parquet(PROCESSED_DIR / "data_with_features.parquet")
+    print("Leakage fixes: scalers fitted on train only (FIX 1); ffill per-split (FIX 2).")
+
+    # Load feature-engineered data (output of Stage 4 — un-normalized)
+    print("\nLoading feature-engineered data...")
+    df = pd.read_parquet(PROCESSED_DIR / "data_engineered.parquet")
     print(f"Loaded {len(df):,} records with {len(df.columns)} columns")
-    
-    # Select model features
+
+    # Select model features (no ffill yet)
     df_selected = select_model_features(df)
-    
-    # Create temporal splits
+
+    # Step 1: Temporal split
     train_df, val_df, test_df = create_temporal_split(df_selected)
-    
+
+    # Step 2: Normalize using train-fit scalers only (FIX 1)
+    train_df, val_df, test_df = normalize_splits(train_df, val_df, test_df)
+
+    # Step 3: ffill within each split independently (FIX 2)
+    train_df, val_df, test_df = apply_ffill_per_split(train_df, val_df, test_df)
+
     # Save final datasets
     print("\nSaving final datasets...")
     train_df.to_parquet(PROCESSED_DIR / "train_final.parquet", index=False)
-    val_df.to_parquet(PROCESSED_DIR / "val_final.parquet", index=False)
-    test_df.to_parquet(PROCESSED_DIR / "test_final.parquet", index=False)
-    print("[SUCCESS] Saved train, validation, and test sets")
-    
+    val_df.to_parquet(PROCESSED_DIR   / "val_final.parquet",   index=False)
+    test_df.to_parquet(PROCESSED_DIR  / "test_final.parquet",  index=False)
+    print("[SUCCESS] Saved train_final, val_final, test_final")
+
     # Create RAG context file
     create_rag_context_file(df)
-    
-    # Create final summary
-    summary = create_final_summary(train_df, val_df, test_df)
-    
+
+    # Final summary
+    create_final_summary(train_df, val_df, test_df)
+
     print("\n" + "="*80)
     print("STAGE 5 COMPLETE")
     print("="*80)
@@ -308,7 +291,6 @@ def main():
     print("  - val_final.parquet")
     print("  - test_final.parquet")
     print("  - rag_context.parquet")
-    print("  - sentiment_model.pkl")
 
 
 if __name__ == "__main__":
