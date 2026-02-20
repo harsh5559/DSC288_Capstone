@@ -21,7 +21,7 @@ team needs to make before writing the fixes.
 
 **Can we address it?** ✅ Yes — rules confirmed from code.
 
-**✅ CONFIRMED FROM CODE (`03_align_data.py`) — checked by Harsh:**
+**✅ CONFIRMED FROM CODE (`03_align_data.py`) — checked**
 
 **Rule 1 — No news for a stock-day:**
 ```python
@@ -375,9 +375,9 @@ Add this metrics plan:
 
 > *"You say you enforce 'strict temporal splits,' but you do not specify what dates are train/val/test or the split method (rolling window vs fixed). Please define the split clearly to prove no leakage."*
 
-**Can we address it?** ✅ Yes — confirmed from code, with two leakage issues flagged (Harsh).
+**Can we address it?** ✅ Yes — confirmed from code, with two leakage issues flagged.**
 
-**✅ CONFIRMED FROM CODE (`05_merge_and_split.py`) — checked by Harsh:**
+**✅ CONFIRMED FROM CODE (`05_merge_and_split.py`)**
 
 ```python
 def create_temporal_split(df, train_end='2021-12-31', val_end='2022-12-31'):
@@ -401,7 +401,7 @@ The split is strictly date-based with no shuffling — no future data can leak i
 
 ---
 
-**✅ FIX 1 — Scaler leakage resolved (implemented by Harsh):**
+**✅ FIX 1 — Scaler leakage resolved**
 
 `MinMaxScaler` and `StandardScaler` have been moved out of Stage 4 entirely and into Stage 5, where they are fitted **on the training split only** and applied via `transform()` to val and test.
 
@@ -415,7 +415,7 @@ norm_val.loc[va_mask, norm_cols]   = price_scaler.transform(…) # transform val
 norm_test.loc[te_mask, norm_cols]  = price_scaler.transform(…) # transform test
 ```
 
-**✅ FIX 2 — ffill leakage resolved (implemented by Harsh):**
+**✅ FIX 2 — ffill leakage resolved**
 
 `ffill().fillna(0)` has been removed from `select_model_features()` (where it ran on the whole dataset) and replaced with a new `apply_ffill_per_split()` function that forward-fills **within each split independently**, after the date cutoff:
 ```python
