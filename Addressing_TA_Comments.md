@@ -476,18 +476,18 @@ The team needs to agree on which evaluation components to commit to:
 
 ## Summary Table
 
-| # | Comment | Addressable? | Effort | Decision Required? |
-|---|---------|-------------|--------|-------------------|
-| 1.1 | News aggregation rule for multi-article days | ✅ Yes | Low | ✅ Yes — confirm aggregation approach |
-| 1.2 | Justify 50% outlier cutoff | ✅ Yes | Low-Medium | ✅ Yes — written justification vs. spot-check analysis |
-| 1.3 | Exact buy/hold/sell thresholds | ✅ Yes | Low | ❌ No — just write it up |
-| 2.1 | Anomaly table with exact counts | ✅ Yes | Low | ✅ Yes — confirm volume outlier handling |
-| 2.2 | Explain what correlation 0.023 means | ✅ Yes | Low | ✅ Yes — add mutual information check? |
-| 3.1 | Define sentiment feature pipeline | ✅ Yes | Medium | ✅ Yes — FinBERT vs GPT-5.2 for batch processing |
-| 3.2 | Rolling window lookahead guarantee | ✅ Yes | Low | ✅ Yes — confirm how first N days handled |
-| 4.1 | Dataset reproducibility / 100 stock selection rule | ✅ Yes | Low | ✅ Yes — confirm exact ticker selection logic |
-| 4.2 | Evaluation metrics plan | ✅ Yes | Low | Low — confirm Macro F1 as primary |
-| 4.3 | Exact train/val/test split dates | ✅ Yes | Low | ✅ Yes — fixed vs rolling window |
-| 4.4 | FinQA connection + explanation quality definition | ✅ Yes | Medium | ✅ Yes — which evaluation components to commit to |
+| # | Comment | Status | Team Action Needed? |
+|---|---------|--------|---------------------|
+| 1.1 | News aggregation rule | ✅ Confirmed from code — current: concatenate with `\|`; planned: Neo4j article nodes | ⚠️ Decide: keep current implementation or move to Neo4j now? |
+| 1.2 | Justify 50% outlier cutoff | ✅ Analysis done — 951 records removed (0.21%), 65% from ACB split data, threshold is correct | ❌ No action needed |
+| 1.3 | Exact buy/hold/sell thresholds | ✅ Confirmed — fixed at ±2%, thresholds not tuned | ❌ No action needed |
+| 2.1 | Anomaly table with counts | ✅ Analysis done — full table built, volume spikes kept as real signal via `volume_ratio` | ❌ No action needed |
+| 2.2 | Correlation of 0.023 — meaningful? | ✅ Analysis done — point-biserial + MI + chi-squared all confirm real relationship | ❌ No action needed |
+| 3.1 | Sentiment feature pipeline | ✅ Pipeline defined — FinBERT vs GPT-5.2 for batch scoring | ⚠️ Raghav to decide: FinBERT vs GPT-5.2 for bulk historical scoring |
+| 3.2 | Rolling window lookahead guarantee | ✅ Confirmed from code — `min_periods=1` (partial windows), no rows dropped currently | ⚠️ Decide: keep partial windows or drop first 50 rows per ticker? |
+| 4.1 | Dataset reproducibility | ✅ Confirmed from code — first 100 alphabetical CSVs, deterministic, no random seed | ⚠️ Raghav to decide: keep alphabetical selection or use a more principled subset? |
+| 4.2 | Evaluation metrics plan | ✅ Plan written — Macro F1 primary, plus trading backtest | ❌ No action needed |
+| 4.3 | Train/val/test split dates | ✅ Confirmed + **two leakage bugs fixed** — Train: Oct 2009–Dec 2021 / Val: 2022 / Test: 2023 | ❌ No action needed |
+| 4.4 | FinQA + explanation quality definition | ✅ Framework defined — citation correctness, faithfulness, Macro F1 | ⚠️ Raghav to decide: which evaluation components to commit to |
 
-**All 11 comments are addressable.** Most are documentation fixes. The substantive decisions that require team alignment are flagged with ⚠️ above.
+**All 11 comments addressed.** Three required code analysis (1.2, 2.1, 2.2 — run against real data). One required a pipeline fix (4.3 — two leakage bugs). The remaining open items are team decisions, flagged above with ⚠️.
