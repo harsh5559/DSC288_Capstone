@@ -192,6 +192,6 @@ EDA_REPORT.md                      Full written EDA with tables and plots
 PIPELINE_SUMMARY.md                Full pipeline documentation
 requirements.txt                   Python dependencies (pip install -r ...)
 
-Progress report files/             Archived milestone docs
+Progress report 1 files/           Archived milestone 1 docs
   PROGRESS_REPORT_GUIDE.md           Week 2 milestone reference for the team
   PROJECT_OVERVIEW.txt               This file

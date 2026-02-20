@@ -112,7 +112,7 @@ Each feature is justified by specific EDA findings (see `EDA_REPORT.md`).
 │   └── eda_outputs/                      # EDA plots and summaries
 │       ├── *.png                         # 7 visualizations
 │       └── *.json                        # 2 summary files
-├── Progress report files/                # Milestone docs and archived reference files
+├── Progress report 1 files/              # Milestone 1 docs and archived reference files
 │   ├── PROGRESS_REPORT_GUIDE.md          # Week 2 milestone reference
 │   └── PROJECT_OVERVIEW.txt              # Plain-English project overview
 ├── DSC288_Progress_Report.html           # Milestone 2 progress report (open in browser)
