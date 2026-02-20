@@ -50,7 +50,7 @@ All articles are **concatenated into one string with ` | ` as the separator**. T
 **⚠️ DECISION NEEDED:**
 The pipeline currently **concatenates all articles for a stock-day into a single text field**. Our Graph RAG architecture calls for **storing each article as an individual node in Neo4j**, linked to the stock and date via edges. Should we update the report to describe the concatenation approach as the tabular pipeline implementation with individual Neo4j article nodes as the planned graph extension — or should we change the pipeline to explicitly implement the Neo4j node structure now?
 
-> **💬 Harsh:** The concatenation approach is what's in the code right now. Do we keep it as-is and describe individual Neo4j article nodes as the planned graph layer, or do we move to that structure in the pipeline before the next milestone? Team please weigh in.
+> **💬 Harsh:** The concatenation approach is what's in the code right now and it's fine for where we are. We don't need to restructure for individual Neo4j article nodes until we actually implement the Graph RAG layer — which we haven't started yet. For now, describe concatenation as the current tabular implementation and individual article nodes as the planned graph extension.
 
 ---
 
