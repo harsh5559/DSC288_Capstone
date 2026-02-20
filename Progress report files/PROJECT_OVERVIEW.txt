@@ -120,7 +120,7 @@ Five scripts run in order. Run them all at once with: python scripts/run_pipelin
     that the RAG system will search at inference time to find real citations.
 
 
-THE EDA  (notebooks/01_EDA.ipynb and Progress report files/EDA_REPORT.md)
+THE EDA  (notebooks/01_EDA.ipynb and EDA_REPORT.md)
 --------------------------------------------------------------------------
 Before building features, an Exploratory Data Analysis was run on the Stage 3
 output to understand the data and justify the engineering choices.
@@ -136,7 +136,7 @@ Key things found:
     which motivated adding momentum and volatility indicators
   - Target labels are roughly balanced: 70% hold, 15% buy, 15% sell
 
-Seven plots are saved in notebooks/eda_outputs/. Progress report files/EDA_REPORT.md
+Seven plots are saved in notebooks/eda_outputs/. EDA_REPORT.md
 has the full written analysis with tables.
 
 
@@ -187,12 +187,11 @@ notebooks/eda_outputs/             7 plots + 2 JSON summaries
 
 DSC288_Progress_Report.html        Full milestone 2 progress report (open in browser)
 Addressing_TA_Comments.md          Response plan for TA feedback on milestone 2
-DSC288_Progress_Report.html        Milestone 2 progress report (open in browser)
 
-Progress report files/             Milestone docs and reference files
-  EDA_REPORT.md                      Full written EDA with tables and plots
-  PIPELINE_SUMMARY.md                Full pipeline documentation
+EDA_REPORT.md                      Full written EDA with tables and plots
+PIPELINE_SUMMARY.md                Full pipeline documentation
+requirements.txt                   Python dependencies (pip install -r ...)
+
+Progress report files/             Archived milestone docs
   PROGRESS_REPORT_GUIDE.md           Week 2 milestone reference for the team
-  REPO_SUMMARY.txt                   Detailed technical reference for the whole repo
-  TA_comments.txt                    Raw TA feedback text
-  requirements.txt                   Python dependencies (pip install -r ...)
+  PROJECT_OVERVIEW.txt               This file

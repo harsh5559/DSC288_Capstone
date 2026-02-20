@@ -39,7 +39,7 @@ We have implemented a 5-stage data pipeline that integrates structured market da
 - 35 total features (16 original + 19 engineered)
 - Runtime: ~3 minutes for validation
 
-**Documentation:** See `Progress report files/PIPELINE_SUMMARY.md` for complete pipeline details and validation results.
+**Documentation:** See `PIPELINE_SUMMARY.md` for complete pipeline details and validation results.
 
 ## Data Sources
 
@@ -70,7 +70,7 @@ Comprehensive EDA covering all rubric requirements:
 - **Correlations:** S&P 500 return strongest predictor (+0.023)
 - **Key Insight:** 10% more extreme moves on days with news
 
-**Documentation:** See `Progress report files/EDA_REPORT.md` for complete analysis with 7 visualizations and 15 data tables.
+**Documentation:** See `EDA_REPORT.md` for complete analysis with 7 visualizations and 15 data tables.
 
 ## Feature Engineering
 
@@ -80,7 +80,7 @@ Based on EDA findings, we engineered 19 features:
 **Market-Relative (4):** S&P 500 return, excess return, market direction indicators
 **Normalization (6):** MinMaxScaler for prices, StandardScaler for volume/returns (per ticker) — applied in Stage 5, fitted on train split only to prevent leakage
 
-Each feature is justified by specific EDA findings (see `Progress report files/EDA_REPORT.md`).
+Each feature is justified by specific EDA findings (see `EDA_REPORT.md`).
 
 ## Repository Structure
 
@@ -112,16 +112,14 @@ Each feature is justified by specific EDA findings (see `Progress report files/E
 │   └── eda_outputs/                      # EDA plots and summaries
 │       ├── *.png                         # 7 visualizations
 │       └── *.json                        # 2 summary files
-├── Progress report files/                # Milestone docs and reference files
-│   ├── EDA_REPORT.md                     # EDA documentation
-│   ├── PIPELINE_SUMMARY.md               # Pipeline documentation
+├── Progress report files/                # Milestone docs and archived reference files
 │   ├── PROGRESS_REPORT_GUIDE.md          # Week 2 milestone reference
-│   ├── REPO_SUMMARY.txt                  # Detailed technical repo reference
-│   ├── TA_comments.txt                   # TA feedback on milestone 2
-│   └── requirements.txt                  # Python dependencies
+│   └── PROJECT_OVERVIEW.txt              # Plain-English project overview
 ├── DSC288_Progress_Report.html           # Milestone 2 progress report (open in browser)
 ├── Addressing_TA_Comments.md             # Response plan for TA feedback
-├── PROJECT_OVERVIEW.txt                  # Plain-English project overview
+├── EDA_REPORT.md                         # EDA documentation
+├── PIPELINE_SUMMARY.md                   # Pipeline documentation
+├── requirements.txt                      # Python dependencies
 └── README.md                             # This file
 ```
 
@@ -129,7 +127,7 @@ Each feature is justified by specific EDA findings (see `Progress report files/E
 
 ### Prerequisites
 ```bash
-pip install -r "Progress report files/requirements.txt"
+pip install -r requirements.txt
 ```
 
 ### Run the Complete Pipeline
@@ -156,15 +154,14 @@ python scripts/05_merge_and_split.py
 ```
 
 ### View EDA
-Open `notebooks/01_EDA.ipynb` in Jupyter or view `Progress report files/EDA_REPORT.md` for the complete analysis.
+Open `notebooks/01_EDA.ipynb` in Jupyter or view `EDA_REPORT.md` for the complete analysis.
 
 ## Key Documentation Files
 
 | File | Description |
 |------|-------------|
-| `Progress report files/PIPELINE_SUMMARY.md` | Complete pipeline description with validation results |
-| `Progress report files/EDA_REPORT.md` | Comprehensive EDA with 7 plots and 15 tables |
-| `Progress report files/REPO_SUMMARY.txt` | Detailed technical reference for the whole repo |
+| `PIPELINE_SUMMARY.md` | Complete pipeline description with validation results |
+| `EDA_REPORT.md` | Comprehensive EDA with 7 plots and 15 tables |
 | `Addressing_TA_Comments.md` | Response plan for TA milestone 2 feedback |
 | `scripts/README.md` | Detailed documentation for each pipeline script |
 
@@ -178,7 +175,7 @@ Open `notebooks/01_EDA.ipynb` in Jupyter or view `Progress report files/EDA_REPO
 - matplotlib, seaborn (visualization)
 - tqdm (progress bars)
 
-See `Progress report files/requirements.txt` for complete list with versions.
+See `requirements.txt` for complete list with versions.
 
 ## Next Steps (Post Week 2 Milestone)
 
