@@ -60,6 +60,13 @@ def add_technical_indicators(df):
             ticker_df['volume_ma_20'] = ticker_df['volume'].rolling(window=20, min_periods=1).mean()
             ticker_df['volume_ratio'] = ticker_df['volume'] / ticker_df['volume_ma_20']
 
+        # Drop the first 50 rows per ticker — the SMA-50 warm-up period.
+        # Before row 50, sma_50 is a partial-window average (fewer than 50 days),
+        # which is less reliable and inconsistent with later rows. Dropping 50 rows
+        # per ticker removes ~5,000 records (~1.9% of data) and guarantees that every
+        # remaining sma_50 value is a true 50-day average.
+        ticker_df = ticker_df.iloc[50:]
+
         feature_dfs.append(ticker_df)
 
     df_with_features = pd.concat(feature_dfs, ignore_index=True)
@@ -71,6 +78,7 @@ def add_technical_indicators(df):
         print(f"  - {feat}")
     if len(new_features) > 10:
         print(f"  ... and {len(new_features) - 10} more")
+    print(f"[INFO] Dropped first 50 rows per ticker (SMA-50 warm-up). ~1.9% of records removed.")
 
     return df_with_features
 
@@ -118,6 +126,7 @@ def create_feature_summary(df_original, df_final):
             "is deferred to Stage 5 to prevent look-ahead bias. "
             "Scalers will be fitted on the training split only."
         ),
+        "warmup_rows_dropped": "First 50 rows per ticker dropped (SMA-50 warm-up). ~1.9% of records removed.",
         "feature_categories": {
             "technical_indicators": len(technical_features),
             "market_relative": len(market_features),
@@ -174,6 +183,7 @@ def main():
     print(f"  - Features: {len(df.columns)} total ({len(df.columns) - len(df_original.columns)} new)")
     print(f"  - Technical indicators: SMA, momentum, volatility, volume ratios")
     print(f"  - Market features: excess returns, market direction")
+    print(f"  - First 50 rows per ticker dropped (SMA-50 warm-up, ~1.9% of records)")
     print(f"  - Normalization: DEFERRED to Stage 5 (fitted on train only)")
 
 

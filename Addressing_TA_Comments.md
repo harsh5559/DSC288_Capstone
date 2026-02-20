@@ -287,27 +287,22 @@ Add this statement to the report:
 > "All rolling window features (SMA-5, SMA-20, SMA-50, momentum_5, momentum_20, volatility_20, volume_ma_20) use **only past trading days** — the window looks backward only (e.g., SMA-5 on day T uses days T-5 through T-1). No future data is used in any feature computation."
 
 **✅ CONFIRMED FROM CODE (`04_feature_engineering.py`) — checked by Harsh:**
-All rolling window features use **`min_periods=1`** (partial windows). The script does NOT drop any rows. Specifically:
+All rolling window features use **`min_periods=1`** during calculation. After all indicators are computed, **the first 50 rows per ticker are dropped** to ensure every `sma_50` value in the output is a true 50-day average, not a partial-window estimate. Specifically:
 ```python
 ticker_df['sma_5']  = ticker_df['close'].rolling(window=5,  min_periods=1).mean()
 ticker_df['sma_20'] = ticker_df['close'].rolling(window=20, min_periods=1).mean()
 ticker_df['sma_50'] = ticker_df['close'].rolling(window=50, min_periods=1).mean()
 ticker_df['volatility_20'] = returns.rolling(window=20, min_periods=1).std()
+
+# Drop first 50 rows per ticker (SMA-50 warm-up period)
+ticker_df = ticker_df.iloc[50:]
 ```
-The `momentum_5` and `momentum_20` features (via `pct_change`) do produce NaN for the first 5/20 rows per ticker, which are forward-filled downstream. No rows are dropped due to rolling window initialisation.
+This removes approximately 5,000 records (~1.9% of data). Every remaining row is guaranteed to have a full 50-day history for all moving average features.
 
 **What to write in the report:**
-> "All rolling window features (SMA-5, SMA-20, SMA-50, momentum_5, momentum_20, volatility_20, volume_ma_20) use only past trading days — the window looks backward only. For the first N days of each ticker's history where the full window isn't yet available, partial windows are used (e.g., SMA-50 on day 3 = mean of 3 days). No rows are dropped due to rolling window initialisation."
+> "All rolling window features (SMA-5, SMA-20, SMA-50, momentum_5, momentum_20, volatility_20, volume_ma_20) use only past trading days — the window looks backward only. The first 50 rows per ticker are dropped after feature computation to ensure every SMA-50 value reflects a true 50-day average, removing ~1.9% of records."
 
-**⚠️ DECISION NEEDED:**
-Now that we know `min_periods=1` (partial windows) is what was implemented, should we keep this or switch to dropping the first 50 rows?
-
-| Option | Approach | Records lost |
-|--------|----------|-------------|
-| **Partial windows (current)** | Use available days; keeps all records but early SMA values are less reliable | 0 |
-| **Drop first 50 rows per ticker** | Clean — SMA-50 is always a real 50-day average | ~5,000 (~1.9%) |
-
-> **💬 Harsh:** I'm open to either approach. Dropping first 50 rows is cleaner and the 1.9% record loss is nothing. That said, the current implementation (partial windows) works and we haven't dropped anything yet. Team should decide — either is defensible.
+> **💬 Harsh:** Implemented the drop. Cleaner than partial windows and 1.9% record loss is negligible.
 
 ---
 
@@ -484,10 +479,10 @@ The team needs to agree on which evaluation components to commit to:
 | 2.1 | No concrete anomaly table with counts per data type (prices, volume, news) | No code changes — analysis run against the cleaned dataset (459,341 records): computed volume spike counts at 3×/5×/10× thresholds and built the full anomaly table | Report needs to include the anomaly table (already drafted in section 2.1). Clarify that high-volume days are intentionally kept and captured via the `volume_ratio` feature. |
 | 2.2 | Pearson r = 0.023 is very small — is the S&P 500 feature actually meaningful? | No code changes — three statistical tests run against the aligned dataset (380,378 records): point-biserial correlation, mutual information, and chi-squared | Report needs to replace the raw Pearson r framing with: MI = 0.0875 nats (~10% of target information); chi-squared p ≈ 0; Pearson r is the wrong tool for a categorical target. |
 | 3.1 | Sentiment feature pipeline not defined — which model, what output score, how aggregated per stock-day | No code changes — sentiment model not yet built | ⚠️ Team to decide: FinBERT (fast, free, local) vs GPT-5.2 (more accurate, API cost) for bulk historical scoring. Report can be written once decided. |
-| 3.2 | Rolling window features don't show the exact rule for the first N days | No code changes — `04_feature_engineering.py` read and confirmed: all rolling calls use `min_periods=1` (partial windows), no rows dropped | Report needs to state: all rolling windows look backward only; for early rows, partial windows are used. ⚠️ Team decision: keep partial windows or drop first 50 rows per ticker for cleaner SMA-50? |
+| 3.2 | Rolling window features don't show the exact rule for the first N days | `04_feature_engineering.py` read and confirmed, then **modified**: first 50 rows per ticker now dropped after feature computation (~1.9% of records), ensuring every SMA-50 is a true 50-day average | Report needs to state: all rolling windows look backward only; first 50 rows per ticker are dropped to guarantee full window availability. |
 | 4.1 | Report doesn't state which exact 100 stocks were used or how they were selected | No code changes — `01_load_data.py` read and confirmed: first 100 CSV files in alphabetical order, no random seed | Report needs to state the selection rule explicitly. ⚠️ Team to decide: keep the alphabetical selection or define a more principled subset (e.g., by market cap or news coverage)? |
 | 4.2 | No evaluation metrics defined for the buy/hold/sell prediction | No code changes — metrics plan written | Report needs to add: Macro F1 as primary metric, per-class precision/recall, confusion matrix, and simulated backtest return on the 2023 test set. |
 | 4.3 | Exact train/val/test split dates not given — no proof of no leakage | **Two leakage bugs fixed and committed:** `05_merge_and_split.py` read and confirmed split dates; `04_feature_engineering.py` modified to remove scalers; `05_merge_and_split.py` modified to fit scalers on train only and apply ffill per-split | Report needs to state the split dates (Train: Oct 2009–Dec 2021, Val: Jan–Dec 2022, Test: Jan–Dec 2023) and confirm normalization is fitted on training data only. |
 | 4.4 | FinQA connection unclear — how does it relate to buy/hold/sell explanations, and what defines a "good explanation"? | No code changes — evaluation framework written | Report needs to define "good explanation" concretely: citation correctness + faithfulness + Macro F1. ⚠️ Team to decide: which evaluation components to commit to (minimum viable vs RAGAS faithfulness vs human evaluation)? |
 
-**All 11 comments are addressed.** Three required analysis against the real data (1.2, 2.1, 2.2). Four required reading scripts to confirm implementation (1.1, 1.3, 3.2, 4.1). One required pipeline code fixes (4.3 — two leakage bugs committed). Four open team decisions remain, marked ⚠️.
+**All 11 comments are addressed.** Three required analysis against the real data (1.2, 2.1, 2.2). Three required reading scripts to confirm implementation (1.1, 1.3, 4.1). Two required pipeline code fixes: 4.3 (two leakage bugs) and 3.2 (drop first 50 rows per ticker). Three open team decisions remain, marked ⚠️.
