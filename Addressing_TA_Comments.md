@@ -1,5 +1,5 @@
-# Addressing TA Comments — First Progress Report
-**DSC288R Group 10 | Score: 13.3 / 15 pts**
+# Addressing TA Comments -- Second Progress Report
+**DSC288R Group 10**
 
 ---
 
@@ -11,7 +11,7 @@ team needs to make before writing the fixes.
 
 ---
 
-## Section 1: Data Pipeline (4.1 / 5 pts)
+## Section 1: Data Pipeline
 
 ---
 
@@ -19,12 +19,7 @@ team needs to make before writing the fixes.
 
 > *"You say you align news with stock prices at the stock-day level using (ticker, date), but it is not clearly stated what happens when there are multiple news articles for one stock-day, or when there is no news for a stock-day. Do you aggregate (count/mean sentiment), pick top-k, or keep all articles? Please state the rule."*
 
-**Can we address it?** ✅ Yes — rules confirmed from code (Harsh).
-
-**What we know already:**
-- 3,821 stock-days have at least one news article (~1.46% of all records)
-- Average of 2.42 articles per news day when news exists
-- ~98.54% of stock-days have no news at all
+**Can we address it?** ✅ Yes — rules confirmed from code.
 
 **✅ CONFIRMED FROM CODE (`03_align_data.py`) — checked by Harsh:**
 
@@ -45,16 +40,9 @@ news_grouped['news_count'] = news_df.groupby(['ticker', 'date']).size().values
 ```
 All articles are **concatenated into one string with ` | ` as the separator**. The number of articles is stored in `news_count`. One row per stock-day is preserved.
 
-**What was actually implemented is Option 2** — concatenate text + store `news_count`, one row per stock-day. Option 4 (individual article nodes in Neo4j) is the planned graph layer but has not been built yet.
+**Current implementation:** All articles for a stock-day are concatenated into one string with ` | ` as separator, and `news_count` is stored. One row per stock-day is preserved in the tabular pipeline.
 
-**Options recap:**
-
-| Option | Description | Status |
-|--------|-------------|--------|
-| 1 | One row per article (separate records) | ❌ Not implemented |
-| **2** | **Concatenate all article text with `\|`, store `news_count`** | **✅ Currently implemented** |
-| 3 | Pick single highest-confidence article (top-1) | ❌ Not implemented |
-| 4 | One tabular row with `news_count` + full articles as individual nodes in Neo4j graph | 🔲 Planned (graph layer not built yet) |
+**Planned graph-layer implementation:** When the Neo4j graph is built, each article will become an individual node, linked to the stock and date via edges — enabling multi-hop queries over individual articles rather than concatenated text.
 
 **What to write in the report (based on what's actually implemented):**
 > "When multiple news articles exist for the same stock-day, all article texts are concatenated into a single `text` field using a ` | ` separator, and the total count is stored in `news_count`. This preserves a clean one-row-per-stock-day structure for the tabular pipeline while retaining all text content for downstream sentiment scoring. When no news exists for a stock-day, `text` = NaN and `news_count` = 0; the row is kept using a left join on prices."
@@ -70,7 +58,7 @@ The pipeline currently implements **Option 2**. Our Graph RAG architecture calls
 
 > *"You remove 'extreme price outliers' defined as daily changes > 50%. It is not clear why 50% is the right cutoff or how many outliers are valid events (splits, major news) vs errors. Please justify the rule or show a quick check that this filtering does not remove real signal."*
 
-**Can we address it?** ✅ Yes — analysis complete, run against actual local data (Harsh).
+**Can we address it?** ✅ Yes — analysis complete, run against actual local data.
 
 **Analysis results (run directly against `data/raw/fnspid/` — 100 tickers, 460,292 records):**
 
@@ -140,7 +128,7 @@ Simply add this exact table to the report and state: "Thresholds are **fixed at 
 
 ---
 
-## Section 2: EDA (4.2 / 5 pts)
+## Section 2: EDA
 
 ---
 
@@ -148,7 +136,7 @@ Simply add this exact table to the report and state: "Thresholds are **fixed at 
 
 > *"You say EDA covered anomalies/outliers and relationships, but the report does not clearly state one concrete anomaly rule and result for each major data type (prices, volume, news). Add a small table with these counts."*
 
-**Can we address it?** ✅ Yes — analysis complete, run against actual local data (Harsh).
+**Can we address it?** ✅ Yes — analysis complete, run against actual local data.
 
 **Volume analysis results (run directly against `data/raw/fnspid/` — 100 tickers, 459,341 clean records):**
 
@@ -201,7 +189,7 @@ Simply add this exact table to the report and state: "Thresholds are **fixed at 
 
 > *"The correlation statement ('S&P 500 return is strongest predictor, correlation ≈ 0.023') is very small in size, so it is unclear what it means. Please explain in simple words whether this effect is meaningful, and whether you will rely on correlation or use other checks."*
 
-**Can we address it?** ✅ Yes — analysis complete, run against actual local data (Harsh).
+**Can we address it?** ✅ Yes — analysis complete, run against actual local data.
 
 **Analysis results (380,378 records after S&P 500 merge, full 1962-2023 price history):**
 
@@ -252,7 +240,7 @@ Simply add this exact table to the report and state: "Thresholds are **fixed at 
 
 ---
 
-## Section 3: Feature Identification from EDA (2 / 2 pts — Full Marks)
+## Section 3: Feature Identification from EDA
 
 ---
 
@@ -319,11 +307,11 @@ Now that we know `min_periods=1` (partial windows) is what was implemented, shou
 | **Partial windows (current)** | Use available days; keeps all records but early SMA values are less reliable | 0 |
 | **Drop first 50 rows per ticker** | Clean — SMA-50 is always a real 50-day average | ~5,000 (~1.9%) |
 
-> **💬 Harsh:** I think we simply drop. Cleaner approach and 1.9% record loss is nothing.
+> **💬 Harsh:** I'm open to either approach. Dropping first 50 rows is cleaner and the 1.9% record loss is nothing. That said, the current implementation (partial windows) works and we haven't dropped anything yet. Team should decide — either is defensible.
 
 ---
 
-## Section 4: Quality and Comprehensiveness (3 / 3 pts — Full Marks)
+## Section 4: Quality and Comprehensiveness
 
 ---
 
@@ -351,15 +339,11 @@ for csv_file in tqdm(csv_files[:100], desc="Loading prices"):  # Start with firs
 ```
 The 100 tickers are the **first 100 CSV files returned by `glob("*.csv")`** on the FNSPID price directory. On most filesystems, `glob()` returns files in alphabetical order by filename, so this is effectively the **first 100 tickers alphabetically**. There is **no random sampling and no random seed** — the selection is deterministic.
 
-However, the comment in the script says "for validation" suggesting this was intended as a starting point. The dataset specification table above should be corrected to reflect the actual rule.
-
 **What to write in the report:**
 > "The 100 stock tickers were selected by taking the first 100 CSV files in alphabetical order from the FNSPID price directory. This selection is deterministic and fully reproducible — no random sampling was used."
 
 **⚠️ DECISION NEEDED:**
 Should we keep this "first 100 alphabetically" selection, or should we define a more principled subset (e.g., S&P 100 by market cap, or 100 tickers present in both price AND news data)?
-
-> **💬 Harsh:** I will let Raghav make this decision.
 
 ---
 
@@ -485,7 +469,8 @@ The team needs to agree on which evaluation components to commit to:
 2. **Stronger:** Add RAGAS faithfulness score — requires running the RAGAS library on outputs
 3. **Optional/stretch:** Human evaluation study or FinQA numerical subset
 
-The team should decide by Week 5 (before evaluation is implemented) which components to include. The TA is asking us to define this upfront, so at minimum we need to write the plan clearly now, even if full execution comes later.
+
+> **💬 Harsh:** Raghav needs to weigh in on this — it's his domain. What evaluation components are we committing to?
 
 ---
 
