@@ -48,9 +48,9 @@ All articles are **concatenated into one string with ` | ` as the separator**. T
 > "When multiple news articles exist for the same stock-day, all article texts are concatenated into a single `text` field using a ` | ` separator, and the total count is stored in `news_count`. This preserves a clean one-row-per-stock-day structure for the tabular pipeline while retaining all text content for downstream sentiment scoring. When no news exists for a stock-day, `text` = NaN and `news_count` = 0; the row is kept using a left join on prices."
 
 **⚠️ DECISION NEEDED:**
-The pipeline currently implements **Option 2**. Our Graph RAG architecture calls for **Option 4** (individual article nodes in Neo4j). Should we update the report to describe Option 2 as the tabular implementation with Option 4 as the planned graph extension — or should we change the pipeline to explicitly implement Option 4 now?
+The pipeline currently **concatenates all articles for a stock-day into a single text field**. Our Graph RAG architecture calls for **storing each article as an individual node in Neo4j**, linked to the stock and date via edges. Should we update the report to describe the concatenation approach as the tabular pipeline implementation with individual Neo4j article nodes as the planned graph extension — or should we change the pipeline to explicitly implement the Neo4j node structure now?
 
-> **💬 Harsh:** I checked the code — we're on Option 2 right now. Do we keep it as-is and describe Option 4 as the planned graph layer, or do we move to Option 4 in the pipeline before the next milestone? Team please weigh in.
+> **💬 Harsh:** The concatenation approach is what's in the code right now. Do we keep it as-is and describe individual Neo4j article nodes as the planned graph layer, or do we move to that structure in the pipeline before the next milestone? Team please weigh in.
 
 ---
 
