@@ -1,0 +1,15 @@
+{
+  "buzz": {
+    "articlesInLastWeek": 2,
+    "buzz": 0.6153,
+    "weeklyAverage": 3.25
+  },
+  "companyNewsScore": 0.5,
+  "sectorAverageBullishPercent": 0.5761,
+  "sectorAverageNewsScore": 0.5118,
+  "sentiment": {
+    "bearishPercent": 0.5,
+    "bullishPercent": 0.5
+  },
+  "symbol": "PNC"
+}

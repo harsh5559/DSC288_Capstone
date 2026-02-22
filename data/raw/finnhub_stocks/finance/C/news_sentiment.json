@@ -1,0 +1,15 @@
+{
+  "buzz": {
+    "articlesInLastWeek": 10,
+    "buzz": 0.851,
+    "weeklyAverage": 11.75
+  },
+  "companyNewsScore": 0.7946,
+  "sectorAverageBullishPercent": 0.5746,
+  "sectorAverageNewsScore": 0.5118,
+  "sentiment": {
+    "bearishPercent": 0,
+    "bullishPercent": 1
+  },
+  "symbol": "C"
+}

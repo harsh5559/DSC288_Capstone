@@ -1,0 +1,38 @@
+[
+  {
+    "buy": 6,
+    "hold": 16,
+    "period": "2026-02-01",
+    "sell": 4,
+    "strongBuy": 6,
+    "strongSell": 1,
+    "symbol": "SRPT"
+  },
+  {
+    "buy": 6,
+    "hold": 16,
+    "period": "2026-01-01",
+    "sell": 4,
+    "strongBuy": 6,
+    "strongSell": 1,
+    "symbol": "SRPT"
+  },
+  {
+    "buy": 6,
+    "hold": 16,
+    "period": "2025-12-01",
+    "sell": 4,
+    "strongBuy": 7,
+    "strongSell": 1,
+    "symbol": "SRPT"
+  },
+  {
+    "buy": 6,
+    "hold": 17,
+    "period": "2025-11-01",
+    "sell": 4,
+    "strongBuy": 7,
+    "strongSell": 1,
+    "symbol": "SRPT"
+  }
+]

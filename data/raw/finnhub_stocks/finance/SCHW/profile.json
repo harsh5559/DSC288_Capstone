@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NEW YORK STOCK EXCHANGE, INC.",
+  "finnhubIndustry": "Financial Services",
+  "floatingShare": 1666.33,
+  "ipo": "1987-09-22",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/SCHW.png",
+  "marketCapitalization": 167085.36914413117,
+  "name": "Charles Schwab Corp",
+  "phone": "13026587581",
+  "shareOutstanding": 1776.94,
+  "ticker": "SCHW",
+  "weburl": "https://www.schwab.com/"
+}

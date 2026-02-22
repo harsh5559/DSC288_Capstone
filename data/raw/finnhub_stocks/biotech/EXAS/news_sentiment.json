@@ -1,0 +1,15 @@
+{
+  "buzz": {
+    "articlesInLastWeek": 14,
+    "buzz": 0.4761,
+    "weeklyAverage": 12.25
+  },
+  "companyNewsScore": 0.5,
+  "sectorAverageBullishPercent": 0.5673,
+  "sectorAverageNewsScore": 0.5131,
+  "sentiment": {
+    "bearishPercent": 0,
+    "bullishPercent": 1
+  },
+  "symbol": "EXAS"
+}

@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NASDAQ NMS - GLOBAL MARKET",
+  "finnhubIndustry": "Biotechnology",
+  "floatingShare": 101.69,
+  "ipo": "1991-04-02",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/REGN.png",
+  "marketCapitalization": 82413.1907509469,
+  "name": "Regeneron Pharmaceuticals Inc",
+  "phone": "17813705000",
+  "shareOutstanding": 105.72,
+  "ticker": "REGN",
+  "weburl": "https://www.regeneron.com/"
+}

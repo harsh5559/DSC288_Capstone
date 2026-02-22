@@ -1,0 +1,38 @@
+[
+  {
+    "buy": 18,
+    "hold": 13,
+    "period": "2026-02-01",
+    "sell": 0,
+    "strongBuy": 12,
+    "strongSell": 0,
+    "symbol": "ADI"
+  },
+  {
+    "buy": 18,
+    "hold": 11,
+    "period": "2026-01-01",
+    "sell": 0,
+    "strongBuy": 12,
+    "strongSell": 0,
+    "symbol": "ADI"
+  },
+  {
+    "buy": 18,
+    "hold": 12,
+    "period": "2025-12-01",
+    "sell": 0,
+    "strongBuy": 11,
+    "strongSell": 0,
+    "symbol": "ADI"
+  },
+  {
+    "buy": 17,
+    "hold": 12,
+    "period": "2025-11-01",
+    "sell": 0,
+    "strongBuy": 11,
+    "strongSell": 0,
+    "symbol": "ADI"
+  }
+]

@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NASDAQ NMS - GLOBAL MARKET",
+  "finnhubIndustry": "Semiconductors",
+  "floatingShare": 4904.38,
+  "ipo": "1971-10-13",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/INTC.png",
+  "marketCapitalization": 220329.44472597828,
+  "name": "Intel Corp",
+  "phone": "14087658080",
+  "shareOutstanding": 4995,
+  "ticker": "INTC",
+  "weburl": "https://www.intel.com/"
+}

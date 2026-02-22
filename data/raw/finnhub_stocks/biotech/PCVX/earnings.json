@@ -1,0 +1,42 @@
+[
+  {
+    "actual": -1.56,
+    "estimate": -1.2943,
+    "period": "2025-09-30",
+    "quarter": 3,
+    "surprise": -0.2657,
+    "surprisePercent": -20.5285,
+    "symbol": "PCVX",
+    "year": 2025
+  },
+  {
+    "actual": -1.22,
+    "estimate": -1.1949,
+    "period": "2025-06-30",
+    "quarter": 2,
+    "surprise": -0.0251,
+    "surprisePercent": -2.1006,
+    "symbol": "PCVX",
+    "year": 2025
+  },
+  {
+    "actual": -1.04,
+    "estimate": -1.0693,
+    "period": "2025-03-31",
+    "quarter": 1,
+    "surprise": 0.0293,
+    "surprisePercent": 2.7401,
+    "symbol": "PCVX",
+    "year": 2025
+  },
+  {
+    "actual": -1.014,
+    "estimate": -1.1644,
+    "period": "2024-12-31",
+    "quarter": 4,
+    "surprise": 0.1504,
+    "surprisePercent": 12.9165,
+    "symbol": "PCVX",
+    "year": 2024
+  }
+]

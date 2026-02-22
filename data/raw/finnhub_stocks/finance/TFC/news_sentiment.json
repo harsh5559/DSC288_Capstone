@@ -1,0 +1,15 @@
+{
+  "buzz": {
+    "articlesInLastWeek": 6,
+    "buzz": 0,
+    "weeklyAverage": 2.25
+  },
+  "companyNewsScore": 0.5,
+  "sectorAverageBullishPercent": 0.5746,
+  "sectorAverageNewsScore": 0.5118,
+  "sentiment": {
+    "bearishPercent": 0.5,
+    "bullishPercent": 0.5
+  },
+  "symbol": "TFC"
+}

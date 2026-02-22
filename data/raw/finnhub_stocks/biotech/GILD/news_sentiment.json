@@ -1,0 +1,15 @@
+{
+  "buzz": {
+    "articlesInLastWeek": 9,
+    "buzz": 0.8372,
+    "weeklyAverage": 10.75
+  },
+  "companyNewsScore": 0.7946,
+  "sectorAverageBullishPercent": 0.5673,
+  "sectorAverageNewsScore": 0.5131,
+  "sentiment": {
+    "bearishPercent": 0,
+    "bullishPercent": 1
+  },
+  "symbol": "GILD"
+}

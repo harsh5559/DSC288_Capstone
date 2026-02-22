@@ -1,0 +1,15 @@
+{
+  "buzz": {
+    "articlesInLastWeek": 23,
+    "buzz": 1,
+    "weeklyAverage": 23
+  },
+  "companyNewsScore": 0.6804,
+  "sectorAverageBullishPercent": 0.5746,
+  "sectorAverageNewsScore": 0.5118,
+  "sentiment": {
+    "bearishPercent": 0,
+    "bullishPercent": 1
+  },
+  "symbol": "MS"
+}

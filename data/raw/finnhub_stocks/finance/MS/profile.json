@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NEW YORK STOCK EXCHANGE, INC.",
+  "finnhubIndustry": "Financial Services",
+  "floatingShare": 1202.06,
+  "ipo": "1986-03-21",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/MS.png",
+  "marketCapitalization": 278780.7196849813,
+  "name": "Morgan Stanley",
+  "phone": "13026587581",
+  "shareOutstanding": 1583,
+  "ticker": "MS",
+  "weburl": "https://www.morganstanley.com/"
+}

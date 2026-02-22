@@ -53,8 +53,9 @@ data/raw/finqa/*.json
 data/raw/yahoo_sp500/*.csv
 data/processed/*.parquet
 data/processed/*.csv
-# notebooks/eda_outputs/*.png  # Commented out - we need these for EDA report
-# notebooks/eda_outputs/*.json  # Commented out - small summary files needed
+
+# Finnhub large financial statements (~20 MB total)
+data/raw/finnhub_stocks/**/financials.json
 
 # Keep directory structure
 !data/raw/fnspid/.gitkeep
@@ -66,8 +67,12 @@ data/processed/*.csv
 # API keys and secrets
 .env
 *.env
+*.key
 secrets.txt
 config_secret.yaml
+
+# Server runtime files
+.litellm.pid
 
 # Model files
 *.pkl
@@ -78,4 +83,5 @@ config_secret.yaml
 
 # Logs
 *.log
-logs/
+logs/*
+!logs/.gitkeep

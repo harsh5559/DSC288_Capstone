@@ -1,0 +1,38 @@
+[
+  {
+    "buy": 19,
+    "hold": 8,
+    "period": "2026-02-01",
+    "sell": 0,
+    "strongBuy": 11,
+    "strongSell": 1,
+    "symbol": "VRTX"
+  },
+  {
+    "buy": 17,
+    "hold": 12,
+    "period": "2026-01-01",
+    "sell": 0,
+    "strongBuy": 9,
+    "strongSell": 1,
+    "symbol": "VRTX"
+  },
+  {
+    "buy": 16,
+    "hold": 13,
+    "period": "2025-12-01",
+    "sell": 0,
+    "strongBuy": 9,
+    "strongSell": 1,
+    "symbol": "VRTX"
+  },
+  {
+    "buy": 16,
+    "hold": 13,
+    "period": "2025-11-01",
+    "sell": 0,
+    "strongBuy": 9,
+    "strongSell": 1,
+    "symbol": "VRTX"
+  }
+]

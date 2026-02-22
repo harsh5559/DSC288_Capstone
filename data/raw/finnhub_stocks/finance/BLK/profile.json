@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NEW YORK STOCK EXCHANGE, INC.",
+  "finnhubIndustry": "Financial Services",
+  "floatingShare": 152.02,
+  "ipo": "1999-10-01",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/950002356066.png",
+  "marketCapitalization": 178415.25595379324,
+  "name": "BlackRock Inc",
+  "phone": "12128105800",
+  "shareOutstanding": 155.15,
+  "ticker": "BLK",
+  "weburl": "https://www.blackrock.com/"
+}

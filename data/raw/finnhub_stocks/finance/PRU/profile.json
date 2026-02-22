@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NEW YORK STOCK EXCHANGE, INC.",
+  "finnhubIndustry": "Insurance",
+  "floatingShare": 347.18,
+  "ipo": "2001-12-13",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/PRU.png",
+  "marketCapitalization": 35997.11967873274,
+  "name": "Prudential Financial Inc",
+  "phone": "19738026000",
+  "shareOutstanding": 347.9,
+  "ticker": "PRU",
+  "weburl": "https://www.prudential.com/"
+}

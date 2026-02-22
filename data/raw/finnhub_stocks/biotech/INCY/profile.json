@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NASDAQ NMS - GLOBAL MARKET",
+  "finnhubIndustry": "Biotechnology",
+  "floatingShare": 192.29,
+  "ipo": "1993-12-06",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/INCY.png",
+  "marketCapitalization": 20164.147839263544,
+  "name": "Incyte Corp",
+  "phone": "13026365400",
+  "shareOutstanding": 196.32,
+  "ticker": "INCY",
+  "weburl": "https://www.incyte.com/"
+}

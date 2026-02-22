@@ -1,0 +1,15 @@
+{
+  "buzz": {
+    "articlesInLastWeek": 8,
+    "buzz": 0.6956,
+    "weeklyAverage": 11.5
+  },
+  "companyNewsScore": 0.5,
+  "sectorAverageBullishPercent": 0.5763,
+  "sectorAverageNewsScore": 0.5117,
+  "sentiment": {
+    "bearishPercent": 0.5,
+    "bullishPercent": 0.5
+  },
+  "symbol": "SCHW"
+}

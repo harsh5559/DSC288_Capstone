@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NASDAQ NMS - GLOBAL MARKET",
+  "finnhubIndustry": "Biotechnology",
+  "floatingShare": 186.98,
+  "ipo": "2001-01-30",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/EXAS.png",
+  "marketCapitalization": 19743.56816021202,
+  "name": "Exact Sciences Corp",
+  "phone": "16082845700",
+  "shareOutstanding": 190.81,
+  "ticker": "EXAS",
+  "weburl": "https://www.exactsciences.com/"
+}

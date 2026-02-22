@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NEW YORK STOCK EXCHANGE, INC.",
+  "finnhubIndustry": "Banking",
+  "floatingShare": 1783.66,
+  "ipo": "1986-10-30",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/C.png",
+  "marketCapitalization": 207554.87462224148,
+  "name": "Citigroup Inc",
+  "phone": "12125591000",
+  "shareOutstanding": 1789.3,
+  "ticker": "C",
+  "weburl": "http://www.citigroup.com/"
+}

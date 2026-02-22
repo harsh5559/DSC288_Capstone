@@ -1,0 +1,15 @@
+{
+  "buzz": {
+    "articlesInLastWeek": 36,
+    "buzz": 0.4285,
+    "weeklyAverage": 35
+  },
+  "companyNewsScore": 0.4149,
+  "sectorAverageBullishPercent": 0.5841,
+  "sectorAverageNewsScore": 0.5208,
+  "sentiment": {
+    "bearishPercent": 1,
+    "bullishPercent": 0
+  },
+  "symbol": "INTC"
+}

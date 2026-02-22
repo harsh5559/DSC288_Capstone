@@ -1,0 +1,15 @@
+{
+  "buzz": {
+    "articlesInLastWeek": 15,
+    "buzz": 0.7407,
+    "weeklyAverage": 20.25
+  },
+  "companyNewsScore": 0.5,
+  "sectorAverageBullishPercent": 0.5802,
+  "sectorAverageNewsScore": 0.5204,
+  "sentiment": {
+    "bearishPercent": 0.5,
+    "bullishPercent": 0.5
+  },
+  "symbol": "QCOM"
+}

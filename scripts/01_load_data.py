@@ -31,13 +31,28 @@ def load_fnspid_prices():
         print(f"[ERROR] Price directory not found: {price_dir}")
         return None
     
-    # Get all CSV files
-    csv_files = list(price_dir.glob("*.csv"))
+    # Get all CSV files, sorted alphabetically for deterministic selection.
+    # The first 100 tickers alphabetically are used — no random sampling.
+    csv_files = sorted(price_dir.glob("*.csv"), key=lambda f: f.stem)
     print(f"Found {len(csv_files)} stock CSV files")
     
+    selected_files = csv_files[:100]
+    selected_tickers = [f.stem for f in selected_files]
+
+    # Save the selected ticker list so the exact subset is reproducible
+    ticker_list_file = PROCESSED_DIR / "selected_tickers.json"
+    with open(ticker_list_file, 'w') as f:
+        json.dump({
+            "selection_method": "first_100_alphabetically",
+            "count": len(selected_tickers),
+            "tickers": selected_tickers
+        }, f, indent=2)
+    print(f"Selected {len(selected_tickers)} tickers (first 100 alphabetically)")
+    print(f"Ticker list saved to: {ticker_list_file}")
+    
     # Load a sample first to check structure
-    if csv_files:
-        sample = pd.read_csv(csv_files[0])
+    if selected_files:
+        sample = pd.read_csv(selected_files[0])
         print(f"\nSample file columns: {list(sample.columns)}")
         print(f"Sample shape: {sample.shape}")
     
@@ -45,7 +60,7 @@ def load_fnspid_prices():
     all_prices = []
     
     print("\nLoading stock prices...")
-    for csv_file in tqdm(csv_files[:100], desc="Loading prices"):  # Start with first 100 stocks for validation
+    for csv_file in tqdm(selected_files, desc="Loading prices"):
         try:
             df = pd.read_csv(csv_file)
             ticker = csv_file.stem  # Filename without extension

@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NASDAQ NMS - GLOBAL MARKET",
+  "finnhubIndustry": "Biotechnology",
+  "floatingShare": 1239.34,
+  "ipo": "1992-01-22",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/GILD.png",
+  "marketCapitalization": 187838.88013709633,
+  "name": "Gilead Sciences Inc",
+  "phone": "13026587581",
+  "shareOutstanding": 1240.68,
+  "ticker": "GILD",
+  "weburl": "https://www.gilead.com/"
+}

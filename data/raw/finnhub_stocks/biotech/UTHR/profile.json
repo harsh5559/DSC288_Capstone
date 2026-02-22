@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NASDAQ NMS - GLOBAL MARKET",
+  "finnhubIndustry": "Biotechnology",
+  "floatingShare": 42.14,
+  "ipo": "1999-06-17",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/UTHR.png",
+  "marketCapitalization": 20383.85447347486,
+  "name": "United Therapeutics Corp",
+  "phone": "13016089292",
+  "shareOutstanding": 43.06,
+  "ticker": "UTHR",
+  "weburl": "https://www.unither.com/"
+}

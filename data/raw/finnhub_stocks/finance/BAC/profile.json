@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NEW YORK STOCK EXCHANGE, INC.",
+  "finnhubIndustry": "Banking",
+  "floatingShare": 6634.25,
+  "ipo": "1979-06-05",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/BAC.png",
+  "marketCapitalization": 382693.36202123173,
+  "name": "Bank of America Corp",
+  "phone": "13026587581",
+  "shareOutstanding": 7212.46,
+  "ticker": "BAC",
+  "weburl": "https://www.bankofamerica.com"
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "buy": 29,
+    "hold": 2,
+    "period": "2026-02-01",
+    "sell": 0,
+    "strongBuy": 12,
+    "strongSell": 0,
+    "symbol": "2330.TW"
+  },
+  {
+    "buy": 27,
+    "hold": 2,
+    "period": "2026-01-01",
+    "sell": 0,
+    "strongBuy": 14,
+    "strongSell": 0,
+    "symbol": "2330.TW"
+  },
+  {
+    "buy": 27,
+    "hold": 2,
+    "period": "2025-12-01",
+    "sell": 0,
+    "strongBuy": 14,
+    "strongSell": 0,
+    "symbol": "2330.TW"
+  },
+  {
+    "buy": 27,
+    "hold": 2,
+    "period": "2025-11-01",
+    "sell": 0,
+    "strongBuy": 14,
+    "strongSell": 0,
+    "symbol": "2330.TW"
+  }
+]

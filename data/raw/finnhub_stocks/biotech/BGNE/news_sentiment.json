@@ -1,0 +1,15 @@
+{
+  "buzz": {
+    "articlesInLastWeek": 2,
+    "buzz": 0.8333,
+    "weeklyAverage": 1
+  },
+  "companyNewsScore": 0.5,
+  "sectorAverageBullishPercent": 0.6603,
+  "sectorAverageNewsScore": 0.5165,
+  "sentiment": {
+    "bearishPercent": 0,
+    "bullishPercent": 1
+  },
+  "symbol": "BGNE"
+}

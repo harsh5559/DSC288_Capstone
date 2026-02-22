@@ -1,0 +1,42 @@
+[
+  {
+    "actual": 7.16,
+    "estimate": 7.3322,
+    "period": "2025-09-30",
+    "quarter": 3,
+    "surprise": -0.1722,
+    "surprisePercent": -2.3485,
+    "symbol": "UTHR",
+    "year": 2025
+  },
+  {
+    "actual": 6.41,
+    "estimate": 7.0796,
+    "period": "2025-06-30",
+    "quarter": 2,
+    "surprise": -0.6696,
+    "surprisePercent": -9.4582,
+    "symbol": "UTHR",
+    "year": 2025
+  },
+  {
+    "actual": 6.63,
+    "estimate": 6.6597,
+    "period": "2025-03-31",
+    "quarter": 1,
+    "surprise": -0.0297,
+    "surprisePercent": -0.446,
+    "symbol": "UTHR",
+    "year": 2025
+  },
+  {
+    "actual": 6.19,
+    "estimate": 6.4362,
+    "period": "2024-12-31",
+    "quarter": 4,
+    "surprise": -0.2462,
+    "surprisePercent": -3.8252,
+    "symbol": "UTHR",
+    "year": 2024
+  }
+]

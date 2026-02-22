@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NEW YORK STOCK EXCHANGE, INC.",
+  "finnhubIndustry": "Banking",
+  "floatingShare": 2738.83,
+  "ipo": "1969-03-05",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/JPM.png",
+  "marketCapitalization": 838210.6883538868,
+  "name": "JPMorgan Chase & Co",
+  "phone": "12122706000",
+  "shareOutstanding": 2749.75,
+  "ticker": "JPM",
+  "weburl": "https://www.jpmorganchase.com/"
+}

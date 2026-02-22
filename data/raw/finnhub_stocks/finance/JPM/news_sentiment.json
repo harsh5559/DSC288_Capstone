@@ -1,0 +1,15 @@
+{
+  "buzz": {
+    "articlesInLastWeek": 35,
+    "buzz": 0.7484,
+    "weeklyAverage": 33.75
+  },
+  "companyNewsScore": 0.6804,
+  "sectorAverageBullishPercent": 0.5761,
+  "sectorAverageNewsScore": 0.5118,
+  "sentiment": {
+    "bearishPercent": 0,
+    "bullishPercent": 1
+  },
+  "symbol": "JPM"
+}

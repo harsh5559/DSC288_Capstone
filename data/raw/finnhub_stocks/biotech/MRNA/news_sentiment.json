@@ -1,0 +1,15 @@
+{
+  "buzz": {
+    "articlesInLastWeek": 4,
+    "buzz": 0.4324,
+    "weeklyAverage": 9.25
+  },
+  "companyNewsScore": 0.5,
+  "sectorAverageBullishPercent": 0.5673,
+  "sectorAverageNewsScore": 0.5131,
+  "sentiment": {
+    "bearishPercent": 0.5,
+    "bullishPercent": 0.5
+  },
+  "symbol": "MRNA"
+}

@@ -1,0 +1,15 @@
+{
+  "buzz": {
+    "articlesInLastWeek": 2,
+    "buzz": 0.4705,
+    "weeklyAverage": 4.25
+  },
+  "companyNewsScore": 0.5,
+  "sectorAverageBullishPercent": 0.5673,
+  "sectorAverageNewsScore": 0.5131,
+  "sentiment": {
+    "bearishPercent": 0.5,
+    "bullishPercent": 0.5
+  },
+  "symbol": "ILMN"
+}

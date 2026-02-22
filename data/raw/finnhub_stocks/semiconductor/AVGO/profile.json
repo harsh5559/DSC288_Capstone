@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NASDAQ NMS - GLOBAL MARKET",
+  "finnhubIndustry": "Semiconductors",
+  "floatingShare": 4646.02,
+  "ipo": "2009-08-06",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/AVGO.png",
+  "marketCapitalization": 1577184.7252952198,
+  "name": "Broadcom Inc",
+  "phone": "13026365400",
+  "shareOutstanding": 4741.27,
+  "ticker": "AVGO",
+  "weburl": "https://www.broadcom.com"
+}

@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NASDAQ NMS - GLOBAL MARKET",
+  "finnhubIndustry": "Biotechnology",
+  "floatingShare": 131.24,
+  "ipo": "2004-05-28",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/ALNY.png",
+  "marketCapitalization": 44586.57226686446,
+  "name": "Alnylam Pharmaceuticals Inc",
+  "phone": "16175518200",
+  "shareOutstanding": 132.11,
+  "ticker": "ALNY",
+  "weburl": "https://www.alnylam.com/"
+}

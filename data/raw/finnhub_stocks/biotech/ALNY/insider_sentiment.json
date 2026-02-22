@@ -1,0 +1,68 @@
+{
+  "data": [
+    {
+      "symbol": "ALNY",
+      "year": 2025,
+      "month": 1,
+      "change": -63842,
+      "mspr": -34.679024
+    },
+    {
+      "symbol": "ALNY",
+      "year": 2025,
+      "month": 2,
+      "change": -852,
+      "mspr": -1.7742608
+    },
+    {
+      "symbol": "ALNY",
+      "year": 2025,
+      "month": 3,
+      "change": 108933,
+      "mspr": 55.447083
+    },
+    {
+      "symbol": "ALNY",
+      "year": 2025,
+      "month": 5,
+      "change": -37607,
+      "mspr": -35.22343
+    },
+    {
+      "symbol": "ALNY",
+      "year": 2025,
+      "month": 6,
+      "change": -19297,
+      "mspr": -33.333332
+    },
+    {
+      "symbol": "ALNY",
+      "year": 2025,
+      "month": 7,
+      "change": 7763,
+      "mspr": 100
+    },
+    {
+      "symbol": "ALNY",
+      "year": 2025,
+      "month": 8,
+      "change": -33619,
+      "mspr": -19.33093
+    },
+    {
+      "symbol": "ALNY",
+      "year": 2025,
+      "month": 9,
+      "change": -18000,
+      "mspr": -33.333332
+    },
+    {
+      "symbol": "ALNY",
+      "year": 2025,
+      "month": 10,
+      "change": 30103,
+      "mspr": 40.028988
+    }
+  ],
+  "symbol": "ALNY"
+}

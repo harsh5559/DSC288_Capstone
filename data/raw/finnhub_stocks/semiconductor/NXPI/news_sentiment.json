@@ -1,0 +1,15 @@
+{
+  "buzz": {
+    "articlesInLastWeek": 2,
+    "buzz": 0.4444,
+    "weeklyAverage": 4.5
+  },
+  "companyNewsScore": 0.5,
+  "sectorAverageBullishPercent": 0.5802,
+  "sectorAverageNewsScore": 0.5204,
+  "sentiment": {
+    "bearishPercent": 0.5,
+    "bullishPercent": 0.5
+  },
+  "symbol": "NXPI"
+}

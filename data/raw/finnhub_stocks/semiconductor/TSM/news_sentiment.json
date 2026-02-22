@@ -1,0 +1,15 @@
+{
+  "buzz": {
+    "articlesInLastWeek": 25,
+    "buzz": 0.8403,
+    "weeklyAverage": 29.75
+  },
+  "companyNewsScore": 0.6473,
+  "sectorAverageBullishPercent": 0.5802,
+  "sectorAverageNewsScore": 0.5204,
+  "sentiment": {
+    "bearishPercent": 0.25,
+    "bullishPercent": 0.75
+  },
+  "symbol": "TSM"
+}

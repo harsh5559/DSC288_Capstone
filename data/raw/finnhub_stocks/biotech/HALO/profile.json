@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NASDAQ NMS - GLOBAL MARKET",
+  "finnhubIndustry": "Biotechnology",
+  "floatingShare": 116.26,
+  "ipo": "2003-01-30",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/HALO.png",
+  "marketCapitalization": 8376.84664522071,
+  "name": "Halozyme Therapeutics Inc",
+  "phone": "18587948889",
+  "shareOutstanding": 117.6,
+  "ticker": "HALO",
+  "weburl": "https://www.halozyme.com/"
+}

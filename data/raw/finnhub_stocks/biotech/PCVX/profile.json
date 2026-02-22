@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NASDAQ NMS - GLOBAL MARKET",
+  "finnhubIndustry": "Biotechnology",
+  "floatingShare": 139.85,
+  "ipo": "2020-06-12",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/950409426436.png",
+  "marketCapitalization": 8302.935535752093,
+  "name": "Vaxcyte Inc",
+  "phone": "16508370111",
+  "shareOutstanding": 141.03,
+  "ticker": "PCVX",
+  "weburl": "https://vaxcyte.com/"
+}

@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NASDAQ NMS - GLOBAL MARKET",
+  "finnhubIndustry": "Biotechnology",
+  "floatingShare": 160.53,
+  "ipo": "1991-05-17",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/IONS.png",
+  "marketCapitalization": 13468.17046294606,
+  "name": "Ionis Pharmaceuticals Inc",
+  "phone": "17609319200",
+  "shareOutstanding": 161.97,
+  "ticker": "IONS",
+  "weburl": "https://www.ionis.com/"
+}

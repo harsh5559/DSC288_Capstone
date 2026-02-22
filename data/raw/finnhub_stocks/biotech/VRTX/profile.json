@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NASDAQ NMS - GLOBAL MARKET",
+  "finnhubIndustry": "Biotechnology",
+  "floatingShare": 253.12,
+  "ipo": "1991-07-24",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/VRTX.png",
+  "marketCapitalization": 119468.59,
+  "name": "Vertex Pharmaceuticals Inc",
+  "phone": "16173416393",
+  "shareOutstanding": 253.72,
+  "ticker": "VRTX",
+  "weburl": "https://www.vrtx.com/"
+}

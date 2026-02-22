@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NASDAQ NMS - GLOBAL MARKET",
+  "finnhubIndustry": "Biotechnology",
+  "floatingShare": 92.14,
+  "ipo": "2014-01-31",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/RARE.png",
+  "marketCapitalization": 2195.428849927622,
+  "name": "Ultragenyx Pharmaceutical Inc",
+  "phone": "14154838800",
+  "shareOutstanding": 96.48,
+  "ticker": "RARE",
+  "weburl": "https://www.ultragenyx.com/"
+}

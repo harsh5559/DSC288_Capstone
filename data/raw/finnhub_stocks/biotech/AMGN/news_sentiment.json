@@ -1,0 +1,15 @@
+{
+  "buzz": {
+    "articlesInLastWeek": 9,
+    "buzz": 0.7659,
+    "weeklyAverage": 11.75
+  },
+  "companyNewsScore": 0.5,
+  "sectorAverageBullishPercent": 0.5695,
+  "sectorAverageNewsScore": 0.5138,
+  "sentiment": {
+    "bearishPercent": 0,
+    "bullishPercent": 1
+  },
+  "symbol": "AMGN"
+}

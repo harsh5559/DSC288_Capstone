@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NEW YORK STOCK EXCHANGE, INC.",
+  "finnhubIndustry": "Insurance",
+  "floatingShare": 547.04,
+  "ipo": "2000-04-05",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/MET.png",
+  "marketCapitalization": 52118.32466569399,
+  "name": "MetLife Inc",
+  "phone": "13026587581",
+  "shareOutstanding": 655.3,
+  "ticker": "MET",
+  "weburl": "https://www.metlife.com/"
+}

@@ -45,21 +45,15 @@ We have implemented a 5-stage data pipeline that integrates structured market da
 
 All datasets have been downloaded and are stored locally in `data/raw/` (gitignored due to size).
 
-**1. FNSPID** - Stock prices and financial news for Fortune 500 companies
-- Source: https://huggingface.co/datasets/Zihan1004/FNSPID
-- Usage: Primary source for stock prices (2009-2023) and financial news articles
+| Dataset | Source | Date Range | Subset Rule |
+|---------|--------|-----------|-------------|
+| FNSPID Stock Prices | [HuggingFace](https://huggingface.co/datasets/Zihan1004/FNSPID) | Oct 2009 – Dec 2023 | First 100 tickers alphabetically (deterministic, no random sampling) |
+| FNSPID News | Same dataset | Oct 2009 – Dec 2023 | All articles for the 100 selected tickers |
+| Financial Phrasebank | [HuggingFace](https://huggingface.co/datasets/takala/financial_phrasebank) | Static | All 2,264 sentences (`sentences_allagree`) |
+| Yahoo S&P 500 | [Yahoo Finance](https://finance.yahoo.com/quote/%5EGSPC/history/) | Jan 1999 – Dec 2023 | Full index history (86.4% coverage) |
+| FinQA | [GitHub](https://github.com/czyssrs/FinQA) | Static | Train + validation + test splits |
 
-**2. Financial Phrasebank** - Sentiment-labeled financial news sentences (2,264 sentences)
-- Source: https://huggingface.co/datasets/takala/financial_phrasebank
-- Usage: Training data for sentiment analysis model
-
-**3. Yahoo Finance S&P 500** - Market index data
-- Source: https://finance.yahoo.com/quote/%5EGSPC/history/
-- Usage: Market context features (86.4% coverage)
-
-**4. FinQA** - Financial question-answering benchmark
-- Source: https://github.com/czyssrs/FinQA
-- Usage: Evaluation of explanation quality and grounding
+The selected ticker list is saved to `data/processed/selected_tickers.json` for full reproducibility.
 
 ## Exploratory Data Analysis
 
@@ -67,7 +61,7 @@ Comprehensive EDA covering all rubric requirements:
 - **Data Quality:** 262K observations, minimal missing values in critical fields
 - **Distributions:** Right-skewed prices, high volatility (34.7% daily std)
 - **Outliers:** 9.67% price outliers, 1.7% extreme returns (>10% moves)
-- **Correlations:** S&P 500 return strongest predictor (+0.023)
+- **Correlations:** S&P 500 return strongest predictor (Pearson r = +0.023 deflated by categorical target; MI = 0.0875 nats, ~10% of target info; chi-squared p ≈ 0)
 - **Key Insight:** 10% more extreme moves on days with news
 
 **Documentation:** See `EDA_REPORT.md` for complete analysis with 7 visualizations and 15 data tables.
@@ -107,18 +101,26 @@ Each feature is justified by specific EDA findings (see `EDA_REPORT.md`).
 │   ├── 05_merge_and_split.py             # Stage 5: Train/val/test split
 │   ├── run_pipeline.py                   # Pipeline orchestrator
 │   └── README.md                         # Scripts documentation
-├── notebooks/
-│   ├── 01_EDA.ipynb                      # Exploratory data analysis
-│   └── eda_outputs/                      # EDA plots and summaries
-│       ├── *.png                         # 7 visualizations
-│       └── *.json                        # 2 summary files
-├── Progress report 1 files/              # Milestone 1 docs and archived reference files
-│   ├── PROGRESS_REPORT_GUIDE.md          # Week 2 milestone reference
-│   └── PROJECT_OVERVIEW.txt              # Plain-English project overview
-├── DSC288_Progress_Report.html           # Milestone 2 progress report (open in browser)
-├── Addressing_TA_Comments.md             # Response plan for TA feedback
-├── EDA_REPORT.md                         # EDA documentation
-├── PIPELINE_SUMMARY.md                   # Pipeline documentation
+├── src/                                 # System implementation
+│   ├── server/                          # LiteLLM proxy & MCP server
+│   │   ├── manage.py                    # Server management (start/stop/test/logs)
+│   │   ├── _serve.py                    # Internal server process
+│   │   └── mcp_server.py               # MCP server for Cursor integration
+│   ├── agents/                          # Multi-agent system (Phase 2)
+│   └── evaluation/                      # Evaluation pipeline (Phase 4)
+├── eda/                                  # Exploratory data analysis
+│   ├── 01_EDA.ipynb                      # EDA notebook (interactive)
+│   ├── run_eda.py                        # Consolidated EDA runner script
+│   └── outputs/                          # Generated plots and summaries
+├── logs/                                 # Agent and server logs (gitignored)
+├── reports/                              # All documentation and reports
+│   ├── PLAN.md                           # End-to-end implementation plan
+│   ├── PIPELINE_SUMMARY.md              # Pipeline documentation
+│   ├── EDA_REPORT.md                    # EDA with plots and tables
+│   ├── Addressing_TA_Comments.md        # Response plan for TA feedback
+│   ├── DSC288_Progress_Report_Group10.md # Progress report
+│   └── Progress_Report_1/              # Milestone 1 archived docs
+├── litellm_config.yaml                   # LiteLLM proxy model configuration
 ├── requirements.txt                      # Python dependencies
 └── README.md                             # This file
 ```
@@ -153,16 +155,29 @@ python scripts/04_feature_engineering.py
 python scripts/05_merge_and_split.py
 ```
 
-### View EDA
-Open `notebooks/01_EDA.ipynb` in Jupyter or view `EDA_REPORT.md` for the complete analysis.
+### Run EDA Pipeline
+```bash
+python eda/run_eda.py                  # Run full EDA pipeline end-to-end
+python eda/run_eda.py --check          # Verify data exists before running
+```
+Or open `eda/01_EDA.ipynb` interactively in Jupyter. See `reports/EDA_REPORT.md` for the full analysis writeup.
+
+### Server Management
+```bash
+python src/server/manage.py start      # Start LiteLLM proxy
+python src/server/manage.py status     # Check status
+python src/server/manage.py test       # Run test suite
+python src/server/manage.py stop       # Stop server
+```
 
 ## Key Documentation Files
 
 | File | Description |
 |------|-------------|
-| `PIPELINE_SUMMARY.md` | Complete pipeline description with validation results |
-| `EDA_REPORT.md` | Comprehensive EDA with 7 plots and 15 tables |
-| `Addressing_TA_Comments.md` | Response plan for TA milestone 2 feedback |
+| `reports/PLAN.md` | End-to-end implementation plan and architecture |
+| `reports/PIPELINE_SUMMARY.md` | Complete pipeline description with validation results |
+| `reports/EDA_REPORT.md` | Comprehensive EDA with 7 plots and 15 tables |
+| `reports/Addressing_TA_Comments.md` | Response plan for TA milestone 2 feedback |
 | `scripts/README.md` | Detailed documentation for each pipeline script |
 
 ## Dependencies
@@ -176,6 +191,17 @@ Open `notebooks/01_EDA.ipynb` in Jupyter or view `EDA_REPORT.md` for the complet
 - tqdm (progress bars)
 
 See `requirements.txt` for complete list with versions.
+
+## Evaluation Plan
+
+| Category | Metric | Purpose |
+|----------|--------|---------|
+| Classification | **Macro F1** (primary) | Treats all three classes equally despite 70% hold imbalance |
+| Classification | Per-class Precision / Recall | Reveals bias toward "hold" predictions |
+| Classification | Confusion Matrix | Shows cost of wrong predictions (BUY vs SELL misclassification) |
+| Trading | Simulated cumulative return | Does following signals make money on the 2023 test set? |
+| Explanation | Citation correctness | Does the cited article support the stated claim? |
+| Explanation | Faithfulness | No hallucination — only info from retrieved sources |
 
 ## Next Steps (Post Week 2 Milestone)
 
@@ -195,7 +221,7 @@ See `requirements.txt` for complete list with versions.
 | News Coverage | 1.46% (3,821 stock-days) |
 | S&P 500 Coverage | 86.4% |
 | Target Distribution | 70% hold, 15% sell, 15% buy |
-| Strongest Predictor | S&P 500 return (+0.023 correlation) |
+| Strongest Predictor | S&P 500 return (MI = 0.0875 nats, ~10% of target info) |
 
 ## References
 

@@ -1,0 +1,15 @@
+{
+  "buzz": {
+    "articlesInLastWeek": 3,
+    "buzz": 0.8571,
+    "weeklyAverage": 3.5
+  },
+  "companyNewsScore": 0.5,
+  "sectorAverageBullishPercent": 0.5695,
+  "sectorAverageNewsScore": 0.5138,
+  "sentiment": {
+    "bearishPercent": 0,
+    "bullishPercent": 1
+  },
+  "symbol": "INSM"
+}

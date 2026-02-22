@@ -1,0 +1,42 @@
+[
+  {
+    "actual": -0.16,
+    "estimate": 0.3793,
+    "period": "2025-09-30",
+    "quarter": 3,
+    "surprise": -0.5393,
+    "surprisePercent": -142.183,
+    "symbol": "BMRN",
+    "year": 2025
+  },
+  {
+    "actual": 1.23,
+    "estimate": 0.8516,
+    "period": "2025-06-30",
+    "quarter": 2,
+    "surprise": 0.3784,
+    "surprisePercent": 44.434,
+    "symbol": "BMRN",
+    "year": 2025
+  },
+  {
+    "actual": 0.95,
+    "estimate": 0.7226,
+    "period": "2025-03-31",
+    "quarter": 1,
+    "surprise": 0.2274,
+    "surprisePercent": 31.4697,
+    "symbol": "BMRN",
+    "year": 2025
+  },
+  {
+    "actual": 0.64,
+    "estimate": 0.5404,
+    "period": "2024-12-31",
+    "quarter": 4,
+    "surprise": 0.0996,
+    "surprisePercent": 18.4308,
+    "symbol": "BMRN",
+    "year": 2024
+  }
+]

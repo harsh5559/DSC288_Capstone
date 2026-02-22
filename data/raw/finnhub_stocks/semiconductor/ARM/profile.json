@@ -1,0 +1,16 @@
+{
+  "country": "GB",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NASDAQ NMS - GLOBAL MARKET",
+  "finnhubIndustry": "Semiconductors",
+  "floatingShare": 137.65,
+  "ipo": "2023-09-14",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/950867383596.png",
+  "marketCapitalization": 134799.660324,
+  "name": "Arm Holdings PLC",
+  "phone": "441223400400",
+  "shareOutstanding": 1062,
+  "ticker": "ARM",
+  "weburl": "https://www.arm.com/"
+}

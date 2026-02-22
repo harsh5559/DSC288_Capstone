@@ -1,0 +1,8 @@
+Data Type,Anomaly / Rule,Count / Rate,Action
+Stock Prices,Daily change > 50%,34 (0.01%),Removed (likely data errors)
+Stock Prices,Extreme returns 10-50%,"5,482 (1.2%)",KEPT -- real events
+Stock Prices,Zero / negative volume,"2,489",Removed
+Volume,Volume >= 5x 20-day MA,"1,455",KEPT via volume_ratio
+Phrasebank,Neutral class dominance,~59% of AllAgree,Stratified sampling
+Finnhub News,Tickers with 0 articles,0,Expected (small-cap)
+FinQA,Multi-step reasoning,"8,281 Q-A pairs",Faithfulness eval

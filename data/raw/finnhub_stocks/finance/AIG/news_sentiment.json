@@ -1,0 +1,12 @@
+{
+  "buzz": {
+    "articlesInLastWeek": 0,
+    "buzz": null,
+    "weeklyAverage": 0
+  },
+  "companyNewsScore": null,
+  "sectorAverageBullishPercent": 0.5761,
+  "sectorAverageNewsScore": 0.5118,
+  "sentiment": null,
+  "symbol": "AIG"
+}

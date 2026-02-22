@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NASDAQ NMS - GLOBAL MARKET",
+  "finnhubIndustry": "Biotechnology",
+  "floatingShare": 146.5,
+  "ipo": "1991-09-17",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/BIIB.png",
+  "marketCapitalization": 28182.040719447,
+  "name": "Biogen Inc",
+  "phone": "13023513367",
+  "shareOutstanding": 146.76,
+  "ticker": "BIIB",
+  "weburl": "https://www.biogen.com/"
+}

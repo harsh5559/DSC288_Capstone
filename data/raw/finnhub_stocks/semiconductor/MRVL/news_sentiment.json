@@ -1,0 +1,15 @@
+{
+  "buzz": {
+    "articlesInLastWeek": 33,
+    "buzz": 0.7701,
+    "weeklyAverage": 25.25
+  },
+  "companyNewsScore": 0.7946,
+  "sectorAverageBullishPercent": 0.5802,
+  "sectorAverageNewsScore": 0.5204,
+  "sentiment": {
+    "bearishPercent": 0,
+    "bullishPercent": 1
+  },
+  "symbol": "MRVL"
+}

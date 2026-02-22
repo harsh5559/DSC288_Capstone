@@ -1,0 +1,32 @@
+{
+  "sp500": {
+    "name": "S&P500",
+    "ok": true,
+    "records": 6289,
+    "file": "C:\\Users\\raghu\\OneDrive\\Desktop\\dsc288\\data\\raw\\yahoo_sp500\\sp500_1999_2023.csv"
+  },
+  "finqa": {
+    "name": "FinQA",
+    "ok": false,
+    "records": 0,
+    "file": "C:\\Users\\raghu\\OneDrive\\Desktop\\dsc288\\data\\raw\\finqa"
+  },
+  "phrasebank": {
+    "name": "Phrasebank",
+    "ok": false,
+    "records": 0,
+    "file": "C:\\Users\\raghu\\OneDrive\\Desktop\\dsc288\\data\\raw\\financial_phrasebank\\data\\FinancialPhraseBank-v1.0\\Sentences_AllAgree.txt"
+  },
+  "prices": {
+    "name": "Prices",
+    "ok": false,
+    "records": 0,
+    "file": "C:\\Users\\raghu\\OneDrive\\Desktop\\dsc288\\data\\raw\\fnspid\\Stock_price\\full_history\\full_history"
+  },
+  "fnspid_news": {
+    "name": "FNSPID-News",
+    "ok": false,
+    "records": 0,
+    "file": "C:\\Users\\raghu\\OneDrive\\Desktop\\dsc288\\data\\raw\\fnspid\\Stock_news\\All_external.csv"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "buzz": {
+    "articlesInLastWeek": 79,
+    "buzz": 0.861,
+    "weeklyAverage": 91.75
+  },
+  "companyNewsScore": 0.8421,
+  "sectorAverageBullishPercent": 0.5798,
+  "sectorAverageNewsScore": 0.5177,
+  "sentiment": {
+    "bearishPercent": 0.1112,
+    "bullishPercent": 0.8888
+  },
+  "symbol": "AMD"
+}

@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NASDAQ NMS - GLOBAL MARKET",
+  "finnhubIndustry": "Life Sciences Tools & Services",
+  "floatingShare": 152.49,
+  "ipo": "2000-06-28",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/ILMN.png",
+  "marketCapitalization": 17991.742282213003,
+  "name": "Illumina Inc",
+  "phone": "18582024500",
+  "shareOutstanding": 152.8,
+  "ticker": "ILMN",
+  "weburl": "https://www.illumina.com"
+}

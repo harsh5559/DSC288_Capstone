@@ -1,0 +1,15 @@
+{
+  "buzz": {
+    "articlesInLastWeek": 33,
+    "buzz": 0.9734,
+    "weeklyAverage": 28.25
+  },
+  "companyNewsScore": 0.9166,
+  "sectorAverageBullishPercent": 0.5841,
+  "sectorAverageNewsScore": 0.5208,
+  "sentiment": {
+    "bearishPercent": 0,
+    "bullishPercent": 1
+  },
+  "symbol": "LRCX"
+}

@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NASDAQ NMS - GLOBAL MARKET",
+  "finnhubIndustry": "Biotechnology",
+  "floatingShare": 210.97,
+  "ipo": "1991-02-15",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/INSM.png",
+  "marketCapitalization": 35170.92761095286,
+  "name": "Insmed Inc",
+  "phone": "19089779900",
+  "shareOutstanding": 213.27,
+  "ticker": "INSM",
+  "weburl": "https://insmed.com/"
+}

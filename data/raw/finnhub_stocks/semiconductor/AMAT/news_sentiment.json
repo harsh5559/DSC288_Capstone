@@ -1,0 +1,15 @@
+{
+  "buzz": {
+    "articlesInLastWeek": 17,
+    "buzz": 0.7083,
+    "weeklyAverage": 24
+  },
+  "companyNewsScore": 0.7946,
+  "sectorAverageBullishPercent": 0.5802,
+  "sectorAverageNewsScore": 0.5204,
+  "sentiment": {
+    "bearishPercent": 0,
+    "bullishPercent": 1
+  },
+  "symbol": "AMAT"
+}

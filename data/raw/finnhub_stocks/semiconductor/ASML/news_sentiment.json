@@ -1,0 +1,15 @@
+{
+  "buzz": {
+    "articlesInLastWeek": 19,
+    "buzz": 0.7721,
+    "weeklyAverage": 14.5
+  },
+  "companyNewsScore": 0.7946,
+  "sectorAverageBullishPercent": 0.5841,
+  "sectorAverageNewsScore": 0.5208,
+  "sentiment": {
+    "bearishPercent": 0,
+    "bullishPercent": 1
+  },
+  "symbol": "ASML"
+}

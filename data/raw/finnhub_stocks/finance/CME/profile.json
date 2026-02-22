@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NASDAQ NMS - GLOBAL MARKET",
+  "finnhubIndustry": "Financial Services",
+  "floatingShare": 358.96,
+  "ipo": "2002-12-06",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/CME.png",
+  "marketCapitalization": 111097.18976752822,
+  "name": "CME Group Inc",
+  "phone": "13026587581",
+  "shareOutstanding": 360.6,
+  "ticker": "CME",
+  "weburl": "https://www.cmegroup.com/"
+}

@@ -1,0 +1,103 @@
+{
+  "data": [
+    {
+      "symbol": "ADI",
+      "year": 2025,
+      "month": 1,
+      "change": -10000,
+      "mspr": -33.333332
+    },
+    {
+      "symbol": "ADI",
+      "year": 2025,
+      "month": 2,
+      "change": -10647,
+      "mspr": -29.911505
+    },
+    {
+      "symbol": "ADI",
+      "year": 2025,
+      "month": 3,
+      "change": 40642,
+      "mspr": 12.489629
+    },
+    {
+      "symbol": "ADI",
+      "year": 2025,
+      "month": 4,
+      "change": 64374,
+      "mspr": 55.07983
+    },
+    {
+      "symbol": "ADI",
+      "year": 2025,
+      "month": 5,
+      "change": -17413,
+      "mspr": -46.542645
+    },
+    {
+      "symbol": "ADI",
+      "year": 2025,
+      "month": 6,
+      "change": -6250,
+      "mspr": -100
+    },
+    {
+      "symbol": "ADI",
+      "year": 2025,
+      "month": 7,
+      "change": -6250,
+      "mspr": -100
+    },
+    {
+      "symbol": "ADI",
+      "year": 2025,
+      "month": 8,
+      "change": -35990,
+      "mspr": -87.844765
+    },
+    {
+      "symbol": "ADI",
+      "year": 2025,
+      "month": 9,
+      "change": -28750,
+      "mspr": -58.974358
+    },
+    {
+      "symbol": "ADI",
+      "year": 2025,
+      "month": 10,
+      "change": -28556,
+      "mspr": -58.810444
+    },
+    {
+      "symbol": "ADI",
+      "year": 2025,
+      "month": 11,
+      "change": -17413,
+      "mspr": -46.542645
+    },
+    {
+      "symbol": "ADI",
+      "year": 2025,
+      "month": 12,
+      "change": -47035,
+      "mspr": -41.292458
+    },
+    {
+      "symbol": "ADI",
+      "year": 2026,
+      "month": 1,
+      "change": -27250,
+      "mspr": -57.67196
+    },
+    {
+      "symbol": "ADI",
+      "year": 2026,
+      "month": 2,
+      "change": -16153,
+      "mspr": -44.441082
+    }
+  ],
+  "symbol": "ADI"
+}

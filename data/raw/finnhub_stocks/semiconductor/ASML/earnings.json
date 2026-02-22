@@ -1,0 +1,42 @@
+[
+  {
+    "actual": 7.34,
+    "estimate": 7.7108,
+    "period": "2025-12-31",
+    "quarter": 4,
+    "surprise": -0.3708,
+    "surprisePercent": -4.8088,
+    "symbol": "ASML.AS",
+    "year": 2025
+  },
+  {
+    "actual": 5.48,
+    "estimate": 5.56,
+    "period": "2025-09-30",
+    "quarter": 3,
+    "surprise": -0.08,
+    "surprisePercent": -1.4388,
+    "symbol": "ASML.AS",
+    "year": 2025
+  },
+  {
+    "actual": 5.9,
+    "estimate": 5.3042,
+    "period": "2025-06-30",
+    "quarter": 2,
+    "surprise": 0.5958,
+    "surprisePercent": 11.2326,
+    "symbol": "ASML.AS",
+    "year": 2025
+  },
+  {
+    "actual": 6,
+    "estimate": 5.891,
+    "period": "2025-03-31",
+    "quarter": 1,
+    "surprise": 0.109,
+    "surprisePercent": 1.8503,
+    "symbol": "ASML.AS",
+    "year": 2025
+  }
+]

@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NEW YORK STOCK EXCHANGE, INC.",
+  "finnhubIndustry": "Financial Services",
+  "floatingShare": 882.27,
+  "ipo": "2006-05-25",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/MA.png",
+  "marketCapitalization": 469458.91882792127,
+  "name": "Mastercard Inc",
+  "phone": "13026587581",
+  "shareOutstanding": 894,
+  "ticker": "MA",
+  "weburl": "https://www.mastercard.us/"
+}

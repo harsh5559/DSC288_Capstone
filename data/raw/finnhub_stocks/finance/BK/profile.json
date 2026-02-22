@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NEW YORK STOCK EXCHANGE, INC.",
+  "finnhubIndustry": "Financial Services",
+  "floatingShare": 686.3,
+  "ipo": "2007-07-02",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/BK.png",
+  "marketCapitalization": 81342.61807332837,
+  "name": "Bank of New York Mellon Corp",
+  "phone": "13026587581",
+  "shareOutstanding": 688.24,
+  "ticker": "BK",
+  "weburl": "https://www.bny.com/corporate/apac/en.html"
+}

@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NEW YORK STOCK EXCHANGE, INC.",
+  "finnhubIndustry": "Banking",
+  "floatingShare": 3088.37,
+  "ipo": "1962-12-10",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/WFC.png",
+  "marketCapitalization": 292590.89,
+  "name": "Wells Fargo & Co",
+  "phone": "18008693557",
+  "shareOutstanding": 3092.6,
+  "ticker": "WFC",
+  "weburl": "https://www.wellsfargo.com"
+}

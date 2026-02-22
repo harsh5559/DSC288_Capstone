@@ -1,0 +1,42 @@
+[
+  {
+    "actual": -0.8,
+    "estimate": -1.2582,
+    "period": "2025-09-30",
+    "quarter": 3,
+    "surprise": 0.4582,
+    "surprisePercent": 36.4171,
+    "symbol": "IONS",
+    "year": 2025
+  },
+  {
+    "actual": 0.7,
+    "estimate": -0.4387,
+    "period": "2025-06-30",
+    "quarter": 2,
+    "surprise": 1.1387,
+    "surprisePercent": 259.5623,
+    "symbol": "IONS",
+    "year": 2025
+  },
+  {
+    "actual": -0.93,
+    "estimate": -1.1391,
+    "period": "2025-03-31",
+    "quarter": 1,
+    "surprise": 0.2091,
+    "surprisePercent": 18.3566,
+    "symbol": "IONS",
+    "year": 2025
+  },
+  {
+    "actual": -0.66,
+    "estimate": -1.1456,
+    "period": "2024-12-31",
+    "quarter": 4,
+    "surprise": 0.4856,
+    "surprisePercent": 42.3883,
+    "symbol": "IONS",
+    "year": 2024
+  }
+]

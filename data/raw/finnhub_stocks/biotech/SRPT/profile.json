@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NASDAQ NMS - GLOBAL MARKET",
+  "finnhubIndustry": "Biotechnology",
+  "floatingShare": 99.37,
+  "ipo": "1997-06-04",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/SRPT.png",
+  "marketCapitalization": 1978.3820821000536,
+  "name": "Sarepta Therapeutics Inc",
+  "phone": "16172744000",
+  "shareOutstanding": 104.79,
+  "ticker": "SRPT",
+  "weburl": "https://www.sarepta.com/"
+}

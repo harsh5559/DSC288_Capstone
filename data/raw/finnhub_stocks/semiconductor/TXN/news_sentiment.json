@@ -1,0 +1,15 @@
+{
+  "buzz": {
+    "articlesInLastWeek": 3,
+    "buzz": 0.6315,
+    "weeklyAverage": 4.75
+  },
+  "companyNewsScore": 0.5,
+  "sectorAverageBullishPercent": 0.5798,
+  "sectorAverageNewsScore": 0.5177,
+  "sentiment": {
+    "bearishPercent": 0.5,
+    "bullishPercent": 0.5
+  },
+  "symbol": "TXN"
+}

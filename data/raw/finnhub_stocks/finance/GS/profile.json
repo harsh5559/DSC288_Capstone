@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NEW YORK STOCK EXCHANGE, INC.",
+  "finnhubIndustry": "Financial Services",
+  "floatingShare": 298.2,
+  "ipo": "1999-05-04",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/GS.png",
+  "marketCapitalization": 276606.0647306438,
+  "name": "Goldman Sachs Group Inc",
+  "phone": "12129021000",
+  "shareOutstanding": 299.93,
+  "ticker": "GS",
+  "weburl": "https://www.goldmansachs.com/"
+}

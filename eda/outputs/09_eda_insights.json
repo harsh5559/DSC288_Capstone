@@ -1,0 +1,65 @@
+{
+  "stock_universe": {
+    "source": "Finnhub 60 tickers, 3 sectors",
+    "price_source": "FNSPID (58/60 matched)",
+    "records": 439931,
+    "sectors": [
+      "biotech",
+      "finance",
+      "semiconductor"
+    ],
+    "tickers_per_sector": {
+      "biotech": 20,
+      "finance": 20,
+      "semiconductor": 20
+    }
+  },
+  "target": {
+    "threshold": "+/-2% fixed",
+    "buy_pct": 17.0,
+    "hold_pct": 66.9,
+    "sell_pct": 16.1
+  },
+  "outliers": {
+    "threshold": "50%",
+    "removed": 34,
+    "pct": 0.008
+  },
+  "sp500_correlation": {
+    "pearson_r": -0.0434,
+    "chi2": 3084.7,
+    "cramers_v": 0.0699,
+    "mutual_info": 0.0095
+  },
+  "finnhub_data": {
+    "profiles": 60,
+    "earnings_records": 220,
+    "total_news_articles": 8344,
+    "sentiment_tickers": 52
+  },
+  "temporal_split": {
+    "train": "2009--2021",
+    "val": "2022",
+    "test": "2023",
+    "method": "fixed cutoff, no shuffling"
+  },
+  "evaluation": {
+    "primary": "Macro F1",
+    "secondary": [
+      "per-class P/R",
+      "confusion matrix",
+      "backtest return"
+    ],
+    "explanation": [
+      "citation correctness",
+      "RAGAS faithfulness",
+      "FinQA reasoning"
+    ]
+  },
+  "sentiment_pipeline": {
+    "model": "FinBERT",
+    "training_data": "Financial Phrasebank (AllAgree)",
+    "output": "[-1, +1]",
+    "aggregation": "mean per stock-day"
+  }
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "actual": 1.95,
+    "estimate": 1.8996,
+    "period": "2025-12-31",
+    "quarter": 4,
+    "surprise": 0.0504,
+    "surprisePercent": 2.6532,
+    "symbol": "AVGO",
+    "year": 2025
+  },
+  {
+    "actual": 1.69,
+    "estimate": 1.6816,
+    "period": "2025-09-30",
+    "quarter": 3,
+    "surprise": 0.0084,
+    "surprisePercent": 0.4995,
+    "symbol": "AVGO",
+    "year": 2025
+  },
+  {
+    "actual": 1.58,
+    "estimate": 1.5948,
+    "period": "2025-06-30",
+    "quarter": 2,
+    "surprise": -0.0148,
+    "surprisePercent": -0.928,
+    "symbol": "AVGO",
+    "year": 2025
+  },
+  {
+    "actual": 1.6,
+    "estimate": 1.5181,
+    "period": "2025-03-31",
+    "quarter": 1,
+    "surprise": 0.0819,
+    "surprisePercent": 5.3949,
+    "symbol": "AVGO",
+    "year": 2025
+  }
+]

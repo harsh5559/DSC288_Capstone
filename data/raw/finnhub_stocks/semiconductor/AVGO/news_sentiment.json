@@ -1,0 +1,15 @@
+{
+  "buzz": {
+    "articlesInLastWeek": 68,
+    "buzz": 0.8724,
+    "weeklyAverage": 56.25
+  },
+  "companyNewsScore": 0.5334,
+  "sectorAverageBullishPercent": 0.5841,
+  "sectorAverageNewsScore": 0.5208,
+  "sentiment": {
+    "bearishPercent": 0.3334,
+    "bullishPercent": 0.6666
+  },
+  "symbol": "AVGO"
+}

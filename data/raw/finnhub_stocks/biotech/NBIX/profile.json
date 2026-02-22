@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NASDAQ NMS - GLOBAL MARKET",
+  "finnhubIndustry": "Biotechnology",
+  "floatingShare": 97.83,
+  "ipo": "1996-05-23",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/NBIX.png",
+  "marketCapitalization": 12909.753025478478,
+  "name": "Neurocrine Biosciences Inc",
+  "phone": "18586177600",
+  "shareOutstanding": 99.71,
+  "ticker": "NBIX",
+  "weburl": "https://www.neurocrine.com/"
+}

@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NEW YORK STOCK EXCHANGE, INC.",
+  "finnhubIndustry": "Banking",
+  "floatingShare": 1552.49,
+  "ipo": "1984-05-07",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/USB.png",
+  "marketCapitalization": 91183.10229054414,
+  "name": "US Bancorp",
+  "phone": "13026587581",
+  "shareOutstanding": 1555,
+  "ticker": "USB",
+  "weburl": "https://www.usbank.com/"
+}

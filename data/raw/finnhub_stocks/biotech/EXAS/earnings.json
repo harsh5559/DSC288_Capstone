@@ -1,0 +1,42 @@
+[
+  {
+    "actual": -0.38,
+    "estimate": -0.0676,
+    "period": "2025-12-31",
+    "quarter": 4,
+    "surprise": -0.3124,
+    "surprisePercent": -462.1302,
+    "symbol": "EXAS",
+    "year": 2025
+  },
+  {
+    "actual": -0.1,
+    "estimate": -0.0714,
+    "period": "2025-09-30",
+    "quarter": 3,
+    "surprise": -0.0286,
+    "surprisePercent": -40.056,
+    "symbol": "EXAS",
+    "year": 2025
+  },
+  {
+    "actual": -0.01,
+    "estimate": -0.1828,
+    "period": "2025-06-30",
+    "quarter": 2,
+    "surprise": 0.1728,
+    "surprisePercent": 94.5295,
+    "symbol": "EXAS",
+    "year": 2025
+  },
+  {
+    "actual": -0.54,
+    "estimate": -0.3883,
+    "period": "2025-03-31",
+    "quarter": 1,
+    "surprise": -0.1517,
+    "surprisePercent": -39.0677,
+    "symbol": "EXAS",
+    "year": 2025
+  }
+]

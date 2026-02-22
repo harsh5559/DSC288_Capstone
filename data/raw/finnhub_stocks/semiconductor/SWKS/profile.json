@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NASDAQ NMS - GLOBAL MARKET",
+  "finnhubIndustry": "Semiconductors",
+  "floatingShare": 149.76,
+  "ipo": "1998-06-02",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/SWKS.png",
+  "marketCapitalization": 9029.93555408139,
+  "name": "Skyworks Solutions Inc",
+  "phone": "19492313000",
+  "shareOutstanding": 150.37,
+  "ticker": "SWKS",
+  "weburl": "https://www.skyworksinc.com/"
+}

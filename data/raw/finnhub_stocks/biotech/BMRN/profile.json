@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NASDAQ NMS - GLOBAL MARKET",
+  "finnhubIndustry": "Biotechnology",
+  "floatingShare": 190.65,
+  "ipo": "1999-07-23",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/BMRN.png",
+  "marketCapitalization": 12310.687151920529,
+  "name": "BioMarin Pharmaceutical Inc",
+  "phone": "14155066700",
+  "shareOutstanding": 192.11,
+  "ticker": "BMRN",
+  "weburl": "https://www.biomarin.com/"
+}

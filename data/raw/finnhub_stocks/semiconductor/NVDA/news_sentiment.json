@@ -1,0 +1,15 @@
+{
+  "buzz": {
+    "articlesInLastWeek": 338,
+    "buzz": 1.2017,
+    "weeklyAverage": 281.25
+  },
+  "companyNewsScore": 0.7226,
+  "sectorAverageBullishPercent": 0.5802,
+  "sectorAverageNewsScore": 0.5204,
+  "sentiment": {
+    "bearishPercent": 0.2038,
+    "bullishPercent": 0.7962
+  },
+  "symbol": "NVDA"
+}

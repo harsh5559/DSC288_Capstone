@@ -1,0 +1,15 @@
+{
+  "buzz": {
+    "articlesInLastWeek": 16,
+    "buzz": 0.6182,
+    "weeklyAverage": 15.25
+  },
+  "companyNewsScore": 0.7946,
+  "sectorAverageBullishPercent": 0.5798,
+  "sectorAverageNewsScore": 0.5177,
+  "sentiment": {
+    "bearishPercent": 0,
+    "bullishPercent": 1
+  },
+  "symbol": "ADI"
+}

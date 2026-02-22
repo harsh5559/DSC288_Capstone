@@ -1,0 +1,16 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "estimateCurrency": "USD",
+  "exchange": "NASDAQ NMS - GLOBAL MARKET",
+  "finnhubIndustry": "Semiconductors",
+  "floatingShare": 487.49,
+  "ipo": "1979-04-03",
+  "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/ADI.png",
+  "marketCapitalization": 173327.11771913274,
+  "name": "Analog Devices Inc",
+  "phone": "17813294700",
+  "shareOutstanding": 488.63,
+  "ticker": "ADI",
+  "weburl": "https://www.analog.com/"
+}
