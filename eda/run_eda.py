@@ -93,7 +93,7 @@ def run_notebook():
 
     executed = NOTEBOOK_PATH.with_name("01_EDA_executed.ipynb")
     nbformat.write(nb, str(executed))
-    print(f"  Saved executed notebook: {executed.name}")
+    print(f"  Saved executed notebook: {executed.name} (gitignored)")
     return True
 
 

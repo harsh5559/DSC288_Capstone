@@ -29,6 +29,7 @@ ENV/
 # Jupyter Notebook
 .ipynb_checkpoints
 *.ipynb_checkpoints/
+eda/01_EDA_executed.ipynb
 
 # IDE
 .vscode/
