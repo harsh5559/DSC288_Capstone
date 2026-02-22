@@ -311,10 +311,10 @@ graph LR
     E --> F["train 129K / val 14K / test 6K"]
     style A fill:#2563eb,color:#fff,stroke:#1d4ed8,font-weight:bold
     style B fill:#16a34a,color:#fff,stroke:#15803d,font-weight:bold
-    style C fill:#d97706,color:#fff,stroke:#b45309,font-weight:bold
-    style D fill:#9333ea,color:#fff,stroke:#7e22ce,font-weight:bold
+    style C fill:#f59e0b,color:#1e293b,stroke:#d97706,font-weight:bold
+    style D fill:#7c3aed,color:#fff,stroke:#6d28d9,font-weight:bold
     style E fill:#dc2626,color:#fff,stroke:#b91c1c,font-weight:bold
-    style F fill:#0891b2,color:#fff,stroke:#0e7490,font-weight:bold
+    style F fill:#06b6d4,color:#1e293b,stroke:#0891b2,font-weight:bold
             </div>
         </div>
 
@@ -371,26 +371,26 @@ graph LR
         <div class="mermaid-container">
             <div class="mermaid">
 graph LR
-    User["fa:fa-user User / IDE"] --> MCP["fa:fa-server MCP Server"]
-    MCP --> GA["fa:fa-project-diagram Graph Agent"]
-    MCP --> DA["fa:fa-database Data Agent"]
-    GA --> Neo4j["fa:fa-circle-nodes Neo4j · 60 stocks"]
-    DA --> Data["fa:fa-chart-line Market Data"]
-    GA --> PB["fa:fa-pen Prompt Builder"]
+    User["User / IDE"] --> MCP["MCP Server"]
+    MCP --> GA["Graph Agent"]
+    MCP --> DA["Data Agent"]
+    GA --> Neo4j["Neo4j · 60 stocks"]
+    DA --> Data["Market Data"]
+    GA --> PB["Prompt Builder"]
     DA --> PB
-    PB --> AA["fa:fa-brain Analyst · GPT-5.2"]
-    AA --> JA["fa:fa-gavel Judge · GPT-5.2"]
+    PB --> AA["Analyst · GPT-5.2"]
+    AA --> JA["Judge · GPT-5.2"]
     JA --> MCP
 
-    style User fill:#475569,color:#fff,stroke:#334155,font-weight:bold
+    style User fill:#e2e8f0,color:#1e293b,stroke:#94a3b8,font-weight:bold
     style MCP fill:#2563eb,color:#fff,stroke:#1d4ed8,font-weight:bold
-    style GA fill:#9333ea,color:#fff,stroke:#7e22ce,font-weight:bold
+    style GA fill:#7c3aed,color:#fff,stroke:#6d28d9,font-weight:bold
     style DA fill:#0891b2,color:#fff,stroke:#0e7490,font-weight:bold
-    style PB fill:#d97706,color:#fff,stroke:#b45309,font-weight:bold
+    style PB fill:#f59e0b,color:#1e293b,stroke:#d97706,font-weight:bold
     style AA fill:#16a34a,color:#fff,stroke:#15803d,font-weight:bold
-    style JA fill:#9333ea,color:#fff,stroke:#7e22ce,font-weight:bold
+    style JA fill:#7c3aed,color:#fff,stroke:#6d28d9,font-weight:bold
     style Neo4j fill:#dc2626,color:#fff,stroke:#b91c1c,font-weight:bold
-    style Data fill:#0284c7,color:#fff,stroke:#0369a1,font-weight:bold
+    style Data fill:#06b6d4,color:#1e293b,stroke:#0891b2,font-weight:bold
             </div>
         </div>
 
@@ -448,17 +448,17 @@ sequenceDiagram
         <div class="mermaid-container">
             <div class="mermaid">
 graph LR
-    Stock["fa:fa-chart-bar Stock"] -- IN_SECTOR --> Sector["fa:fa-industry Sector"]
-    Stock -- HAS_EARNINGS --> Earnings["fa:fa-calendar Earnings"]
-    Stock -- MENTIONED_IN --> News["fa:fa-newspaper NewsArticle"]
-    Stock -- HAS_RECOMMENDATION --> Rec["fa:fa-thumbs-up Recommendation"]
+    Stock["Stock"] -- IN_SECTOR --> Sector["Sector"]
+    Stock -- HAS_EARNINGS --> Earnings["Earnings"]
+    Stock -- MENTIONED_IN --> News["NewsArticle"]
+    Stock -- HAS_RECOMMENDATION --> Rec["Recommendation"]
     Stock -- PEERS_WITH --> Stock
 
     style Sector fill:#dc2626,color:#fff,stroke:#b91c1c,font-weight:bold
     style Stock fill:#2563eb,color:#fff,stroke:#1d4ed8,font-weight:bold
     style Earnings fill:#16a34a,color:#fff,stroke:#15803d,font-weight:bold
-    style News fill:#d97706,color:#fff,stroke:#b45309,font-weight:bold
-    style Rec fill:#9333ea,color:#fff,stroke:#7e22ce,font-weight:bold
+    style News fill:#f59e0b,color:#1e293b,stroke:#d97706,font-weight:bold
+    style Rec fill:#7c3aed,color:#fff,stroke:#6d28d9,font-weight:bold
             </div>
         </div>
 
@@ -477,9 +477,9 @@ graph LR
         <div class="mermaid-container">
             <div class="mermaid">
 graph LR
-    FH["fa:fa-cloud Finnhub API"] --> Raw["fa:fa-download 60 tickers x 3 sectors"] --> Neo["fa:fa-circle-nodes Neo4j Graph"] --> Ctx["fa:fa-brain LLM Context"]
+    FH["Finnhub API"] --> Raw["60 tickers x 3 sectors"] --> Neo["Neo4j Graph"] --> Ctx["LLM Context"]
 
-    style FH fill:#d97706,color:#fff,stroke:#b45309,font-weight:bold
+    style FH fill:#f59e0b,color:#1e293b,stroke:#d97706,font-weight:bold
     style Raw fill:#7c3aed,color:#fff,stroke:#6d28d9,font-weight:bold
     style Neo fill:#dc2626,color:#fff,stroke:#b91c1c,font-weight:bold
     style Ctx fill:#16a34a,color:#fff,stroke:#15803d,font-weight:bold
@@ -492,20 +492,20 @@ graph LR
             <div class="mermaid">
 graph LR
     subgraph Quantitative["Path 1 · Quantitative Features"]
-        TS["fa:fa-chart-line FNSPID Prices"] --> Feat["fa:fa-cogs Join by ticker+date"]
-        News["fa:fa-newspaper News Articles"] --> Feat
-        Feat --> Out1["fa:fa-table news_count · target"]
+        TS["FNSPID Prices"] --> Feat["Join by ticker+date"]
+        News["News Articles"] --> Feat
+        Feat --> Out1["news_count · target"]
     end
     subgraph Qualitative["Path 2 · Qualitative Context"]
-        FH["fa:fa-newspaper Finnhub News"] --> Neo["fa:fa-circle-nodes Neo4j Stock"]
-        Neo --> Hdl["fa:fa-brain Headlines for LLM"]
+        FH["Finnhub News"] --> Neo["Neo4j Stock"]
+        Neo --> Hdl["Headlines for LLM"]
     end
 
     style TS fill:#2563eb,color:#fff,stroke:#1d4ed8,font-weight:bold
-    style News fill:#d97706,color:#fff,stroke:#b45309,font-weight:bold
-    style Feat fill:#0891b2,color:#fff,stroke:#0e7490,font-weight:bold
+    style News fill:#f59e0b,color:#1e293b,stroke:#d97706,font-weight:bold
+    style Feat fill:#06b6d4,color:#1e293b,stroke:#0891b2,font-weight:bold
     style Out1 fill:#16a34a,color:#fff,stroke:#15803d,font-weight:bold
-    style FH fill:#d97706,color:#fff,stroke:#b45309,font-weight:bold
+    style FH fill:#f59e0b,color:#1e293b,stroke:#d97706,font-weight:bold
     style Neo fill:#dc2626,color:#fff,stroke:#b91c1c,font-weight:bold
     style Hdl fill:#16a34a,color:#fff,stroke:#15803d,font-weight:bold
             </div>
@@ -540,20 +540,20 @@ graph LR
         <div class="mermaid-container">
             <div class="mermaid">
 graph LR
-    P1["fa:fa-database Parquet Data"] --> Neo["fa:fa-circle-nodes Neo4j Context"]
-    Neo --> JSONL["fa:fa-list 50 Prompts · 3 variants"]
-    JSONL --> Analyst["fa:fa-brain Analyst GPT-5.2"]
-    Analyst --> Judge["fa:fa-gavel Judge GPT-5.2"]
-    Judge --> Results["fa:fa-file Results JSONL"]
-    Results --> Metrics["fa:fa-chart-bar Metrics + Plots"]
+    P1["Parquet Data"] --> Neo["Neo4j Context"]
+    Neo --> JSONL["50 Prompts · 3 variants"]
+    JSONL --> Analyst["Analyst GPT-5.2"]
+    Analyst --> Judge["Judge GPT-5.2"]
+    Judge --> Results["Results JSONL"]
+    Results --> Metrics["Metrics + Plots"]
 
     style P1 fill:#7c3aed,color:#fff,stroke:#6d28d9,font-weight:bold
     style Neo fill:#dc2626,color:#fff,stroke:#b91c1c,font-weight:bold
-    style JSONL fill:#d97706,color:#fff,stroke:#b45309,font-weight:bold
+    style JSONL fill:#f59e0b,color:#1e293b,stroke:#d97706,font-weight:bold
     style Analyst fill:#16a34a,color:#fff,stroke:#15803d,font-weight:bold
-    style Judge fill:#9333ea,color:#fff,stroke:#7e22ce,font-weight:bold
+    style Judge fill:#7c3aed,color:#fff,stroke:#6d28d9,font-weight:bold
     style Results fill:#2563eb,color:#fff,stroke:#1d4ed8,font-weight:bold
-    style Metrics fill:#0891b2,color:#fff,stroke:#0e7490,font-weight:bold
+    style Metrics fill:#06b6d4,color:#1e293b,stroke:#0891b2,font-weight:bold
             </div>
         </div>
 
