@@ -83,6 +83,17 @@
         .mermaid-container { background:#1e1e2e; border-radius:16px; padding:30px; margin:24px 0; overflow-x:auto; border:1px solid #313244; }
         .mermaid { display:flex; justify-content:center; overflow-x:auto; }
         .mermaid svg { height:auto; min-width:600px; }
+        .mermaid .edgeLabel { background:#313244 !important; color:#e2e8f0 !important; padding:4px 8px !important; border-radius:6px !important; font-size:13px !important; border:1px solid #585b70 !important; }
+        .mermaid .edgeLabel span, .mermaid .edgeLabel p { color:#e2e8f0 !important; }
+        .mermaid .edgePath .path { stroke:#7f849c !important; stroke-width:2px !important; }
+        .mermaid .marker { fill:#7f849c !important; stroke:#7f849c !important; }
+        .mermaid .actor { fill:#3b82f6 !important; stroke:#60a5fa !important; }
+        .mermaid .actor text, .mermaid text.actor { fill:#fff !important; }
+        .mermaid .messageLine0, .mermaid .messageLine1 { stroke:#a6adc8 !important; stroke-width:1.5px !important; }
+        .mermaid .messageText { fill:#e2e8f0 !important; font-size:13px !important; }
+        .mermaid .labelText, .mermaid .edgeLabel foreignObject div { color:#e2e8f0 !important; }
+        .mermaid .cluster rect { fill:#181825 !important; stroke:#45475a !important; }
+        .mermaid .cluster span, .mermaid .cluster text { color:#e2e8f0 !important; fill:#e2e8f0 !important; }
 
         /* Callouts */
         .callout { background:linear-gradient(135deg,#eff6ff 0%,#dbeafe 100%); border-left:4px solid var(--accent); padding:24px 28px; border-radius:0 16px 16px 0; margin:24px 0; }
@@ -359,12 +370,18 @@ graph LR
         <div class="mermaid-container">
             <div class="mermaid">
 graph LR
-    User["User / IDE"] -->|MCP| MCP["MCP Server"]
-    MCP --> GA["Graph Agent"] -->|Cypher| Neo4j["Neo4j (60 stocks)"]
-    MCP --> DA["Data Agent"] -->|Parquet| Data["Market Data"]
-    GA & DA --> PB["Prompt Builder"] --> AA["Analyst GPT-5.2"] --> JA["Judge GPT-5.2"]
-    JA -->|Scores| MCP
+    User["fa:fa-user User / IDE"] --> MCP["fa:fa-server MCP Server"]
+    MCP --> GA["fa:fa-project-diagram Graph Agent"]
+    MCP --> DA["fa:fa-database Data Agent"]
+    GA --> Neo4j["fa:fa-circle-nodes Neo4j · 60 stocks"]
+    DA --> Data["fa:fa-chart-line Market Data"]
+    GA --> PB["fa:fa-pen Prompt Builder"]
+    DA --> PB
+    PB --> AA["fa:fa-brain Analyst · GPT-5.2"]
+    AA --> JA["fa:fa-gavel Judge · GPT-5.2"]
+    JA --> MCP
 
+    style User fill:#94a3b8,color:#fff,stroke:#cbd5e1
     style MCP fill:#3b82f6,color:#fff,stroke:#60a5fa
     style GA fill:#a855f7,color:#fff,stroke:#c084fc
     style DA fill:#06b6d4,color:#fff,stroke:#22d3ee
@@ -430,11 +447,11 @@ sequenceDiagram
         <div class="mermaid-container">
             <div class="mermaid">
 graph LR
-    Stock["Stock"] -->|IN_SECTOR| Sector["Sector"]
-    Stock -->|HAS_EARNINGS| Earnings["Earnings"]
-    Stock -->|MENTIONED_IN| News["NewsArticle"]
-    Stock -->|HAS_RECOMMENDATION| Rec["Recommendation"]
-    Stock -->|PEERS_WITH| Stock
+    Stock["fa:fa-chart-bar Stock"] -- IN_SECTOR --> Sector["fa:fa-industry Sector"]
+    Stock -- HAS_EARNINGS --> Earnings["fa:fa-calendar Earnings"]
+    Stock -- MENTIONED_IN --> News["fa:fa-newspaper NewsArticle"]
+    Stock -- HAS_RECOMMENDATION --> Rec["fa:fa-thumbs-up Recommendation"]
+    Stock -- PEERS_WITH --> Stock
 
     style Sector fill:#ef4444,color:#fff,stroke:#f87171
     style Stock fill:#3b82f6,color:#fff,stroke:#60a5fa
@@ -459,7 +476,7 @@ graph LR
         <div class="mermaid-container">
             <div class="mermaid">
 graph LR
-    FH["Finnhub API"] -->|download| Raw["60 tickers x 3 sectors"] -->|ingest| Neo["Neo4j Graph"] -->|query| Ctx["LLM Context"]
+    FH["fa:fa-cloud Finnhub API"] --> Raw["fa:fa-download 60 tickers x 3 sectors"] --> Neo["fa:fa-circle-nodes Neo4j Graph"] --> Ctx["fa:fa-brain LLM Context"]
 
     style FH fill:#eab308,color:#000,stroke:#facc15
     style Raw fill:#818cf8,color:#fff,stroke:#a5b4fc
@@ -473,16 +490,20 @@ graph LR
         <div class="mermaid-container">
             <div class="mermaid">
 graph LR
-    subgraph Quantitative["Path 1: Quantitative Features"]
-        TS["FNSPID Prices"] & News["News Articles"] -->|join ticker+date| Feat["Features: news_count, target"]
+    subgraph Quantitative["Path 1 · Quantitative Features"]
+        TS["fa:fa-chart-line FNSPID Prices"] --> Feat["fa:fa-cogs Join by ticker+date"]
+        News["fa:fa-newspaper News Articles"] --> Feat
+        Feat --> Out1["fa:fa-table news_count · target"]
     end
-    subgraph Qualitative["Path 2: Qualitative Context"]
-        FH["Finnhub News"] -->|MENTIONED_IN| Neo["Neo4j Stock"] --> Hdl["Headlines for LLM"]
+    subgraph Qualitative["Path 2 · Qualitative Context"]
+        FH["fa:fa-newspaper Finnhub News"] --> Neo["fa:fa-circle-nodes Neo4j Stock"]
+        Neo --> Hdl["fa:fa-brain Headlines for LLM"]
     end
 
     style TS fill:#3b82f6,color:#fff,stroke:#60a5fa
     style News fill:#eab308,color:#000,stroke:#facc15
-    style Feat fill:#22c55e,color:#fff,stroke:#4ade80
+    style Feat fill:#06b6d4,color:#fff,stroke:#22d3ee
+    style Out1 fill:#22c55e,color:#fff,stroke:#4ade80
     style FH fill:#eab308,color:#000,stroke:#facc15
     style Neo fill:#ef4444,color:#fff,stroke:#f87171
     style Hdl fill:#22c55e,color:#fff,stroke:#4ade80
@@ -518,9 +539,12 @@ graph LR
         <div class="mermaid-container">
             <div class="mermaid">
 graph LR
-    P1["Parquet Data"] -->|filter + sample| Neo["Neo4j Context"] -->|3 variants| JSONL["50 Prompts"]
-    JSONL --> Analyst["Analyst GPT-5.2"] --> Judge["Judge GPT-5.2"] --> Results["Results JSONL"]
-    Results --> Metrics["Metrics + Plots"]
+    P1["fa:fa-database Parquet Data"] --> Neo["fa:fa-circle-nodes Neo4j Context"]
+    Neo --> JSONL["fa:fa-list 50 Prompts · 3 variants"]
+    JSONL --> Analyst["fa:fa-brain Analyst GPT-5.2"]
+    Analyst --> Judge["fa:fa-gavel Judge GPT-5.2"]
+    Judge --> Results["fa:fa-file Results JSONL"]
+    Results --> Metrics["fa:fa-chart-bar Metrics + Plots"]
 
     style P1 fill:#818cf8,color:#fff,stroke:#a5b4fc
     style Neo fill:#ef4444,color:#fff,stroke:#f87171
@@ -915,7 +939,7 @@ scripts/
 
 <!-- SCRIPTS -->
 <script>
-    mermaid.initialize({ startOnLoad:true, theme:'dark', flowchart:{useMaxWidth:false,htmlLabels:true,curve:'basis',nodeSpacing:50,rankSpacing:60,padding:15}, sequence:{useMaxWidth:false,actorMargin:30,messageMargin:30,mirrorActors:false,width:160}, themeVariables:{fontSize:'15px',fontFamily:'Segoe UI, Arial, sans-serif',darkMode:true,background:'#1e1e2e',primaryColor:'#313244',primaryTextColor:'#cdd6f4',primaryBorderColor:'#585b70',lineColor:'#7f849c',secondaryColor:'#45475a',tertiaryColor:'#313244',noteBkgColor:'#313244',noteTextColor:'#cdd6f4',actorTextColor:'#cdd6f4',actorBkg:'#313244',actorBorder:'#585b70',signalColor:'#cdd6f4',labelBoxBkgColor:'#313244',labelTextColor:'#cdd6f4'} });
+    mermaid.initialize({ startOnLoad:true, theme:'dark', flowchart:{useMaxWidth:false,htmlLabels:true,curve:'basis',nodeSpacing:50,rankSpacing:60,padding:15}, sequence:{useMaxWidth:false,actorMargin:30,messageMargin:30,mirrorActors:false,width:160}, themeVariables:{fontSize:'15px',fontFamily:'Segoe UI, Arial, sans-serif',darkMode:true,background:'#1e1e2e',primaryColor:'#313244',primaryTextColor:'#cdd6f4',primaryBorderColor:'#585b70',lineColor:'#a6adc8',secondaryColor:'#45475a',tertiaryColor:'#313244',edgeLabelBackground:'#313244',noteBkgColor:'#313244',noteTextColor:'#cdd6f4',actorTextColor:'#cdd6f4',actorBkg:'#313244',actorBorder:'#585b70',signalColor:'#cdd6f4',labelBoxBkgColor:'#313244',labelTextColor:'#cdd6f4',clusterBkg:'#181825',clusterBorder:'#45475a'} });
 
     // Scroll-reveal: sections animate in when they enter viewport
     (function() {
