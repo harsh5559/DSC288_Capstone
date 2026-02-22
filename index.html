@@ -80,7 +80,7 @@
         .badge-purple { background:#ede9fe; color:#5b21b6; }
 
         /* Mermaid */
-        .mermaid-container { background:#f8fafc; border-radius:16px; padding:30px; margin:24px 0; overflow-x:auto; border:1px solid var(--border); }
+        .mermaid-container { background:#1e1e2e; border-radius:16px; padding:30px; margin:24px 0; overflow-x:auto; border:1px solid #313244; }
         .mermaid { display:flex; justify-content:center; overflow-x:auto; }
         .mermaid svg { height:auto; min-width:600px; }
 
@@ -297,12 +297,12 @@
 graph LR
     A["1. Load"] --> B["2. Clean"] --> C["3. Align"] --> D["4. Features"] --> E["5. Split"]
     E --> F["train 129K / val 14K / test 6K"]
-    style A fill:#2563eb,color:#fff,stroke:#1d4ed8
-    style B fill:#16a34a,color:#fff,stroke:#15803d
-    style C fill:#ca8a04,color:#fff,stroke:#a16207
-    style D fill:#9333ea,color:#fff,stroke:#7e22ce
-    style E fill:#dc2626,color:#fff,stroke:#b91c1c
-    style F fill:#0d9488,color:#fff,stroke:#0f766e
+    style A fill:#3b82f6,color:#fff,stroke:#60a5fa
+    style B fill:#22c55e,color:#fff,stroke:#4ade80
+    style C fill:#eab308,color:#000,stroke:#facc15
+    style D fill:#a855f7,color:#fff,stroke:#c084fc
+    style E fill:#ef4444,color:#fff,stroke:#f87171
+    style F fill:#06b6d4,color:#fff,stroke:#22d3ee
             </div>
         </div>
 
@@ -365,14 +365,14 @@ graph LR
     GA & DA --> PB["Prompt Builder"] --> AA["Analyst GPT-5.2"] --> JA["Judge GPT-5.2"]
     JA -->|Scores| MCP
 
-    style MCP fill:#2563eb,color:#fff,stroke:#1d4ed8
-    style GA fill:#7c3aed,color:#fff,stroke:#6d28d9
-    style DA fill:#0891b2,color:#fff,stroke:#0e7490
-    style PB fill:#ca8a04,color:#fff,stroke:#a16207
-    style AA fill:#16a34a,color:#fff,stroke:#15803d
-    style JA fill:#9333ea,color:#fff,stroke:#7e22ce
-    style Neo4j fill:#dc2626,color:#fff,stroke:#b91c1c
-    style Data fill:#0284c7,color:#fff,stroke:#0369a1
+    style MCP fill:#3b82f6,color:#fff,stroke:#60a5fa
+    style GA fill:#a855f7,color:#fff,stroke:#c084fc
+    style DA fill:#06b6d4,color:#fff,stroke:#22d3ee
+    style PB fill:#eab308,color:#000,stroke:#facc15
+    style AA fill:#22c55e,color:#fff,stroke:#4ade80
+    style JA fill:#a855f7,color:#fff,stroke:#c084fc
+    style Neo4j fill:#ef4444,color:#fff,stroke:#f87171
+    style Data fill:#0ea5e9,color:#fff,stroke:#38bdf8
             </div>
         </div>
 
@@ -436,11 +436,11 @@ graph LR
     Stock -->|HAS_RECOMMENDATION| Rec["Recommendation"]
     Stock -->|PEERS_WITH| Stock
 
-    style Sector fill:#dc2626,color:#fff,stroke:#b91c1c
-    style Stock fill:#2563eb,color:#fff,stroke:#1d4ed8
-    style Earnings fill:#16a34a,color:#fff,stroke:#15803d
-    style News fill:#ca8a04,color:#fff,stroke:#a16207
-    style Rec fill:#9333ea,color:#fff,stroke:#7e22ce
+    style Sector fill:#ef4444,color:#fff,stroke:#f87171
+    style Stock fill:#3b82f6,color:#fff,stroke:#60a5fa
+    style Earnings fill:#22c55e,color:#fff,stroke:#4ade80
+    style News fill:#eab308,color:#000,stroke:#facc15
+    style Rec fill:#a855f7,color:#fff,stroke:#c084fc
             </div>
         </div>
 
@@ -461,10 +461,10 @@ graph LR
 graph LR
     FH["Finnhub API"] -->|download| Raw["60 tickers x 3 sectors"] -->|ingest| Neo["Neo4j Graph"] -->|query| Ctx["LLM Context"]
 
-    style FH fill:#ca8a04,color:#fff,stroke:#a16207
-    style Raw fill:#4f46e5,color:#fff,stroke:#4338ca
-    style Neo fill:#dc2626,color:#fff,stroke:#b91c1c
-    style Ctx fill:#16a34a,color:#fff,stroke:#15803d
+    style FH fill:#eab308,color:#000,stroke:#facc15
+    style Raw fill:#818cf8,color:#fff,stroke:#a5b4fc
+    style Neo fill:#ef4444,color:#fff,stroke:#f87171
+    style Ctx fill:#22c55e,color:#fff,stroke:#4ade80
             </div>
         </div>
 
@@ -480,12 +480,12 @@ graph LR
         FH["Finnhub News"] -->|MENTIONED_IN| Neo["Neo4j Stock"] --> Hdl["Headlines for LLM"]
     end
 
-    style TS fill:#2563eb,color:#fff,stroke:#1d4ed8
-    style News fill:#ca8a04,color:#fff,stroke:#a16207
-    style Feat fill:#16a34a,color:#fff,stroke:#15803d
-    style FH fill:#ca8a04,color:#fff,stroke:#a16207
-    style Neo fill:#dc2626,color:#fff,stroke:#b91c1c
-    style Hdl fill:#16a34a,color:#fff,stroke:#15803d
+    style TS fill:#3b82f6,color:#fff,stroke:#60a5fa
+    style News fill:#eab308,color:#000,stroke:#facc15
+    style Feat fill:#22c55e,color:#fff,stroke:#4ade80
+    style FH fill:#eab308,color:#000,stroke:#facc15
+    style Neo fill:#ef4444,color:#fff,stroke:#f87171
+    style Hdl fill:#22c55e,color:#fff,stroke:#4ade80
             </div>
         </div>
         <div class="callout">
@@ -522,13 +522,13 @@ graph LR
     JSONL --> Analyst["Analyst GPT-5.2"] --> Judge["Judge GPT-5.2"] --> Results["Results JSONL"]
     Results --> Metrics["Metrics + Plots"]
 
-    style P1 fill:#4f46e5,color:#fff,stroke:#4338ca
-    style Neo fill:#dc2626,color:#fff,stroke:#b91c1c
-    style JSONL fill:#ca8a04,color:#fff,stroke:#a16207
-    style Analyst fill:#16a34a,color:#fff,stroke:#15803d
-    style Judge fill:#9333ea,color:#fff,stroke:#7e22ce
-    style Results fill:#2563eb,color:#fff,stroke:#1d4ed8
-    style Metrics fill:#0891b2,color:#fff,stroke:#0e7490
+    style P1 fill:#818cf8,color:#fff,stroke:#a5b4fc
+    style Neo fill:#ef4444,color:#fff,stroke:#f87171
+    style JSONL fill:#eab308,color:#000,stroke:#facc15
+    style Analyst fill:#22c55e,color:#fff,stroke:#4ade80
+    style Judge fill:#a855f7,color:#fff,stroke:#c084fc
+    style Results fill:#3b82f6,color:#fff,stroke:#60a5fa
+    style Metrics fill:#06b6d4,color:#fff,stroke:#22d3ee
             </div>
         </div>
 
@@ -915,7 +915,7 @@ scripts/
 
 <!-- SCRIPTS -->
 <script>
-    mermaid.initialize({ startOnLoad:true, theme:'default', flowchart:{useMaxWidth:false,htmlLabels:true,curve:'basis',nodeSpacing:50,rankSpacing:60,padding:15}, sequence:{useMaxWidth:false,actorMargin:30,messageMargin:30,mirrorActors:false,width:160}, themeVariables:{fontSize:'16px',fontFamily:'Segoe UI, Arial, sans-serif',primaryColor:'#dbeafe',primaryTextColor:'#0f172a',lineColor:'#94a3b8',primaryBorderColor:'#93c5fd'} });
+    mermaid.initialize({ startOnLoad:true, theme:'dark', flowchart:{useMaxWidth:false,htmlLabels:true,curve:'basis',nodeSpacing:50,rankSpacing:60,padding:15}, sequence:{useMaxWidth:false,actorMargin:30,messageMargin:30,mirrorActors:false,width:160}, themeVariables:{fontSize:'15px',fontFamily:'Segoe UI, Arial, sans-serif',darkMode:true,background:'#1e1e2e',primaryColor:'#313244',primaryTextColor:'#cdd6f4',primaryBorderColor:'#585b70',lineColor:'#7f849c',secondaryColor:'#45475a',tertiaryColor:'#313244',noteBkgColor:'#313244',noteTextColor:'#cdd6f4',actorTextColor:'#cdd6f4',actorBkg:'#313244',actorBorder:'#585b70',signalColor:'#cdd6f4',labelBoxBkgColor:'#313244',labelTextColor:'#cdd6f4'} });
 
     // Scroll-reveal: sections animate in when they enter viewport
     (function() {
