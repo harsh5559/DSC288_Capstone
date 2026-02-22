@@ -297,12 +297,12 @@
 graph LR
     A["1. Load"] --> B["2. Clean"] --> C["3. Align"] --> D["4. Features"] --> E["5. Split"]
     E --> F["train 129K / val 14K / test 6K"]
-    style A fill:#3182ce,color:#fff,stroke:#fff
-    style B fill:#38a169,color:#fff,stroke:#fff
-    style C fill:#d69e2e,color:#fff,stroke:#fff
-    style D fill:#805ad5,color:#fff,stroke:#fff
-    style E fill:#e53e3e,color:#fff,stroke:#fff
-    style F fill:#0f766e,color:#fff,stroke:#0d9488
+    style A fill:#2563eb,color:#fff,stroke:#1d4ed8
+    style B fill:#16a34a,color:#fff,stroke:#15803d
+    style C fill:#ca8a04,color:#fff,stroke:#a16207
+    style D fill:#9333ea,color:#fff,stroke:#7e22ce
+    style E fill:#dc2626,color:#fff,stroke:#b91c1c
+    style F fill:#0d9488,color:#fff,stroke:#0f766e
             </div>
         </div>
 
@@ -365,14 +365,14 @@ graph LR
     GA & DA --> PB["Prompt Builder"] --> AA["Analyst GPT-5.2"] --> JA["Judge GPT-5.2"]
     JA -->|Scores| MCP
 
-    style MCP fill:#3182ce,color:#fff,stroke:#fff
-    style GA fill:#b794f4,color:#fff,stroke:#fff
-    style DA fill:#4fd1c5,color:#fff,stroke:#fff
-    style PB fill:#fbd38d,color:#1a202c,stroke:#f6c95c
-    style AA fill:#68d391,color:#1a202c,stroke:#4ade80
-    style JA fill:#d6bcfa,color:#1a202c,stroke:#c4b5fd
-    style Neo4j fill:#e53e3e,color:#fff,stroke:#dc2626
-    style Data fill:#0ea5e9,color:#fff,stroke:#0284c7
+    style MCP fill:#2563eb,color:#fff,stroke:#1d4ed8
+    style GA fill:#7c3aed,color:#fff,stroke:#6d28d9
+    style DA fill:#0891b2,color:#fff,stroke:#0e7490
+    style PB fill:#ca8a04,color:#fff,stroke:#a16207
+    style AA fill:#16a34a,color:#fff,stroke:#15803d
+    style JA fill:#9333ea,color:#fff,stroke:#7e22ce
+    style Neo4j fill:#dc2626,color:#fff,stroke:#b91c1c
+    style Data fill:#0284c7,color:#fff,stroke:#0369a1
             </div>
         </div>
 
@@ -436,11 +436,11 @@ graph LR
     Stock -->|HAS_RECOMMENDATION| Rec["Recommendation"]
     Stock -->|PEERS_WITH| Stock
 
-    style Sector fill:#e53e3e,color:#fff,stroke:#fff
-    style Stock fill:#3182ce,color:#fff,stroke:#fff
-    style Earnings fill:#38a169,color:#fff,stroke:#fff
-    style News fill:#d69e2e,color:#fff,stroke:#fff
-    style Rec fill:#805ad5,color:#fff,stroke:#fff
+    style Sector fill:#dc2626,color:#fff,stroke:#b91c1c
+    style Stock fill:#2563eb,color:#fff,stroke:#1d4ed8
+    style Earnings fill:#16a34a,color:#fff,stroke:#15803d
+    style News fill:#ca8a04,color:#fff,stroke:#a16207
+    style Rec fill:#9333ea,color:#fff,stroke:#7e22ce
             </div>
         </div>
 
@@ -461,10 +461,10 @@ graph LR
 graph LR
     FH["Finnhub API"] -->|download| Raw["60 tickers x 3 sectors"] -->|ingest| Neo["Neo4j Graph"] -->|query| Ctx["LLM Context"]
 
-    style FH fill:#d69e2e,color:#fff,stroke:#fff
-    style Raw fill:#6366f1,color:#fff,stroke:#4f46e5
-    style Neo fill:#e53e3e,color:#fff,stroke:#fff
-    style Ctx fill:#38a169,color:#fff,stroke:#fff
+    style FH fill:#ca8a04,color:#fff,stroke:#a16207
+    style Raw fill:#4f46e5,color:#fff,stroke:#4338ca
+    style Neo fill:#dc2626,color:#fff,stroke:#b91c1c
+    style Ctx fill:#16a34a,color:#fff,stroke:#15803d
             </div>
         </div>
 
@@ -480,12 +480,12 @@ graph LR
         FH["Finnhub News"] -->|MENTIONED_IN| Neo["Neo4j Stock"] --> Hdl["Headlines for LLM"]
     end
 
-    style TS fill:#3182ce,color:#fff,stroke:#fff
-    style News fill:#d69e2e,color:#fff,stroke:#fff
-    style Feat fill:#38a169,color:#fff,stroke:#fff
-    style FH fill:#d69e2e,color:#fff,stroke:#fff
-    style Neo fill:#e53e3e,color:#fff,stroke:#fff
-    style Hdl fill:#38a169,color:#fff,stroke:#fff
+    style TS fill:#2563eb,color:#fff,stroke:#1d4ed8
+    style News fill:#ca8a04,color:#fff,stroke:#a16207
+    style Feat fill:#16a34a,color:#fff,stroke:#15803d
+    style FH fill:#ca8a04,color:#fff,stroke:#a16207
+    style Neo fill:#dc2626,color:#fff,stroke:#b91c1c
+    style Hdl fill:#16a34a,color:#fff,stroke:#15803d
             </div>
         </div>
         <div class="callout">
@@ -522,13 +522,13 @@ graph LR
     JSONL --> Analyst["Analyst GPT-5.2"] --> Judge["Judge GPT-5.2"] --> Results["Results JSONL"]
     Results --> Metrics["Metrics + Plots"]
 
-    style P1 fill:#6366f1,color:#fff,stroke:#4f46e5
-    style Neo fill:#e53e3e,color:#fff,stroke:#fff
-    style JSONL fill:#fbd38d,color:#1a202c,stroke:#f6c95c
-    style Analyst fill:#68d391,color:#1a202c,stroke:#4ade80
-    style Judge fill:#d6bcfa,color:#1a202c,stroke:#c4b5fd
-    style Results fill:#3182ce,color:#fff,stroke:#2563eb
-    style Metrics fill:#0f766e,color:#fff,stroke:#0d9488
+    style P1 fill:#4f46e5,color:#fff,stroke:#4338ca
+    style Neo fill:#dc2626,color:#fff,stroke:#b91c1c
+    style JSONL fill:#ca8a04,color:#fff,stroke:#a16207
+    style Analyst fill:#16a34a,color:#fff,stroke:#15803d
+    style Judge fill:#9333ea,color:#fff,stroke:#7e22ce
+    style Results fill:#2563eb,color:#fff,stroke:#1d4ed8
+    style Metrics fill:#0891b2,color:#fff,stroke:#0e7490
             </div>
         </div>
 
