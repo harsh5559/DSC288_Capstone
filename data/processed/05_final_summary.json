@@ -1,0 +1,51 @@
+{
+  "pipeline_completion_timestamp": "2026-02-22T12:25:19.691902",
+  "leakage_fixes_applied": [
+    "FIX 1: Scalers fitted on training split only; val/test transformed without refitting",
+    "FIX 2: ffill applied within each split independently after date cutoff"
+  ],
+  "splits": {
+    "train": {
+      "records": 129833,
+      "date_range": {
+        "start": "2009-07-10",
+        "end": "2018-12-31"
+      },
+      "tickers": 57,
+      "features": 15,
+      "target_distribution": {
+        "hold": 96169,
+        "buy": 17609,
+        "sell": 16055
+      }
+    },
+    "validation": {
+      "records": 14364,
+      "date_range": {
+        "start": "2019-01-02",
+        "end": "2019-12-31"
+      },
+      "tickers": 57,
+      "features": 15,
+      "target_distribution": {
+        "hold": 11080,
+        "buy": 1783,
+        "sell": 1501
+      }
+    },
+    "test": {
+      "records": 6222,
+      "date_range": {
+        "start": "2020-01-02",
+        "end": "2020-06-09"
+      },
+      "tickers": 57,
+      "features": 15,
+      "target_distribution": {
+        "hold": 2929,
+        "sell": 1649,
+        "buy": 1644
+      }
+    }
+  }
+}

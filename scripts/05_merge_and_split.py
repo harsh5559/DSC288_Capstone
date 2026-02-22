@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).parent.parent
 PROCESSED_DIR = BASE_DIR / "data" / "processed"
 
 
-def create_temporal_split(df, train_end='2021-12-31', val_end='2022-12-31'):
+def create_temporal_split(df, train_end='2018-12-31', val_end='2019-12-31'):
     """
     Split data temporally to prevent look-ahead bias.
     Train: up to train_end (inclusive)

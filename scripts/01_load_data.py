@@ -19,8 +19,19 @@ PROCESSED_DIR = BASE_DIR / "data" / "processed"
 PROCESSED_DIR.mkdir(exist_ok=True)
 
 
+def _get_finnhub_tickers():
+    """Tickers from data/raw/finnhub_stocks/_sector_index.json (Neo4j/fin_memory source)."""
+    path = RAW_DIR / "finnhub_stocks" / "_sector_index.json"
+    if not path.exists():
+        return []
+    with open(path) as f:
+        return [t.strip().upper() for t in json.load(f).keys() if t]
+
+
 def load_fnspid_prices():
-    """Load FNSPID stock price data from individual CSVs"""
+    """Load FNSPID stock price data from individual CSVs.
+    Prefers tickers that exist in Finnhub/Neo4j (_sector_index.json) for aligned train/test and eval.
+    """
     print("\n" + "="*60)
     print("LOADING FNSPID STOCK PRICES")
     print("="*60)
@@ -31,24 +42,39 @@ def load_fnspid_prices():
         print(f"[ERROR] Price directory not found: {price_dir}")
         return None
     
-    # Get all CSV files, sorted alphabetically for deterministic selection.
-    # The first 100 tickers alphabetically are used — no random sampling.
     csv_files = sorted(price_dir.glob("*.csv"), key=lambda f: f.stem)
+    available_stems = {f.stem.upper() for f in csv_files}
     print(f"Found {len(csv_files)} stock CSV files")
     
-    selected_files = csv_files[:100]
+    finnhub_tickers = _get_finnhub_tickers()
+    if finnhub_tickers:
+        # Use intersection so train/test align with Neo4j/Finnhub for analysis and eval
+        intersection = [s for s in finnhub_tickers if s in available_stems]
+        if intersection:
+            # Keep CSV order by stem so we can look up files
+            stem_to_file = {f.stem.upper(): f for f in csv_files}
+            selected_files = [stem_to_file[t] for t in sorted(intersection) if t in stem_to_file]
+            selection_method = "finnhub_neo4j_intersection"
+            print(f"Using {len(selected_files)} tickers (Finnhub/Neo4j intersection with FNSPID)")
+        else:
+            selected_files = csv_files[:100]
+            selection_method = "first_100_alphabetically"
+            print(f"No overlap with Finnhub tickers; using first 100 alphabetically")
+    else:
+        selected_files = csv_files[:100]
+        selection_method = "first_100_alphabetically"
+        print(f"Finnhub index not found; using first {len(selected_files)} alphabetically")
+    
     selected_tickers = [f.stem for f in selected_files]
 
-    # Save the selected ticker list so the exact subset is reproducible
     ticker_list_file = PROCESSED_DIR / "selected_tickers.json"
     with open(ticker_list_file, 'w') as f:
         json.dump({
-            "selection_method": "first_100_alphabetically",
+            "selection_method": selection_method,
             "count": len(selected_tickers),
             "tickers": selected_tickers
         }, f, indent=2)
-    print(f"Selected {len(selected_tickers)} tickers (first 100 alphabetically)")
-    print(f"Ticker list saved to: {ticker_list_file}")
+    print(f"Selected {len(selected_tickers)} tickers. Saved to: {ticker_list_file}")
     
     # Load a sample first to check structure
     if selected_files:

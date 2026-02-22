@@ -92,6 +92,15 @@ Comprehensive EDA in a single notebook (`eda/01_EDA.ipynb`) covering 12 analysis
 
 **Output artifacts:** 8 PNG visualizations + 1 JSON insights summary + 1 CSV anomaly table in `eda/outputs/`.
 
+## Fin Memory (Neo4j Knowledge Graph)
+
+Finnhub master data is ingested into a **Neo4j** graph for explainability: sectors, stocks, profiles, earnings, news, recommendations, and peer links. The **fin_memory** agent builds and updates this graph via MERGE (idempotent).
+
+**Entities:** Sector (3), Stock (60), Earnings (220), NewsArticle (6,960), Recommendation (232).  
+**Relationships:** IN_SECTOR, HAS_EARNINGS, MENTIONED_IN, HAS_RECOMMENDATION, PEERS_WITH.
+
+**Documentation:** See [reports/FIN_MEMORY_IMPLEMENTATION.md](reports/FIN_MEMORY_IMPLEMENTATION.md) for how entities and relationships are built, and how they were verified.
+
 ## Feature Engineering
 
 Based on EDA findings, we engineer features across three categories:
@@ -122,15 +131,16 @@ Normalization: MinMaxScaler for prices, StandardScaler for volume/returns (per t
 │   ├── run_pipeline.py                   # Pipeline orchestrator
 │   └── README.md                         # Scripts documentation
 ├── src/                                  # System implementation
-│   ├── server/                           # LiteLLM proxy & MCP server
-│   ├── agents/                           # Multi-agent system (Phase 2)
+│   ├── server/                           # LiteLLM + Neo4j (manage.py), MCP server
+│   ├── agents/                           # fin_memory, multi-agent (Phase 2)
 │   └── evaluation/                       # Evaluation pipeline (Phase 4)
 ├── eda/                                  # Exploratory data analysis
 │   ├── 01_EDA.ipynb                      # Canonical EDA notebook (12 sections)
 │   ├── run_eda.py                        # Executes notebook, saves outputs
 │   └── outputs/                          # Generated plots and summaries
 ├── config/
-│   └── litellm_config.yaml               # LiteLLM proxy model configuration
+│   ├── litellm_config.yaml               # LiteLLM proxy model configuration
+│   └── neo4j.yaml                        # Neo4j connection (fin_memory)
 ├── docs/
 │   └── index.html                        # GitHub Pages progress report
 ├── reports/                              # Documentation and reports
@@ -168,12 +178,23 @@ python eda/run_eda.py --check          # Verify data exists before running
 ```
 Or open `eda/01_EDA.ipynb` interactively in Jupyter.
 
-### Server Management
+### Server Management (LiteLLM + Neo4j)
 ```bash
-python src/server/manage.py start      # Start LiteLLM proxy
-python src/server/manage.py status     # Check status
-python src/server/manage.py test       # Run test suite
-python src/server/manage.py stop       # Stop server
+python src/server/manage.py start           # Start both (requires Docker for Neo4j)
+python src/server/manage.py start neo4j     # Start only Neo4j
+python src/server/manage.py status          # Status of both
+python src/server/manage.py stop            # Stop both
+python src/server/manage.py neo4j reset     # Wipe Neo4j graph
+python src/server/manage.py test            # LiteLLM test suite
+```
+
+### Fin Memory (Neo4j ingest)
+```bash
+python src/agents/fin_memory.py memorize     # Ingest all 60 tickers
+python src/agents/fin_memory.py memorize --ticker JPM   # Single ticker
+python src/agents/fin_memory.py stats        # Graph counts
+python src/agents/fin_memory.py query "MATCH (s:Stock) RETURN s.ticker LIMIT 5"
+# One-shot (start Neo4j + full ingest): python scripts/ingest_fin_memory.py
 ```
 
 ## Evaluation Plan

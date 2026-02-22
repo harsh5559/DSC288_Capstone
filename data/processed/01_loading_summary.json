@@ -1,5 +1,5 @@
 {
-  "loading_timestamp": "2026-01-31T21:11:00.920438",
+  "loading_timestamp": "2026-02-22T12:18:57.875512",
   "datasets": {
     "financial_phrasebank": {
       "file": "financial_phrasebank_raw.parquet",
@@ -12,38 +12,33 @@
     },
     "fnspid_news": {
       "file": "fnspid_news_raw.parquet",
-      "records": 20000,
+      "records": 10000,
       "columns": [
         "Date",
-        "Article_title",
+        "Title",
         "Stock_symbol",
         "Url",
         "Publisher",
         "Author",
         "Article",
-        "Lsa_summary",
-        "Luhn_summary",
-        "Textrank_summary",
-        "Lexrank_summary",
-        "source",
-        "Unnamed: 0"
+        "source"
       ],
-      "size_mb": 31.03
+      "size_mb": 0.84
     },
     "fnspid_prices": {
       "file": "fnspid_prices_raw.parquet",
-      "records": 460293,
+      "records": 439931,
       "columns": [
         "date",
-        "volume",
         "open",
         "high",
         "low",
         "close",
         "adj close",
+        "volume",
         "ticker"
       ],
-      "size_mb": 9.32
+      "size_mb": 9.59
     },
     "sp500": {
       "file": "sp500_raw.parquet",

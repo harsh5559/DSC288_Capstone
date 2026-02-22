@@ -1,0 +1,22 @@
+{
+  "train": {
+    "n": 200,
+    "accuracy": 0.275,
+    "balanced_accuracy": 0.3324,
+    "macro_f1": 0.1912,
+    "judge_faithfulness_mean": 1.0,
+    "judge_relevance_mean": 3.315,
+    "judge_consistency_mean": 4.29,
+    "judge_correctness_mean": 2.1
+  },
+  "test": {
+    "n": 10,
+    "accuracy": 0.6,
+    "balanced_accuracy": 0.3333,
+    "macro_f1": 0.25,
+    "judge_faithfulness_mean": 1.0,
+    "judge_relevance_mean": 3.8,
+    "judge_consistency_mean": 5.0,
+    "judge_correctness_mean": 3.4
+  }
+}

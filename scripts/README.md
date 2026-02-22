@@ -37,9 +37,9 @@ python scripts/05_merge_and_split.py
 
 ### Stage 1: Data Loading (`01_load_data.py`)
 - Loads all raw datasets from `data/raw/`
-- Loads 100 stocks from FNSPID (can be adjusted)
+- **Stock tickers:** Uses Finnhub/Neo4j tickers (from `data/raw/finnhub_stocks/_sector_index.json`) when available; takes the intersection with FNSPID price CSVs so train/val/test align with Neo4j for analysis and eval. Falls back to first 100 FNSPID tickers if no Finnhub index or no overlap.
 - Loads Financial Phrasebank, FinQA, and S&P 500 data
-- **Output:** `*_raw.parquet` files in `data/processed/`
+- **Output:** `*_raw.parquet` files and `selected_tickers.json` in `data/processed/`
 
 ### Stage 2: Data Cleaning (`02_clean_data.py`)
 - Handles NULL values with forward fill

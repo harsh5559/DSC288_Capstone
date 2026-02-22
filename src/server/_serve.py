@@ -11,7 +11,7 @@ if LITELLM_PKG not in sys.path:
     sys.path.insert(0, LITELLM_PKG)
 
 BASE_DIR = Path(__file__).parent.parent.parent
-CONFIG_FILE = BASE_DIR / "litellm_config.yaml"
+CONFIG_FILE = BASE_DIR / "config" / "litellm_config.yaml"
 
 
 def main():

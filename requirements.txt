@@ -46,5 +46,6 @@ xgboost>=2.0.0
 ta>=0.11.0
 pandas-datareader>=0.10.0
 
-# Knowledge graph (optional)
-# neo4j>=5.15.0
+# Knowledge graph
+neo4j>=5.15.0
+pyyaml>=6.0

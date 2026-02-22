@@ -75,6 +75,9 @@ config_secret.yaml
 # Server runtime files
 .litellm.pid
 
+# Neo4j data
+data/neo4j/
+
 # Model files
 *.pkl
 *.joblib

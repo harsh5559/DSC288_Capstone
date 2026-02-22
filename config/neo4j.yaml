@@ -1,0 +1,5 @@
+# Neo4j connection (used by fin_memory and graph-aware agents)
+uri: bolt://localhost:7687
+user: neo4j
+password: dsc288graph
+database: neo4j

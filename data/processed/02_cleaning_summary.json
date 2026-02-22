@@ -1,85 +1,70 @@
 {
-  "cleaning_timestamp": "2026-01-31T21:11:16.211484",
+  "cleaning_timestamp": "2026-02-22T12:19:17.760504",
   "datasets": {
     "prices": {
-      "records": 428243,
+      "records": 418153,
       "columns": [
         "date",
-        "volume",
         "open",
         "high",
         "low",
         "close",
         "adj_close",
+        "volume",
         "ticker"
       ],
       "null_counts": {
         "date": 0,
-        "volume": 0,
         "open": 0,
         "high": 0,
         "low": 0,
         "close": 0,
-        "adj_close": 1,
+        "adj_close": 7,
+        "volume": 0,
         "ticker": 0
       },
       "dtypes": {
         "date": "datetime64[ns]",
-        "volume": "float64",
         "open": "float64",
         "high": "float64",
         "low": "float64",
         "close": "float64",
         "adj_close": "float64",
+        "volume": "float64",
         "ticker": "object"
       }
     },
     "news": {
-      "records": 9721,
+      "records": 9134,
       "columns": [
         "date",
-        "article_title",
+        "text",
         "ticker",
         "url",
         "publisher",
         "author",
         "article",
-        "lsa_summary",
-        "luhn_summary",
-        "text",
-        "lexrank_summary",
-        "source",
-        "unnamed:_0"
+        "source"
       ],
       "null_counts": {
         "date": 0,
-        "article_title": 0,
+        "text": 0,
         "ticker": 0,
         "url": 0,
-        "publisher": 9721,
-        "author": 9721,
-        "article": 0,
-        "lsa_summary": 0,
-        "luhn_summary": 0,
-        "text": 0,
-        "lexrank_summary": 0,
-        "source": 0,
-        "unnamed:_0": 0
+        "publisher": 0,
+        "author": 9134,
+        "article": 9134,
+        "source": 0
       },
       "dtypes": {
         "date": "datetime64[ns, UTC]",
-        "article_title": "object",
+        "text": "object",
         "ticker": "object",
         "url": "object",
         "publisher": "object",
         "author": "float64",
-        "article": "object",
-        "lsa_summary": "object",
-        "luhn_summary": "object",
-        "text": "object",
-        "lexrank_summary": "object",
-        "source": "object",
-        "unnamed:_0": "float64"
+        "article": "float64",
+        "source": "object"
       }
     },
     "phrasebank": {
@@ -132,6 +117,23 @@
         "stock_splits": "float64",
         "sp500_return": "float64"
       }
+    }
+  },
+  "outlier_analysis": {
+    "total_removed": 34,
+    "pct_of_dataset": 0.008,
+    "magnitude_ranges": {
+      "50_to_100_pct": 33,
+      "100_to_200_pct": 1,
+      "200_to_500_pct": 0,
+      "above_500_pct": 0
+    },
+    "top_tickers": {
+      "INSM": 6,
+      "AIG": 3,
+      "ALNY": 3,
+      "REGN": 3,
+      "SRPT": 3
     }
   }
 }

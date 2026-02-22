@@ -1,27 +1,16 @@
 {
-  "engineering_timestamp": "2026-01-31T21:36:13.983632",
-  "total_records": 262257,
+  "engineering_timestamp": "2026-02-22T12:19:27.232105",
+  "total_records": 150419,
   "original_features": 16,
-  "new_features": 19,
-  "total_features": 35,
+  "new_features": 13,
+  "total_features": 29,
+  "normalization_note": "Normalization (MinMaxScaler for prices, StandardScaler for volume/returns) is deferred to Stage 5 to prevent look-ahead bias. Scalers will be fitted on the training split only.",
+  "warmup_rows_dropped": "First 50 rows per ticker dropped (SMA-50 warm-up). ~1.9% of records removed.",
   "feature_categories": {
-    "normalized": 6,
     "technical_indicators": 9,
-    "market_relative": 3,
-    "price_ratios": 2
-  },
-  "normalization_methods": {
-    "prices": "MinMaxScaler (0-1 range, per ticker)",
-    "volume": "StandardScaler (z-score, per ticker)",
-    "returns": "StandardScaler (z-score, per ticker)"
+    "market_relative": 3
   },
   "new_feature_list": [
-    "open_norm",
-    "high_norm",
-    "low_norm",
-    "close_norm",
-    "volume_norm",
-    "return_norm",
     "sma_5",
     "sma_20",
     "sma_50",

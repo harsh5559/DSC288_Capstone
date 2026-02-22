@@ -1,17 +1,20 @@
 """
-DSC288 Server Management
+DSC288 Server Management (LiteLLM + Neo4j)
 
 Usage:
-    python src/server/manage.py start      Start LiteLLM proxy (background)
-    python src/server/manage.py start -f   Start in foreground
-    python src/server/manage.py stop       Stop the running server
-    python src/server/manage.py restart    Restart the server
-    python src/server/manage.py status     Check if the server is running
-    python src/server/manage.py test       Run test suite against the proxy
-    python src/server/manage.py logs       Show recent server logs
-    python src/server/manage.py logs -n 20 Show last N lines
-    python src/server/manage.py models     List available models
-    python src/server/manage.py health     Quick health check
+    python src/server/manage.py start           Start both LiteLLM and Neo4j
+    python src/server/manage.py start litellm   Start only LiteLLM
+    python src/server/manage.py start neo4j     Start only Neo4j (Docker)
+    python src/server/manage.py stop            Stop both
+    python src/server/manage.py stop litellm    Stop only LiteLLM
+    python src/server/manage.py status          Show status of both
+    python src/server/manage.py restart [litellm|neo4j]  Restart one or both
+    python src/server/manage.py neo4j reset    Wipe Neo4j database
+    python src/server/manage.py neo4j shell    Print Neo4j browser URL
+    python src/server/manage.py test            Run test suite (LiteLLM)
+    python src/server/manage.py logs [-n N]     LiteLLM logs
+    python src/server/manage.py models          List LiteLLM models
+    python src/server/manage.py health         LiteLLM health check
 """
 
 import argparse
@@ -29,11 +32,15 @@ SERVE_SCRIPT = SCRIPT_DIR / "_serve.py"
 PID_FILE = BASE_DIR / ".litellm.pid"
 LOG_FILE = BASE_DIR / "logs" / "litellm.log"
 KEY_FILE = BASE_DIR / ".key"
-CONFIG_FILE = BASE_DIR / "litellm_config.yaml"
+CONFIG_FILE = BASE_DIR / "config" / "litellm_config.yaml"
+NEO4J_CONFIG = BASE_DIR / "config" / "neo4j.yaml"
+NEO4J_DATA = BASE_DIR / "data" / "neo4j"
+NEO4J_CONTAINER = "dsc288-neo4j"
 LITELLM_PKG = r"C:\litellm_pkg"
 
 PROXY_URL = "http://localhost:4000"
 MASTER_KEY = "sk-ds288r"
+NEO4J_BROWSER_URL = "http://localhost:7474"
 
 
 # ── Helpers ─────────────────────────────────────────────────────────
@@ -131,25 +138,95 @@ def _proxy_get(path, timeout=5):
         return None
 
 
+# ── Neo4j helpers ───────────────────────────────────────────────────
+
+def _neo4j_running():
+    """Return True if Neo4j container is running."""
+    r = subprocess.run(
+        ["docker", "ps", "-q", "-f", f"name={NEO4J_CONTAINER}"],
+        capture_output=True, text=True, cwd=str(BASE_DIR),
+    )
+    return bool(r.stdout.strip())
+
+
+def _neo4j_start():
+    """Start Neo4j in Docker. Idempotent if already running."""
+    if _neo4j_running():
+        print(f"[INFO] Neo4j already running (container {NEO4J_CONTAINER})")
+        return
+    NEO4J_DATA.mkdir(parents=True, exist_ok=True)
+    cmd = [
+        "docker", "run", "-d",
+        "--name", NEO4J_CONTAINER,
+        "-p", "7474:7474", "-p", "7687:7687",
+        "-e", "NEO4J_AUTH=neo4j/dsc288graph",
+        "-v", f"{NEO4J_DATA.absolute()}:/data",
+        "neo4j:latest",
+    ]
+    r = subprocess.run(cmd, cwd=str(BASE_DIR))
+    if r.returncode != 0:
+        print("[ERROR] Failed to start Neo4j. Is Docker running?")
+        sys.exit(1)
+    print(f"[INFO] Neo4j starting (container {NEO4J_CONTAINER})")
+    print(f"       Browser: {NEO4J_BROWSER_URL}  Bolt: bolt://localhost:7687")
+    # Wait for bolt to be ready
+    for _ in range(30):
+        time.sleep(1)
+        if _neo4j_bolt_ok():
+            print("[INFO] Neo4j bolt ready.")
+            return
+    print("[WARN] Neo4j may still be starting. Try: python src/server/manage.py status")
+
+
+def _neo4j_bolt_ok():
+    """Return True if Neo4j bolt port accepts connections."""
+    try:
+        import yaml
+        from neo4j import GraphDatabase
+        cfg = yaml.safe_load(NEO4J_CONFIG.read_text()) if NEO4J_CONFIG.exists() else {}
+        uri = cfg.get("uri", "bolt://localhost:7687")
+        user = cfg.get("user", "neo4j")
+        password = cfg.get("password", "dsc288graph")
+        driver = GraphDatabase.driver(uri, auth=(user, password))
+        driver.verify_connectivity()
+        driver.close()
+        return True
+    except Exception:
+        return False
+
+
+def _neo4j_stop():
+    """Stop and remove Neo4j container."""
+    if not _neo4j_running():
+        print("[INFO] Neo4j is not running.")
+        return
+    subprocess.run(["docker", "stop", NEO4J_CONTAINER], capture_output=True, cwd=str(BASE_DIR))
+    subprocess.run(["docker", "rm", NEO4J_CONTAINER], capture_output=True, cwd=str(BASE_DIR))
+    print("[INFO] Neo4j stopped.")
+
+
 # ── Commands ────────────────────────────────────────────────────────
 
-def cmd_start(args):
+def _service_target(args):
+    """Return 'litellm', 'neo4j', or 'all' from args.service."""
+    s = getattr(args, "service", None) or "all"
+    if s not in ("litellm", "neo4j", "all"):
+        return "all"
+    return s
+
+
+def _start_litellm(foreground=False):
     pid = get_running_pid()
     if pid:
-        print(f"[INFO] Server already running (PID {pid})")
-        print(f"       {PROXY_URL}")
+        print(f"[INFO] LiteLLM already running (PID {pid})")
         return
-
     env = _server_env()
     cmd = [sys.executable, str(SERVE_SCRIPT)]
-
-    if args.foreground:
-        print("[INFO] Starting in foreground (Ctrl+C to stop)...")
+    if foreground:
+        print("[INFO] Starting LiteLLM in foreground (Ctrl+C to stop)...")
         proc = subprocess.run(cmd, env=env, cwd=str(BASE_DIR))
         sys.exit(proc.returncode)
-
     print("[INFO] Starting LiteLLM proxy server...")
-
     if sys.platform == "win32":
         proc = subprocess.Popen(
             cmd, env=env, cwd=str(BASE_DIR),
@@ -164,35 +241,37 @@ def cmd_start(args):
             stderr=subprocess.STDOUT,
             start_new_session=True,
         )
-
     PID_FILE.write_text(str(proc.pid))
-    print(f"[INFO] Server PID: {proc.pid}")
-    print("[INFO] Waiting for server to be ready...", end="", flush=True)
-
+    print(f"[INFO] LiteLLM PID: {proc.pid}")
+    print("[INFO] Waiting for LiteLLM...", end="", flush=True)
     if wait_for_server(timeout=45):
         print(" ready!")
-        print()
-        print(f"  URL    : {PROXY_URL}")
-        print(f"  Key    : {MASTER_KEY}")
-        print(f"  PID    : {proc.pid}")
-        print(f"  Logs   : python src/server/manage.py logs")
-        print(f"  Stop   : python src/server/manage.py stop")
+        print(f"  URL    : {PROXY_URL}  Key: {MASTER_KEY}")
     else:
-        print(" timeout.")
-        print("[WARN] Server may still be starting. Check: python src/server/manage.py logs")
+        print(" timeout. Check: python src/server/manage.py logs")
 
 
-def cmd_stop(args):
+def cmd_start(args):
+    target = _service_target(args)
+    if target in ("litellm", "all"):
+        _start_litellm(foreground=getattr(args, "foreground", False))
+    if target in ("neo4j", "all"):
+        _neo4j_start()
+    if target == "all":
+        print()
+        print("  Stop both: python src/server/manage.py stop")
+        print("  Status:   python src/server/manage.py status")
+
+
+def _stop_litellm():
     pid = get_running_pid()
     if not pid:
-        print("[INFO] Server is not running.")
+        print("[INFO] LiteLLM is not running.")
         return
-
-    print(f"[INFO] Stopping server (PID {pid})...")
+    print(f"[INFO] Stopping LiteLLM (PID {pid})...")
     try:
         if sys.platform == "win32":
-            subprocess.run(["taskkill", "/F", "/T", "/PID", str(pid)],
-                           capture_output=True)
+            subprocess.run(["taskkill", "/F", "/T", "/PID", str(pid)], capture_output=True)
         else:
             os.kill(pid, signal.SIGTERM)
             for _ in range(10):
@@ -205,34 +284,64 @@ def cmd_stop(args):
                 os.kill(pid, signal.SIGKILL)
     except Exception as e:
         print(f"[WARN] Could not kill process: {e}")
-
     PID_FILE.unlink(missing_ok=True)
-    print("[INFO] Server stopped.")
+    print("[INFO] LiteLLM stopped.")
+
+
+def cmd_stop(args):
+    target = _service_target(args)
+    if target in ("litellm", "all"):
+        _stop_litellm()
+    if target in ("neo4j", "all"):
+        _neo4j_stop()
 
 
 def cmd_restart(args):
-    cmd_stop(args)
+    target = _service_target(args)
+    if target in ("litellm", "all"):
+        _stop_litellm()
+    if target in ("neo4j", "all"):
+        _neo4j_stop()
     time.sleep(2)
-    cmd_start(args)
+    if target in ("litellm", "all"):
+        _start_litellm(foreground=getattr(args, "foreground", False))
+    if target in ("neo4j", "all"):
+        _neo4j_start()
 
 
 def cmd_status(args):
+    print("=" * 50)
+    print("LiteLLM")
+    print("=" * 50)
     pid = get_running_pid()
     if not pid:
-        print("Status : STOPPED")
-        print(f"URL    : {PROXY_URL}")
-        return
-
-    print("Status : RUNNING")
-    print(f"PID    : {pid}")
-    print(f"URL    : {PROXY_URL}")
-    print(f"Key    : {MASTER_KEY}")
-
-    data = _proxy_get("/v1/models")
-    if data:
-        print(f"Health : OK ({len(data.get('data', []))} models loaded)")
+        print("  Status : STOPPED")
+        print(f"  URL    : {PROXY_URL}")
     else:
-        print("Health : UNKNOWN (could not reach proxy)")
+        print("  Status : RUNNING")
+        print(f"  PID    : {pid}")
+        print(f"  URL    : {PROXY_URL}")
+        print(f"  Key    : {MASTER_KEY}")
+        data = _proxy_get("/v1/models")
+        if data:
+            print(f"  Health : OK ({len(data.get('data', []))} models)")
+        else:
+            print("  Health : UNKNOWN")
+    print()
+    print("Neo4j")
+    print("=" * 50)
+    if not _neo4j_running():
+        print("  Status : STOPPED")
+        print(f"  Browser: {NEO4J_BROWSER_URL}  Bolt: bolt://localhost:7687")
+    else:
+        print("  Status : RUNNING")
+        print(f"  Container : {NEO4J_CONTAINER}")
+        print(f"  Browser   : {NEO4J_BROWSER_URL}")
+        print(f"  Bolt      : bolt://localhost:7687")
+        if _neo4j_bolt_ok():
+            print("  Health    : OK")
+        else:
+            print("  Health    : starting...")
 
 
 def cmd_test(args):
@@ -395,39 +504,91 @@ def cmd_health(args):
     sys.exit(1)
 
 
+def cmd_neo4j_reset(args):
+    """Wipe Neo4j database (delete all nodes and relationships)."""
+    if not _neo4j_running():
+        print("[ERROR] Neo4j is not running. Start with: python src/server/manage.py start neo4j")
+        sys.exit(1)
+    try:
+        import yaml
+        from neo4j import GraphDatabase
+        cfg = yaml.safe_load(NEO4J_CONFIG.read_text()) if NEO4J_CONFIG.exists() else {}
+        uri = cfg.get("uri", "bolt://localhost:7687")
+        user = cfg.get("user", "neo4j")
+        password = cfg.get("password", "dsc288graph")
+        driver = GraphDatabase.driver(uri, auth=(user, password))
+        with driver.session() as session:
+            session.run("MATCH (n) DETACH DELETE n")
+        driver.close()
+        print("[INFO] Neo4j database wiped.")
+    except Exception as e:
+        print(f"[ERROR] {e}")
+        sys.exit(1)
+
+
+def cmd_neo4j_shell(args):
+    """Print Neo4j browser URL."""
+    print(f"Neo4j Browser: {NEO4J_BROWSER_URL}")
+    print("Bolt: bolt://localhost:7687  (user: neo4j, password: dsc288graph)")
+
+
 # ── CLI ─────────────────────────────────────────────────────────────
 
 def main():
     parser = argparse.ArgumentParser(
-        description="DSC288 Server Management",
+        description="DSC288 Server Management (LiteLLM + Neo4j)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )
     sub = parser.add_subparsers(dest="command")
 
-    p_start = sub.add_parser("start", help="Start LiteLLM proxy server")
+    p_start = sub.add_parser("start", help="Start LiteLLM and/or Neo4j")
+    p_start.add_argument("service", nargs="?", default="all",
+                         choices=["litellm", "neo4j", "all"],
+                         help="Which service to start (default: all)")
     p_start.add_argument("-f", "--foreground", action="store_true",
-                         help="Run in foreground (don't daemonize)")
+                         help="Run LiteLLM in foreground (don't daemonize)")
 
-    sub.add_parser("stop", help="Stop the running server")
+    p_stop = sub.add_parser("stop", help="Stop LiteLLM and/or Neo4j")
+    p_stop.add_argument("service", nargs="?", default="all",
+                        choices=["litellm", "neo4j", "all"],
+                        help="Which service to stop (default: all)")
 
-    p_restart = sub.add_parser("restart", help="Restart the server")
+    p_restart = sub.add_parser("restart", help="Restart LiteLLM and/or Neo4j")
+    p_restart.add_argument("service", nargs="?", default="all",
+                           choices=["litellm", "neo4j", "all"])
     p_restart.add_argument("-f", "--foreground", action="store_true")
 
-    sub.add_parser("status", help="Check server status")
-    sub.add_parser("test", help="Run test suite against the proxy")
+    sub.add_parser("status", help="Check status of both servers")
 
-    p_logs = sub.add_parser("logs", help="Show recent server logs")
+    sub.add_parser("test", help="Run test suite against LiteLLM proxy")
+
+    p_logs = sub.add_parser("logs", help="Show recent LiteLLM logs")
     p_logs.add_argument("-n", "--lines", type=int, default=50,
                         help="Number of lines to show (default: 50)")
 
-    sub.add_parser("models", help="List available models")
-    sub.add_parser("health", help="Quick health check")
+    sub.add_parser("models", help="List available LiteLLM models")
+    sub.add_parser("health", help="Quick LiteLLM health check")
+
+    p_neo4j = sub.add_parser("neo4j", help="Neo4j subcommands")
+    neo4j_sub = p_neo4j.add_subparsers(dest="neo4j_command")
+    neo4j_sub.add_parser("reset", help="Wipe Neo4j database")
+    neo4j_sub.add_parser("shell", help="Print Neo4j browser URL")
 
     args = parser.parse_args()
     if not args.command:
         parser.print_help()
         sys.exit(0)
+
+    if args.command == "neo4j":
+        if not getattr(args, "neo4j_command", None):
+            p_neo4j.print_help()
+            sys.exit(0)
+        if args.neo4j_command == "reset":
+            cmd_neo4j_reset(args)
+        elif args.neo4j_command == "shell":
+            cmd_neo4j_shell(args)
+        return
 
     {
         "start": cmd_start,

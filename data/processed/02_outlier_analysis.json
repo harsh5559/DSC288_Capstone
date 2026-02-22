@@ -1,0 +1,17 @@
+{
+  "total_removed": 34,
+  "pct_of_dataset": 0.008,
+  "magnitude_ranges": {
+    "50_to_100_pct": 33,
+    "100_to_200_pct": 1,
+    "200_to_500_pct": 0,
+    "above_500_pct": 0
+  },
+  "top_tickers": {
+    "INSM": 6,
+    "AIG": 3,
+    "ALNY": 3,
+    "REGN": 3,
+    "SRPT": 3
+  }
+}

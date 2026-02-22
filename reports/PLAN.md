@@ -74,8 +74,10 @@
 | EDA with 7 plots and statistical validation | Done | `EDA_REPORT.md`, `notebooks/01_EDA.ipynb` |
 | TA feedback fully addressed (9/11 closed, 2 team decisions) | Done | `Addressing_TA_Comments.md` |
 | OpenAI API key stored | Done | `.key` (gitignored) |
-| LiteLLM config | Done | `litellm_config.yaml` |
+| LiteLLM config | Done | `config/litellm_config.yaml` |
 | MCP server skeleton | Done | `server/mcp_server.py` |
+| **Unified server management (LiteLLM + Neo4j)** | Done | `src/server/manage.py` (start/stop/status for both; `neo4j reset`, `neo4j shell`) |
+| **Neo4j knowledge graph (fin_memory)** | Done | `src/agents/fin_memory.py`; entities: Sector, Stock, Earnings, NewsArticle, Recommendation; relationships: IN_SECTOR, HAS_EARNINGS, MENTIONED_IN, HAS_RECOMMENDATION, PEERS_WITH. See `reports/FIN_MEMORY_IMPLEMENTATION.md`. |
 
 ---
 
@@ -140,21 +142,27 @@ ChromaDB collection: "financial_news"
 | 1 | `scripts/09_build_vectorstore.py` | Split concatenated articles, embed via LiteLLM proxy, store in ChromaDB with metadata. Persist to `data/vectorstore/`. |
 | 2 | `server/retriever.py` | Retrieval interface: `retrieve(query, ticker, date_range, top_k)` → returns articles with metadata. Supports both semantic search and metadata filtering. |
 
-### 1C. Neo4j Knowledge Graph (optional, stretch)
+### 1C. Neo4j Knowledge Graph (fin_memory) — Implemented
 
-Model relationships that flat retrieval can't capture:
+Finnhub master data is ingested into Neo4j for explainability. Schema (implemented):
 
 ```
-(:Stock {ticker}) -[:HAS_PRICE_ON]-> (:TradingDay {date, close, volume, target})
-(:Stock) -[:MENTIONED_IN]-> (:Article {text, sentiment, source})
-(:Article) -[:PUBLISHED_ON]-> (:TradingDay)
-(:Stock) -[:IN_SECTOR]-> (:Sector)
-(:TradingDay) -[:MARKET_CONTEXT]-> (:MarketDay {sp500_return, direction})
+(:Sector {name})                    ← 3 sectors
+(:Stock {ticker, name, sector, industry, exchange, market_cap, ipo_date, shares_outstanding})  ← 60
+(:Earnings {uid, period, quarter, year, actual, estimate, surprise, surprise_pct})  ← 220
+(:NewsArticle {finnhub_id, headline, summary, source, url, datetime, category})    ← 6,960
+(:Recommendation {uid, period, buy, hold, sell, strong_buy, strong_sell})            ← 232
+
+(:Stock)-[:IN_SECTOR]->(:Sector)
+(:Stock)-[:HAS_EARNINGS]->(:Earnings)
+(:Stock)-[:MENTIONED_IN]->(:NewsArticle)
+(:Stock)-[:HAS_RECOMMENDATION]->(:Recommendation)
+(:Stock)-[:PEERS_WITH]->(:Stock)
 ```
 
-Enables multi-hop queries like: "Find all negative articles about AAPL in weeks where the S&P 500 was also down." This feeds the Fundamental Analyst agent.
+**Implementation:** `src/agents/fin_memory.py` (memorize/stats/query). Neo4j runs in Docker; single CLI: `src/server/manage.py` (start/stop Neo4j and LiteLLM). Data source: `data/raw/finnhub_stocks/` (profile, earnings, news, recommendations, peers per ticker).
 
-**Implementation:** `scripts/10_build_graph.py` — load parquet data into Neo4j, create nodes and relationships.
+**Build and verification:** See **reports/FIN_MEMORY_IMPLEMENTATION.md** for how each entity and relationship is built from source files and how they were verified (schema, counts, sample queries).
 
 ---
 

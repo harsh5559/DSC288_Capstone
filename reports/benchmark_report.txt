@@ -1,0 +1,172 @@
+======================================================================
+DSC288 FINANCIAL SYSTEM — EVALUATION BENCHMARK
+======================================================================
+
+Data: using existing processed data
+
+BENCHMARK SUMMARY (primary metrics)
+----------------------------------------------------------------------
+Split        Baseline          N   Accuracy    Bal.Acc   Macro F1
+----------------------------------------------------------------------
+validation   hold            600     0.6000     0.3333     0.2500
+validation   majority        600     0.6000     0.3333     0.2500
+test         hold            400     0.6000     0.3333     0.2500
+test         majority        400     0.6000     0.3333     0.2500
+
+BEST BASELINE BY SPLIT (by Macro F1)
+----------------------------------------------------------------------
+  validation: hold (Macro F1 = 0.2500)
+  test: hold (Macro F1 = 0.2500)
+
+Ground-truth eval: no samples with Neo4j context (populate graph for tickers in your split).
+Ground-truth eval: no samples with Neo4j context (populate graph for tickers in your split).
+
+DETAILED PER-RUN REPORTS
+======================================================================
+
+============================================================
+CLASSIFICATION EVALUATION
+Split: validation  |  N = 600
+============================================================
+
+  Accuracy:           0.6000
+  Balanced accuracy:  0.3333
+  Macro F1 (primary): 0.2500
+
+  Per-class metrics:
+    BUY    P: 0.0000  R: 0.0000  F1: 0.0000
+    HOLD   P: 0.6000  R: 1.0000  F1: 0.7500
+    SELL   P: 0.0000  R: 0.0000  F1: 0.0000
+
+  Baseline predictor: always 'hold' (no trained model).
+
+  Confusion matrix (rows=true, cols=predicted):
+                 buy    hold    sell
+    buy            0     120       0
+    hold           0     360       0
+    sell           0     120       0
+
+  Classification report (sklearn):
+precision    recall  f1-score   support
+
+         buy       0.00      0.00      0.00       120
+        hold       0.60      1.00      0.75       360
+        sell       0.00      0.00      0.00       120
+
+    accuracy                           0.60       600
+   macro avg       0.20      0.33      0.25       600
+weighted avg       0.36      0.60      0.45       600
+
+============================================================
+
+
+============================================================
+CLASSIFICATION EVALUATION
+Split: validation  |  N = 600
+============================================================
+
+  Accuracy:           0.6000
+  Balanced accuracy:  0.3333
+  Macro F1 (primary): 0.2500
+
+  Per-class metrics:
+    BUY    P: 0.0000  R: 0.0000  F1: 0.0000
+    HOLD   P: 0.6000  R: 1.0000  F1: 0.7500
+    SELL   P: 0.0000  R: 0.0000  F1: 0.0000
+
+  Baseline predictor: always 'majority' (no trained model).
+
+  Confusion matrix (rows=true, cols=predicted):
+                 buy    hold    sell
+    buy            0     120       0
+    hold           0     360       0
+    sell           0     120       0
+
+  Classification report (sklearn):
+precision    recall  f1-score   support
+
+         buy       0.00      0.00      0.00       120
+        hold       0.60      1.00      0.75       360
+        sell       0.00      0.00      0.00       120
+
+    accuracy                           0.60       600
+   macro avg       0.20      0.33      0.25       600
+weighted avg       0.36      0.60      0.45       600
+
+============================================================
+
+
+============================================================
+CLASSIFICATION EVALUATION
+Split: test  |  N = 400
+============================================================
+
+  Accuracy:           0.6000
+  Balanced accuracy:  0.3333
+  Macro F1 (primary): 0.2500
+
+  Per-class metrics:
+    BUY    P: 0.0000  R: 0.0000  F1: 0.0000
+    HOLD   P: 0.6000  R: 1.0000  F1: 0.7500
+    SELL   P: 0.0000  R: 0.0000  F1: 0.0000
+
+  Baseline predictor: always 'hold' (no trained model).
+
+  Confusion matrix (rows=true, cols=predicted):
+                 buy    hold    sell
+    buy            0      80       0
+    hold           0     240       0
+    sell           0      80       0
+
+  Classification report (sklearn):
+precision    recall  f1-score   support
+
+         buy       0.00      0.00      0.00        80
+        hold       0.60      1.00      0.75       240
+        sell       0.00      0.00      0.00        80
+
+    accuracy                           0.60       400
+   macro avg       0.20      0.33      0.25       400
+weighted avg       0.36      0.60      0.45       400
+
+============================================================
+
+
+============================================================
+CLASSIFICATION EVALUATION
+Split: test  |  N = 400
+============================================================
+
+  Accuracy:           0.6000
+  Balanced accuracy:  0.3333
+  Macro F1 (primary): 0.2500
+
+  Per-class metrics:
+    BUY    P: 0.0000  R: 0.0000  F1: 0.0000
+    HOLD   P: 0.6000  R: 1.0000  F1: 0.7500
+    SELL   P: 0.0000  R: 0.0000  F1: 0.0000
+
+  Baseline predictor: always 'majority' (no trained model).
+
+  Confusion matrix (rows=true, cols=predicted):
+                 buy    hold    sell
+    buy            0      80       0
+    hold           0     240       0
+    sell           0      80       0
+
+  Classification report (sklearn):
+precision    recall  f1-score   support
+
+         buy       0.00      0.00      0.00        80
+        hold       0.60      1.00      0.75       240
+        sell       0.00      0.00      0.00        80
+
+    accuracy                           0.60       400
+   macro avg       0.20      0.33      0.25       400
+weighted avg       0.36      0.60      0.45       400
+
+============================================================
+
+======================================================================
+END OF BENCHMARK
+======================================================================
