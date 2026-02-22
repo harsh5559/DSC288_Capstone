@@ -83,18 +83,20 @@
         .mermaid-container { background:#ffffff; border-radius:16px; padding:30px; margin:24px 0; overflow-x:auto; border:1px solid #e2e8f0; box-shadow:0 2px 12px rgba(0,0,0,0.06); }
         .mermaid { display:flex; justify-content:center; overflow-x:auto; }
         .mermaid svg { height:auto; min-width:600px; }
-        .mermaid .nodeLabel, .mermaid .node text, .mermaid .label { font-weight:700 !important; font-size:15px !important; }
-        .mermaid .edgeLabel { background:#f1f5f9 !important; color:#1e293b !important; padding:4px 10px !important; border-radius:6px !important; font-size:13px !important; font-weight:600 !important; border:1px solid #cbd5e1 !important; }
-        .mermaid .edgeLabel span, .mermaid .edgeLabel p { color:#1e293b !important; font-weight:600 !important; }
-        .mermaid .edgePath .path { stroke:#64748b !important; stroke-width:2px !important; }
-        .mermaid .marker { fill:#64748b !important; stroke:#64748b !important; }
+        .mermaid .node .nodeLabel, .mermaid .node .label, .mermaid .nodeLabel span, .mermaid .nodeLabel p, .mermaid .nodeLabel div, .mermaid .nodeLabel { font-weight:800 !important; font-size:16px !important; letter-spacing:0.01em !important; }
+        .mermaid .node.wh .nodeLabel, .mermaid .node.wh .nodeLabel span, .mermaid .node.wh .nodeLabel p { color:#ffffff !important; }
+        .mermaid .node.dk .nodeLabel, .mermaid .node.dk .nodeLabel span, .mermaid .node.dk .nodeLabel p { color:#0f172a !important; }
+        .mermaid .edgeLabel { background:#f1f5f9 !important; color:#1e293b !important; padding:4px 10px !important; border-radius:6px !important; font-size:14px !important; font-weight:700 !important; border:1px solid #cbd5e1 !important; }
+        .mermaid .edgeLabel span, .mermaid .edgeLabel p { color:#1e293b !important; font-weight:700 !important; }
+        .mermaid .edgePath .path { stroke:#475569 !important; stroke-width:2.5px !important; }
+        .mermaid .marker { fill:#475569 !important; stroke:#475569 !important; }
         .mermaid .actor { fill:#1e40af !important; stroke:#1e3a8a !important; }
-        .mermaid .actor text, .mermaid text.actor { fill:#fff !important; font-weight:700 !important; }
-        .mermaid .messageLine0, .mermaid .messageLine1 { stroke:#475569 !important; stroke-width:1.5px !important; }
-        .mermaid .messageText { fill:#1e293b !important; font-size:13px !important; font-weight:600 !important; }
-        .mermaid .labelText, .mermaid .edgeLabel foreignObject div { color:#1e293b !important; font-weight:600 !important; }
-        .mermaid .cluster rect { fill:#f8fafc !important; stroke:#94a3b8 !important; rx:12 !important; }
-        .mermaid .cluster span, .mermaid .cluster text { color:#1e293b !important; fill:#1e293b !important; font-weight:700 !important; }
+        .mermaid .actor text, .mermaid text.actor { fill:#fff !important; font-weight:800 !important; font-size:15px !important; }
+        .mermaid .messageLine0, .mermaid .messageLine1 { stroke:#475569 !important; stroke-width:2px !important; }
+        .mermaid .messageText { fill:#0f172a !important; font-size:14px !important; font-weight:700 !important; }
+        .mermaid .labelText, .mermaid .edgeLabel foreignObject div { color:#1e293b !important; font-weight:700 !important; }
+        .mermaid .cluster rect { fill:#f8fafc !important; stroke:#94a3b8 !important; stroke-width:2px !important; rx:12 !important; }
+        .mermaid .cluster span, .mermaid .cluster text { color:#0f172a !important; fill:#0f172a !important; font-weight:800 !important; font-size:15px !important; }
 
         /* Callouts */
         .callout { background:linear-gradient(135deg,#eff6ff 0%,#dbeafe 100%); border-left:4px solid var(--accent); padding:24px 28px; border-radius:0 16px 16px 0; margin:24px 0; }
@@ -307,14 +309,16 @@
         <div class="mermaid-container">
             <div class="mermaid">
 graph LR
-    A["1. Load"] --> B["2. Clean"] --> C["3. Align"] --> D["4. Features"] --> E["5. Split"]
-    E --> F["train 129K / val 14K / test 6K"]
-    style A fill:#2563eb,color:#fff,stroke:#1d4ed8,font-weight:bold
-    style B fill:#16a34a,color:#fff,stroke:#15803d,font-weight:bold
-    style C fill:#f59e0b,color:#1e293b,stroke:#d97706,font-weight:bold
-    style D fill:#7c3aed,color:#fff,stroke:#6d28d9,font-weight:bold
-    style E fill:#dc2626,color:#fff,stroke:#b91c1c,font-weight:bold
-    style F fill:#06b6d4,color:#1e293b,stroke:#0891b2,font-weight:bold
+    classDef wh color:#fff,font-weight:800,font-size:16px
+    classDef dk color:#0f172a,font-weight:800,font-size:16px
+    A["1. Load"]:::wh --> B["2. Clean"]:::wh --> C["3. Align"]:::dk --> D["4. Features"]:::wh --> E["5. Split"]:::wh
+    E --> F["train 129K / val 14K / test 6K"]:::dk
+    style A fill:#2563eb,stroke:#1d4ed8,stroke-width:2px
+    style B fill:#16a34a,stroke:#15803d,stroke-width:2px
+    style C fill:#fbbf24,stroke:#d97706,stroke-width:2px
+    style D fill:#7c3aed,stroke:#6d28d9,stroke-width:2px
+    style E fill:#dc2626,stroke:#b91c1c,stroke-width:2px
+    style F fill:#67e8f9,stroke:#0891b2,stroke-width:2px
             </div>
         </div>
 
@@ -371,26 +375,28 @@ graph LR
         <div class="mermaid-container">
             <div class="mermaid">
 graph LR
-    User["User / IDE"] --> MCP["MCP Server"]
-    MCP --> GA["Graph Agent"]
-    MCP --> DA["Data Agent"]
-    GA --> Neo4j["Neo4j · 60 stocks"]
-    DA --> Data["Market Data"]
-    GA --> PB["Prompt Builder"]
+    classDef wh color:#fff,font-weight:800,font-size:16px
+    classDef dk color:#0f172a,font-weight:800,font-size:16px
+    User["User / IDE"]:::dk --> MCP["MCP Server"]:::wh
+    MCP --> GA["Graph Agent"]:::wh
+    MCP --> DA["Data Agent"]:::wh
+    GA --> Neo4j["Neo4j · 60 stocks"]:::wh
+    DA --> Data["Market Data"]:::dk
+    GA --> PB["Prompt Builder"]:::dk
     DA --> PB
-    PB --> AA["Analyst · GPT-5.2"]
-    AA --> JA["Judge · GPT-5.2"]
+    PB --> AA["Analyst · GPT-5.2"]:::wh
+    AA --> JA["Judge · GPT-5.2"]:::wh
     JA --> MCP
 
-    style User fill:#e2e8f0,color:#1e293b,stroke:#94a3b8,font-weight:bold
-    style MCP fill:#2563eb,color:#fff,stroke:#1d4ed8,font-weight:bold
-    style GA fill:#7c3aed,color:#fff,stroke:#6d28d9,font-weight:bold
-    style DA fill:#0891b2,color:#fff,stroke:#0e7490,font-weight:bold
-    style PB fill:#f59e0b,color:#1e293b,stroke:#d97706,font-weight:bold
-    style AA fill:#16a34a,color:#fff,stroke:#15803d,font-weight:bold
-    style JA fill:#7c3aed,color:#fff,stroke:#6d28d9,font-weight:bold
-    style Neo4j fill:#dc2626,color:#fff,stroke:#b91c1c,font-weight:bold
-    style Data fill:#06b6d4,color:#1e293b,stroke:#0891b2,font-weight:bold
+    style User fill:#e2e8f0,stroke:#94a3b8,stroke-width:2px
+    style MCP fill:#2563eb,stroke:#1d4ed8,stroke-width:2px
+    style GA fill:#7c3aed,stroke:#6d28d9,stroke-width:2px
+    style DA fill:#0891b2,stroke:#0e7490,stroke-width:2px
+    style PB fill:#fbbf24,stroke:#d97706,stroke-width:2px
+    style AA fill:#16a34a,stroke:#15803d,stroke-width:2px
+    style JA fill:#7c3aed,stroke:#6d28d9,stroke-width:2px
+    style Neo4j fill:#dc2626,stroke:#b91c1c,stroke-width:2px
+    style Data fill:#67e8f9,stroke:#0891b2,stroke-width:2px
             </div>
         </div>
 
@@ -448,17 +454,19 @@ sequenceDiagram
         <div class="mermaid-container">
             <div class="mermaid">
 graph LR
-    Stock["Stock"] -- IN_SECTOR --> Sector["Sector"]
-    Stock -- HAS_EARNINGS --> Earnings["Earnings"]
-    Stock -- MENTIONED_IN --> News["NewsArticle"]
-    Stock -- HAS_RECOMMENDATION --> Rec["Recommendation"]
+    classDef wh color:#fff,font-weight:800,font-size:16px
+    classDef dk color:#0f172a,font-weight:800,font-size:16px
+    Stock["Stock"]:::wh -- IN_SECTOR --> Sector["Sector"]:::wh
+    Stock -- HAS_EARNINGS --> Earnings["Earnings"]:::wh
+    Stock -- MENTIONED_IN --> News["NewsArticle"]:::dk
+    Stock -- HAS_RECOMMENDATION --> Rec["Recommendation"]:::wh
     Stock -- PEERS_WITH --> Stock
 
-    style Sector fill:#dc2626,color:#fff,stroke:#b91c1c,font-weight:bold
-    style Stock fill:#2563eb,color:#fff,stroke:#1d4ed8,font-weight:bold
-    style Earnings fill:#16a34a,color:#fff,stroke:#15803d,font-weight:bold
-    style News fill:#f59e0b,color:#1e293b,stroke:#d97706,font-weight:bold
-    style Rec fill:#7c3aed,color:#fff,stroke:#6d28d9,font-weight:bold
+    style Sector fill:#dc2626,stroke:#b91c1c,stroke-width:2px
+    style Stock fill:#2563eb,stroke:#1d4ed8,stroke-width:2px
+    style Earnings fill:#16a34a,stroke:#15803d,stroke-width:2px
+    style News fill:#fbbf24,stroke:#d97706,stroke-width:2px
+    style Rec fill:#7c3aed,stroke:#6d28d9,stroke-width:2px
             </div>
         </div>
 
@@ -477,12 +485,14 @@ graph LR
         <div class="mermaid-container">
             <div class="mermaid">
 graph LR
-    FH["Finnhub API"] --> Raw["60 tickers x 3 sectors"] --> Neo["Neo4j Graph"] --> Ctx["LLM Context"]
+    classDef wh color:#fff,font-weight:800,font-size:16px
+    classDef dk color:#0f172a,font-weight:800,font-size:16px
+    FH["Finnhub API"]:::dk --> Raw["60 tickers x 3 sectors"]:::wh --> Neo["Neo4j Graph"]:::wh --> Ctx["LLM Context"]:::wh
 
-    style FH fill:#f59e0b,color:#1e293b,stroke:#d97706,font-weight:bold
-    style Raw fill:#7c3aed,color:#fff,stroke:#6d28d9,font-weight:bold
-    style Neo fill:#dc2626,color:#fff,stroke:#b91c1c,font-weight:bold
-    style Ctx fill:#16a34a,color:#fff,stroke:#15803d,font-weight:bold
+    style FH fill:#fbbf24,stroke:#d97706,stroke-width:2px
+    style Raw fill:#7c3aed,stroke:#6d28d9,stroke-width:2px
+    style Neo fill:#dc2626,stroke:#b91c1c,stroke-width:2px
+    style Ctx fill:#16a34a,stroke:#15803d,stroke-width:2px
             </div>
         </div>
 
@@ -491,23 +501,25 @@ graph LR
         <div class="mermaid-container">
             <div class="mermaid">
 graph LR
+    classDef wh color:#fff,font-weight:800,font-size:16px
+    classDef dk color:#0f172a,font-weight:800,font-size:16px
     subgraph Quantitative["Path 1 · Quantitative Features"]
-        TS["FNSPID Prices"] --> Feat["Join by ticker+date"]
-        News["News Articles"] --> Feat
-        Feat --> Out1["news_count · target"]
+        TS["FNSPID Prices"]:::wh --> Feat["Join by ticker+date"]:::dk
+        News["News Articles"]:::dk --> Feat
+        Feat --> Out1["news_count · target"]:::wh
     end
     subgraph Qualitative["Path 2 · Qualitative Context"]
-        FH["Finnhub News"] --> Neo["Neo4j Stock"]
-        Neo --> Hdl["Headlines for LLM"]
+        FH["Finnhub News"]:::dk --> Neo["Neo4j Stock"]:::wh
+        Neo --> Hdl["Headlines for LLM"]:::wh
     end
 
-    style TS fill:#2563eb,color:#fff,stroke:#1d4ed8,font-weight:bold
-    style News fill:#f59e0b,color:#1e293b,stroke:#d97706,font-weight:bold
-    style Feat fill:#06b6d4,color:#1e293b,stroke:#0891b2,font-weight:bold
-    style Out1 fill:#16a34a,color:#fff,stroke:#15803d,font-weight:bold
-    style FH fill:#f59e0b,color:#1e293b,stroke:#d97706,font-weight:bold
-    style Neo fill:#dc2626,color:#fff,stroke:#b91c1c,font-weight:bold
-    style Hdl fill:#16a34a,color:#fff,stroke:#15803d,font-weight:bold
+    style TS fill:#2563eb,stroke:#1d4ed8,stroke-width:2px
+    style News fill:#fbbf24,stroke:#d97706,stroke-width:2px
+    style Feat fill:#67e8f9,stroke:#0891b2,stroke-width:2px
+    style Out1 fill:#16a34a,stroke:#15803d,stroke-width:2px
+    style FH fill:#fbbf24,stroke:#d97706,stroke-width:2px
+    style Neo fill:#dc2626,stroke:#b91c1c,stroke-width:2px
+    style Hdl fill:#16a34a,stroke:#15803d,stroke-width:2px
             </div>
         </div>
         <div class="callout">
@@ -540,20 +552,22 @@ graph LR
         <div class="mermaid-container">
             <div class="mermaid">
 graph LR
-    P1["Parquet Data"] --> Neo["Neo4j Context"]
-    Neo --> JSONL["50 Prompts · 3 variants"]
-    JSONL --> Analyst["Analyst GPT-5.2"]
-    Analyst --> Judge["Judge GPT-5.2"]
-    Judge --> Results["Results JSONL"]
-    Results --> Metrics["Metrics + Plots"]
+    classDef wh color:#fff,font-weight:800,font-size:16px
+    classDef dk color:#0f172a,font-weight:800,font-size:16px
+    P1["Parquet Data"]:::wh --> Neo["Neo4j Context"]:::wh
+    Neo --> JSONL["50 Prompts · 3 variants"]:::dk
+    JSONL --> Analyst["Analyst GPT-5.2"]:::wh
+    Analyst --> Judge["Judge GPT-5.2"]:::wh
+    Judge --> Results["Results JSONL"]:::wh
+    Results --> Metrics["Metrics + Plots"]:::dk
 
-    style P1 fill:#7c3aed,color:#fff,stroke:#6d28d9,font-weight:bold
-    style Neo fill:#dc2626,color:#fff,stroke:#b91c1c,font-weight:bold
-    style JSONL fill:#f59e0b,color:#1e293b,stroke:#d97706,font-weight:bold
-    style Analyst fill:#16a34a,color:#fff,stroke:#15803d,font-weight:bold
-    style Judge fill:#7c3aed,color:#fff,stroke:#6d28d9,font-weight:bold
-    style Results fill:#2563eb,color:#fff,stroke:#1d4ed8,font-weight:bold
-    style Metrics fill:#06b6d4,color:#1e293b,stroke:#0891b2,font-weight:bold
+    style P1 fill:#7c3aed,stroke:#6d28d9,stroke-width:2px
+    style Neo fill:#dc2626,stroke:#b91c1c,stroke-width:2px
+    style JSONL fill:#fbbf24,stroke:#d97706,stroke-width:2px
+    style Analyst fill:#16a34a,stroke:#15803d,stroke-width:2px
+    style Judge fill:#7c3aed,stroke:#6d28d9,stroke-width:2px
+    style Results fill:#2563eb,stroke:#1d4ed8,stroke-width:2px
+    style Metrics fill:#67e8f9,stroke:#0891b2,stroke-width:2px
             </div>
         </div>
 
