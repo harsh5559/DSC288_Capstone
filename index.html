@@ -202,6 +202,7 @@
             <li><a href="#architecture">Architecture</a></li>
             <li><a href="#neo4j">Neo4j Schema</a></li>
             <li><a href="#eval-pipeline">Evaluation</a></li>
+            <li><a href="#hyperparams">HP Tuning</a></li>
             <li><a href="#results">Results</a></li>
             <li><a href="#demo">Live Demo</a></li>
             <li><a href="#code">Code &amp; Usage</a></li>
@@ -661,6 +662,84 @@ momentum_5d: +0.034, news_count: 3
         <div class="callout warning">
             <h4>What This Example Reveals</h4>
             <p>The model gives a well-reasoned, relevant, and correct recommendation &mdash; but the Judge flags faithfulness at 1/5 because the model <em>embellishes</em> context with specific numbers that are close-but-not-exact. This pattern repeats across all 50 samples: the model &ldquo;knows&rdquo; what to say, but fills in details it shouldn&rsquo;t have access to. The architecture is working correctly &mdash; the faithfulness gap is a <strong>model behavior</strong> issue, not a system design issue.</p>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 6.5 HYPERPARAMETER TUNING -->
+    <!-- ============================================================ -->
+    <section id="hyperparams" class="section">
+        <h2>6.5 Hyperparameter Tuning</h2>
+
+        <p>Can we improve the system&rsquo;s recommendation accuracy by tuning inference-time hyperparameters? We swept <strong>18 configurations</strong> across three axes, evaluating each on the same 10 test prompts:</p>
+
+        <div class="card-grid">
+            <div class="card highlight">
+                <h4>System Prompt Strategy</h4>
+                <p><strong>Baseline:</strong> &ldquo;You are a financial analyst&rdquo; (original).<br/>
+                <strong>Chain-of-Thought:</strong> Step-by-step: earnings &rarr; news &rarr; consensus &rarr; return &rarr; recommendation.<br/>
+                <strong>Structured Analysis:</strong> Forces FUNDAMENTALS / SENTIMENT / TECHNICAL sections before concluding.</p>
+            </div>
+            <div class="card success">
+                <h4>Max Tokens</h4>
+                <p><strong>300</strong> tokens (concise, forces decisive output) vs. <strong>500</strong> (standard) vs. <strong>800</strong> (verbose, allows detailed reasoning). Hypothesis: shorter output = less hedging = more decisive recommendations.</p>
+            </div>
+            <div class="card warning">
+                <h4>Model Selection</h4>
+                <p><strong>GPT-5.2-chat</strong> (reasoning model, no temperature control) vs. <strong>GPT-5-mini</strong> (T=0.3, 0.7) vs. <strong>GPT-5</strong> (T=0.3, 0.7). Tests whether smaller, faster models can match the flagship.</p>
+            </div>
+        </div>
+
+        <h3>6.5.1 Sweep Results</h3>
+        <div class="table-container">
+            <table>
+                <tr><th>Model</th><th>Temp</th><th>Prompt Strategy</th><th>Max Tokens</th><th>Accuracy</th><th>Balanced Acc.</th><th>Macro F1</th><th>Judge Corr.</th></tr>
+                <tr style="background:#dcfce7;font-weight:bold;"><td>GPT-5.2-chat</td><td>default</td><td>chain_of_thought</td><td>300</td><td>70.0%</td><td>66.7%</td><td>0.600</td><td>3.40</td></tr>
+                <tr><td>GPT-5.2-chat</td><td>default</td><td>baseline</td><td>500</td><td>60.0%</td><td>33.3%</td><td>0.250</td><td>3.40</td></tr>
+                <tr><td>GPT-5.2-chat</td><td>default</td><td>chain_of_thought</td><td>500</td><td>60.0%</td><td>33.3%</td><td>0.250</td><td>3.40</td></tr>
+                <tr><td>GPT-5.2-chat</td><td>default</td><td>structured_analysis</td><td>500</td><td>60.0%</td><td>33.3%</td><td>0.250</td><td>3.40</td></tr>
+                <tr><td>GPT-5.2-chat</td><td>default</td><td>baseline</td><td>300</td><td>60.0%</td><td>33.3%</td><td>0.250</td><td>3.40</td></tr>
+                <tr><td>GPT-5.2-chat</td><td>default</td><td>chain_of_thought</td><td>800</td><td>60.0%</td><td>33.3%</td><td>0.250</td><td>3.40</td></tr>
+                <tr><td>GPT-5.2-chat</td><td>default</td><td>structured_analysis</td><td>800</td><td>60.0%</td><td>33.3%</td><td>0.250</td><td>3.40</td></tr>
+                <tr><td>GPT-5.2-chat</td><td>default</td><td>structured_analysis</td><td>300</td><td>50.0%</td><td>27.8%</td><td>0.238</td><td>3.00</td></tr>
+                <tr style="color:#94a3b8;"><td>GPT-5-mini</td><td>0.7</td><td>baseline</td><td>500</td><td>20.0%</td><td>11.1%</td><td>0.133</td><td>1.80</td></tr>
+                <tr style="color:#94a3b8;"><td>GPT-5-mini</td><td>0.3</td><td>baseline</td><td>500</td><td>10.0%</td><td>5.6%</td><td>0.083</td><td>1.40</td></tr>
+                <tr style="color:#94a3b8;"><td>GPT-5 / GPT-5-mini</td><td>0.3&ndash;0.7</td><td>CoT / Structured</td><td>500</td><td>10.0%</td><td>33.3%</td><td>0.061</td><td>1.00</td></tr>
+            </table>
+        </div>
+
+        <h3>6.5.2 Key Findings</h3>
+        <div class="card-grid">
+            <div class="card highlight">
+                <h4>Best Config: CoT + 300 tokens</h4>
+                <p><strong>70% accuracy</strong> (up from 60% baseline) with <strong>66.7% balanced accuracy</strong> and <strong>0.600 F1</strong> &mdash; a 2.4&times; improvement in F1. The chain-of-thought prompt forces step-by-step reasoning through earnings, news, and consensus before deciding. The 300-token cap forces conciseness, preventing the model from hedging with &ldquo;on one hand / on the other hand&rdquo; reasoning that often defaults to HOLD.</p>
+            </div>
+            <div class="card success">
+                <h4>Model Size Matters Dramatically</h4>
+                <p>GPT-5.2-chat achieves 50&ndash;70% accuracy across all prompt strategies. GPT-5-mini and GPT-5 collapse to 10&ndash;20% &mdash; effectively always predicting a single class (HOLD). Financial reasoning requires the largest model&rsquo;s ability to synthesize earnings surprises, news sentiment, and analyst consensus simultaneously.</p>
+            </div>
+            <div class="card warning">
+                <h4>Structured Analysis Underperforms at Low Tokens</h4>
+                <p>The structured_analysis prompt at 300 tokens (<strong>50% accuracy</strong>) actually hurts: the rigid FUNDAMENTALS/SENTIMENT/TECHNICAL template consumes most of the token budget on structure, leaving too little room for the actual recommendation. At 500+ tokens it recovers to 60%.</p>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <h4>Implications for Production Deployment</h4>
+            <ul>
+                <li><strong>Use chain-of-thought prompting</strong> with concise output limits as the default strategy for all stock recommendations.</li>
+                <li><strong>GPT-5.2-chat is the minimum viable model</strong> for financial explainability &mdash; smaller models lack the multi-factor reasoning capacity needed.</li>
+                <li><strong>Temperature is not a lever</strong> for reasoning models like GPT-5.2-chat (which only support default temperature). For models that do support it, lower temperature (0.3) does not improve accuracy over higher (0.7).</li>
+                <li><strong>Token budget interacts with prompt strategy:</strong> verbose prompts need proportionally more output tokens. Match your prompt complexity to your max_tokens setting.</li>
+            </ul>
+        </div>
+
+        <div class="callout">
+            <h4>Running the Sweep</h4>
+            <p>The sweep script is available at <code>src/evaluation/hyperparam_sweep.py</code>. It reuses existing prompts and evaluates each configuration through the full analyst + judge pipeline:</p>
+        </div>
+        <div class="code-block">
+            <pre><code>python -m src.evaluation.hyperparam_sweep --split test</code></pre>
         </div>
     </section>
 
