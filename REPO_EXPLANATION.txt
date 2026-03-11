@@ -1,0 +1,568 @@
+================================================================================
+  DSC288 CAPSTONE — COMPLETE PROJECT DOCUMENTATION
+  Multi-Agent Graph RAG for Explainable Financial Decision Support
+  Group 10: Harsh Arya, Gabrielle Despaigne, Camila Paik, Raghav Vasappanavara
+  UC San Diego — March 2026
+================================================================================
+
+IMPORTANT — RUNTIME REQUIREMENTS
+---------------------------------
+This project was developed and executed inside Docker containers on a local
+laptop, with network hooks to the OpenAI API via a LiteLLM proxy.
+
+To reproduce results you would need:
+  1. Docker Desktop  — Neo4j runs as a Docker container (dsc288-neo4j)
+  2. OpenAI API key  — All LLM calls (analyst agent, LLM judge, embeddings)
+                       go through LiteLLM → OpenAI. The models used include
+                       gpt-5.2-chat, gpt-5-mini, gpt-5-nano, and others.
+  3. Python 3.10+    — With packages from requirements.txt
+  4. Finnhub API key — Only needed if re-downloading raw stock data
+
+THE CODE WILL NOT RUN WITHOUT VALID OPENAI API KEYS.
+API keys are stored in a .key file at the repo root (gitignored) with the
+format OPENAI_API_KEY=sk-... (one KEY=VALUE per line).
+
+The included results, evaluation outputs, figures, and HTML report represent
+our completed evaluation outputs and can be reviewed without running anything.
+
+================================================================================
+WHAT THIS PROJECT IS
+================================================================================
+
+A multi-agent LLM-based system that gives retail investors buy/hold/sell
+recommendations on stocks, with natural-language explanations grounded in
+real financial data via Graph RAG (Retrieval-Augmented Generation backed by
+a Neo4j knowledge graph).
+
+The key innovation is EXPLAINABILITY — not just a prediction, but a cited,
+structured explanation of why the model recommends buy, hold, or sell. The
+system uses specialized agents and a knowledge graph of real Finnhub data
+(earnings, news, analyst recommendations, peer networks) to produce
+recommendations that can be traced back to specific data points.
+
+Target users: intermediate/beginner retail investors who value understanding
+financial recommendations over opaque numerical predictions.
+
+================================================================================
+STOCK UNIVERSE
+================================================================================
+
+60 tickers sourced from Finnhub across three high-activity sectors:
+
+  Finance (20):       JPM, GS, MS, BAC, C, WFC, BLK, SCHW, AXP, V,
+                      MA, COF, MET, USB, TFC, CME, BK, ICE, SPGI, PNC
+  Semiconductor (20): NVDA, AMD, INTC, AVGO, QCOM, TXN, AMAT, LRCX,
+                      KLAC, MCHP, ADI, ON, NXPI, MRVL, SWKS, ARM,
+                      MU, TSM, ASML, GFS
+  Biotech (20):       AMGN, GILD, REGN, VRTX, MRNA, BIIB, ILMN, ALNY,
+                      INCY, BMRN, EXAS, HALO, IONS, NBIX, PCVX, RARE,
+                      SRPT, UTHR, INSM, SGEN
+
+Of these 60, 58 have historical OHLCV price data in FNSPID (2 recent IPOs
+lack coverage). The final dataset spans Oct 2009 – Dec 2023 with ~440K
+stock-day observations.
+
+================================================================================
+DATA SOURCES (5 datasets)
+================================================================================
+
+1. Finnhub API  (data/raw/finnhub_stocks/)
+   - 60 tickers × up to 9 endpoints each: profile, quote, financials,
+     earnings, recommendations, peers, news, news_sentiment, insider_sentiment
+   - Organized: data/raw/finnhub_stocks/{sector}/{TICKER}/{endpoint}.json
+   - Downloaded by: scripts/_dl_stocks.py (uses Finnhub API key)
+
+2. FNSPID  (data/raw/fnspid/)
+   - Stock_price/full_history/ — individual CSV per ticker (OHLCV daily)
+   - Stock_news/All_external.csv — ~5.5 GB of financial news articles
+   - Downloaded by: scripts/_dl_fnspid.py (from HuggingFace)
+
+3. Financial Phrasebank  (data/raw/financial_phrasebank/)
+   - 2,264 sentiment-labeled financial sentences (AllAgree split)
+   - Used to validate FinBERT sentiment pipeline
+   - Downloaded by: scripts/_dl_phrasebank.py (from HuggingFace)
+
+4. Yahoo Finance S&P 500  (data/raw/yahoo_sp500/)
+   - sp500_1999_2023.csv — daily S&P 500 index (6,289 trading days)
+   - Provides market context (return, direction indicators)
+
+5. FinQA  (data/raw/finqa/)
+   - Financial question-answering pairs (train/validation/test JSON)
+   - For evaluating explanation quality and reasoning faithfulness
+   - Downloaded by: scripts/_dl_finqa.py (from GitHub)
+
+To download all data:
+  python scripts/download_all_data.py
+(Runs the four _dl_* scripts in parallel. Each is idempotent.)
+
+================================================================================
+DATA PIPELINE  (5 stages)
+================================================================================
+
+Run the full pipeline:
+  python scripts/run_pipeline.py
+
+Or run stages individually:
+  python scripts/01_load_data.py
+  python scripts/02_clean_data.py
+  python scripts/03_align_data.py
+  python scripts/04_feature_engineering.py
+  python scripts/05_merge_and_split.py
+
+--- STAGE 1: LOAD DATA  (scripts/01_load_data.py) -----------------------------
+- Loads FNSPID prices (individual CSVs per ticker)
+- Uses Finnhub/Neo4j ticker list when available; intersects with FNSPID so
+  train/val/test align with Neo4j for evaluation
+- Loads FNSPID news, Financial Phrasebank, Yahoo S&P 500, FinQA
+- Saves selected ticker list to data/processed/selected_tickers.json
+- Outputs: data/processed/*_raw.parquet, 01_loading_summary.json
+
+--- STAGE 2: CLEAN DATA  (scripts/02_clean_data.py) ---------------------------
+- Prices: standardize columns, forward-fill, drop duplicates, remove outliers
+  (>50% daily change — justified as data errors in curated universe)
+- News: detect columns, strip HTML, remove short/empty/duplicate articles
+- Phrasebank: dedupe, standardize labels
+- S&P 500: standardize dates, compute sp500_return
+- Outputs: data/processed/*_clean.parquet, 02_cleaning_summary.json
+
+--- STAGE 3: TEMPORAL ALIGNMENT  (scripts/03_align_data.py) --------------------
+- Filters prices to news-available period (Oct 2009 – Dec 2023)
+- Aggregates news by (ticker, date); counts articles per stock-day
+- Left-joins news onto prices (keeps all price rows)
+- Joins S&P 500 market context
+- Creates next_day_return and buy/hold/sell targets (fixed ±2% thresholds)
+- Outputs: data/processed/data_aligned.parquet, 03_alignment_summary.json
+
+--- STAGE 4: FEATURE ENGINEERING  (scripts/04_feature_engineering.py) -----------
+- Per-ticker indicators: SMA-5/20/50, momentum-5/20, volatility-20,
+  volume ratio, price-to-SMA ratios
+- Market features: excess return, market_up/market_down indicators
+- Drops first 50 rows per ticker (warm-up for SMA-50)
+- Normalization intentionally deferred to Stage 5 (no leakage)
+- Outputs: data/processed/data_engineered.parquet
+
+--- STAGE 5: SPLIT + NORMALIZE  (scripts/05_merge_and_split.py) ----------------
+- Temporal split (no shuffling):
+    Train:      everything up to 2021-12-31
+    Validation: 2022-01-01 to 2022-12-31
+    Test:       2023-01-01 onward
+- Normalization (fitted on TRAIN split only):
+    MinMaxScaler for prices → *_norm columns
+    StandardScaler for volume and returns
+- Forward-fill applied independently per split (no cross-split leakage)
+- Creates RAG context file for Graph RAG retrieval
+- Outputs:
+    data/processed/train_final.parquet   (2009–2021, ~129K rows)
+    data/processed/val_final.parquet     (2022, ~14K rows)
+    data/processed/test_final.parquet    (2023, ~6K rows)
+    data/processed/rag_context.parquet   (news text for retrieval)
+
+================================================================================
+NEO4J KNOWLEDGE GRAPH (Fin Memory)
+================================================================================
+
+Finnhub data is ingested into a Neo4j graph database for Graph RAG. The
+graph provides structured financial context that the LLM agents query when
+generating explanations.
+
+Entities:
+  - Sector (3): Finance, Semiconductor, Biotech
+  - Stock (60): ticker, name, industry, market_cap
+  - Earnings (220): period, actual, estimate, surprise, surprise_percent
+  - NewsArticle (6,960): headline, summary, source, url, datetime
+  - Recommendation (232): buy, hold, sell, strongBuy, strongSell, period
+
+Relationships:
+  - Stock -[:IN_SECTOR]-> Sector
+  - Stock -[:HAS_EARNINGS]-> Earnings
+  - Stock -[:MENTIONED_IN]-> NewsArticle
+  - Stock -[:HAS_RECOMMENDATION]-> Recommendation
+  - Stock -[:PEERS_WITH]-> Stock
+
+How to ingest (requires Docker for Neo4j):
+  python scripts/ingest_fin_memory.py          # start Neo4j + full ingest
+  python src/agents/fin_memory.py memorize     # ingest all 60 tickers
+  python src/agents/fin_memory.py stats        # graph node/edge counts
+  python src/agents/fin_memory.py query "MATCH (s:Stock) RETURN s LIMIT 5"
+
+Neo4j connection: bolt://localhost:7687 (user: neo4j, pw: dsc288graph)
+Configuration: config/neo4j.yaml
+
+Documentation: reports/FIN_MEMORY_IMPLEMENTATION.md
+Browser queries: reports/NEO4J_BROWSER_QUERIES.md
+
+================================================================================
+AGENT SYSTEM (src/agents/)
+================================================================================
+
+The multi-agent system consists of specialized modules that work together:
+
+1. graph_context.py  — Neo4j Context Retriever
+   Fetches structured context for a ticker from Neo4j: company profile,
+   sector, earnings history, news headlines, peer network, and latest
+   analyst recommendation. This context is injected into LLM prompts so
+   that explanations are grounded in real data.
+
+2. data_context.py  — Market Data Provider
+   Loads processed parquet data (val/test splits). Provides rows by
+   (ticker, date) for prompt construction and samples for judge evaluation.
+   Manages the Finnhub ticker list from _sector_index.json.
+
+3. prompt_builder.py  — Prompt Construction
+   Builds prompts for both the analyst LLM and the LLM judge:
+   - Analyst prompts: combine Neo4j context + market data, request
+     a BUY/HOLD/SELL recommendation with explanation
+   - Three prompt variants: "standard", "earnings_focus", "news_focus"
+   - Judge prompts: provide context + model output for scoring
+
+4. llm_judge.py  — LLM-as-Judge Scoring
+   Uses GPT-5.2-chat as a judge to score analyst outputs on four dimensions:
+     - Faithfulness (1-5): does the explanation only use provided data?
+     - Relevance (1-5): is the explanation relevant to the recommendation?
+     - Consistency (1-5): is the reasoning internally consistent?
+     - Correctness (1-5): does the recommendation match ground truth?
+   Connects to LiteLLM proxy (localhost:4000). Supports sync and async.
+
+5. fin_memory.py  — Neo4j Ingestion CLI
+   Reads Finnhub JSON files from data/raw/finnhub_stocks/ and MERGEs them
+   into Neo4j (idempotent). Creates sectors, stocks, earnings, news,
+   recommendations, and peer relationships.
+
+================================================================================
+EVALUATION PIPELINE (src/evaluation/)
+================================================================================
+
+The evaluation system measures both recommendation accuracy and explanation
+quality using an LLM-as-judge approach.
+
+1. explainability.py  — Main Evaluation Pipeline
+   Commands: build, run, export, all
+
+   "build" — Constructs prompts from Neo4j context + processed data for
+   train and test splits, with three prompt variants per sample.
+   Output: data/eval/prompts_train.jsonl, prompts_test.jsonl
+
+   "run" — For each prompt: calls the analyst LLM (via LiteLLM),
+   parses the BUY/HOLD/SELL recommendation, calls the LLM judge for
+   scoring. Computes classification metrics (accuracy, balanced accuracy,
+   macro F1) and judge score averages. Generates confusion matrices,
+   judge score distributions, and sector accuracy plots.
+   Output: data/eval/results_*.jsonl, reports/eval_summary.json,
+           assets/figures/eval/*.png, assets/eval_summary_embed.js
+
+   "export" — Extracts demo data from test results for the HTML report.
+   Output: assets/demo_data.json, assets/demo_embed.js (or demo_hp_embed.js)
+
+2. hyperparam_sweep.py  — Hyperparameter Tuning
+   Sweeps over: prompt strategy (standard vs chain-of-thought),
+   max_tokens (300, 500, 800), model (gpt-5.2-chat, gpt-5-mini, gpt-5-nano),
+   and temperature.
+   Finds best configuration and saves results.
+   Output: reports/hyperparam_results.json
+
+   Best configuration found: gpt-5.2-chat + chain-of-thought + 300 tokens
+   (10 pp accuracy improvement over baseline)
+
+3. classification_eval.py  — Classification Metrics
+   Computes macro F1, per-class precision/recall, and confusion matrices
+   for val/test splits. Includes hold-only and majority-class baselines.
+
+Supporting scripts for evaluation:
+  scripts/generate_hp_comparison_plots.py  — baseline vs HP-tuned plots
+  scripts/generate_hp_demo_data.py         — HP-tuned demo data for HTML
+
+================================================================================
+SERVER INFRASTRUCTURE (src/server/)
+================================================================================
+
+1. LiteLLM Proxy  (src/server/_serve.py, managed by manage.py)
+   A local proxy on port 4000 that routes all OpenAI API calls through
+   LiteLLM. Provides model aliasing, caching, retries, and rate limiting.
+
+   Configured via config/litellm_config.yaml:
+     - GPT-5 family: gpt-5.2, gpt-5.1, gpt-5, gpt-5-mini, gpt-5-nano
+     - O-series reasoning: o4-mini, o3, o1
+     - Embeddings: text-embedding-3-small/large, ada-002
+     - Project aliases used by agents:
+         agent-reasoning → gpt-5.2     (decision synthesizer)
+         agent-fast      → gpt-5-mini  (individual agent tasks)
+         agent-bulk      → gpt-5-nano  (bulk scoring)
+         embedder        → text-embedding-3-small
+
+   Server management:
+     python src/server/manage.py start         # start LiteLLM + Neo4j
+     python src/server/manage.py start neo4j   # start only Neo4j (Docker)
+     python src/server/manage.py status        # check if running
+     python src/server/manage.py test          # run test suite
+     python src/server/manage.py models        # list available models
+     python src/server/manage.py stop          # shut down
+
+2. MCP Server  (src/server/mcp_server.py)
+   Exposes financial analysis tools to Cursor IDE via MCP (Model Context
+   Protocol). Implemented tools:
+     - analyze_stock:       full LLM analysis on a ticker (graph context
+                            + analyst LLM + recommendation)
+     - evaluate_model:      classification metrics for a split
+     - evaluate_with_judge: LLM-as-judge on sampled rows
+     - search_news:         search Neo4j news for a ticker
+   Placeholder tools (not yet wired): get_sentiment, technical_snapshot,
+   backtest
+
+================================================================================
+EXPLORATORY DATA ANALYSIS
+================================================================================
+
+Location: eda/01_EDA.ipynb  (Jupyter notebook, 12 analysis sections)
+Runner:   eda/run_eda.py    (executes the notebook programmatically)
+
+How to run:
+  python eda/run_eda.py              # full run
+  python eda/run_eda.py --check      # verify data exists
+
+Sections:
+  1.  Setup & stock universe
+  2.  Load & align price history
+  3.  Data quality
+  4.  Outlier analysis (justifies the 50% threshold)
+  5.  Target variable (buy/hold/sell distributions: ~15/70/15%)
+  6.  Finnhub fundamentals
+  7.  Phrasebank sentiment baseline
+  8.  FinQA
+  9.  S&P 500 correlation (MI = 0.0875 nats, ~10% of target info)
+  10. Temporal analysis
+  11. Anomaly summary
+  12. Critical insights
+
+Outputs (eda/outputs/):
+  8 PNG visualizations + 1 JSON insights summary + 1 CSV anomaly table
+
+================================================================================
+KEY EVALUATION FINDINGS
+================================================================================
+
+Classification (test set, 50 prompts):
+  - Accuracy: ~60% (test), ~52.5% (train)
+  - Macro F1 is low due to strong BUY bias — the model predicts BUY for
+    nearly all inputs regardless of ground truth
+  - Balanced accuracy reveals this is effectively a majority-class classifier
+
+Explanation Quality (LLM judge, 1-5 scale):
+  - Relevance: 4-5 (explanations are on-topic)
+  - Consistency: 4-5 (reasoning is internally coherent)
+  - Faithfulness: ~1.0-1.3 (critically low — model hallucates specific
+    numbers and statistics not present in the provided context)
+  - This is the most important finding for production deployment
+
+Hyperparameter Tuning Impact:
+  - Best config: Chain-of-Thought prompt + 300 max_tokens (gpt-5.2-chat)
+  - +10 percentage point accuracy improvement over baseline
+  - Explanation quality preserved; only consistency drops modestly (-0.5)
+  - Faithfulness remains low across all configurations — prompt engineering
+    alone cannot fix hallucination; requires RAG constraints or citation
+    enforcement
+
+Sector Patterns:
+  - Semiconductor: highest training accuracy (BUY signals from earnings/sentiment)
+  - Biotech: most variable (binary clinical trial outcomes)
+  - Finance: HOLD ground truth + BUY bias = frequent misclassification
+
+================================================================================
+GITHUB PAGES REPORT
+================================================================================
+
+index.html (repo root) — single-page styled HTML report deployed via
+GitHub Pages. Contains:
+  - Project overview and team info
+  - Interactive Mermaid diagrams (pipeline, architecture, Neo4j schema)
+  - Evaluation results with plots (confusion matrices, judge scores,
+    sector accuracy, HP comparison)
+  - Live demo section showing actual analyst outputs with judge scores
+  - Toggle between baseline and HP-tuned results
+  - All static assets in assets/ directory:
+      assets/figures/eval/        — evaluation plots (PNG)
+      assets/eval_summary_embed.js — metrics data
+      assets/demo_hp_embed.js     — demo entries
+      assets/hyperparam_embed.js  — HP sweep results
+      assets/demo_data.json       — demo data
+
+================================================================================
+CONFIGURATION FILES
+================================================================================
+
+config/litellm_config.yaml  — LiteLLM proxy: model definitions, aliases,
+                              cache/retry/timeout settings
+config/neo4j.yaml           — Neo4j connection (bolt://localhost:7687,
+                              user: neo4j, password: dsc288graph)
+requirements.txt            — Python dependencies with version constraints
+                              (pandas, numpy, openai, litellm, neo4j,
+                              scikit-learn, torch, transformers, mcp, etc.)
+.gitignore                  — Excludes: raw data files (FNSPID CSVs,
+                              Phrasebank, FinQA), processed parquets,
+                              .key/.env files, model weights, logs,
+                              venv, pycache
+
+================================================================================
+DATA FLOW — END TO END
+================================================================================
+
+  API keys (.key file, gitignored)
+       |
+       v
+  download_all_data.py  →  data/raw/
+       |                      |-- finnhub_stocks/{sector}/{TICKER}/*.json
+       |                      |-- fnspid/Stock_price/ & Stock_news/
+       |                      |-- financial_phrasebank/
+       |                      |-- finqa/
+       |                      |-- yahoo_sp500/
+       v
+  run_pipeline.py  (5 stages)
+       |-- 01_load_data.py         →  *_raw.parquet
+       |-- 02_clean_data.py        →  *_clean.parquet
+       |-- 03_align_data.py        →  data_aligned.parquet
+       |-- 04_feature_engineering  →  data_engineered.parquet
+       |-- 05_merge_and_split     →  train/val/test_final.parquet
+       v
+  ingest_fin_memory.py  (Docker Neo4j)
+       |-- Starts Neo4j container
+       |-- Ingests 60 tickers from Finnhub JSON → Neo4j graph
+       v
+  src/evaluation/explainability.py  (requires LiteLLM + Neo4j + OpenAI)
+       |-- "build"   →  prompts_train.jsonl, prompts_test.jsonl
+       |-- "run"     →  results_*.jsonl, eval_summary.json, plots
+       |-- "export"  →  demo data for index.html
+       v
+  src/evaluation/hyperparam_sweep.py  (requires LiteLLM + OpenAI)
+       |-- Sweeps prompt × tokens × model × temperature
+       |-- Outputs hyperparam_results.json
+       v
+  scripts/generate_hp_comparison_plots.py  →  HP comparison figures
+  scripts/generate_hp_demo_data.py         →  HP demo embed JS
+       v
+  index.html  — GitHub Pages report with all results and live demo
+
+================================================================================
+COMPLETE REPO STRUCTURE
+================================================================================
+
+288r/
+├── config/
+│   ├── litellm_config.yaml            # LLM proxy model definitions
+│   └── neo4j.yaml                     # Neo4j connection settings
+├── data/
+│   ├── raw/                           # Original datasets (gitignored)
+│   │   ├── finnhub_stocks/            # 60 tickers × 9 endpoints
+│   │   │   ├── _sector_index.json     # ticker → sector mapping
+│   │   │   ├── finance/{TICKER}/      # 20 finance tickers
+│   │   │   ├── semiconductor/{TICKER}/ # 20 semi tickers
+│   │   │   └── biotech/{TICKER}/      # 20 biotech tickers
+│   │   ├── fnspid/                    # OHLCV prices + news articles
+│   │   ├── financial_phrasebank/      # Sentiment-labeled sentences
+│   │   ├── finqa/                     # Financial QA benchmark
+│   │   └── yahoo_sp500/              # S&P 500 daily index
+│   └── processed/                     # Pipeline outputs (gitignored)
+│       ├── selected_tickers.json      # Tickers used in pipeline
+│       ├── *_raw.parquet              # Stage 1 outputs
+│       ├── *_clean.parquet            # Stage 2 outputs
+│       ├── data_aligned.parquet       # Stage 3 output
+│       ├── data_engineered.parquet    # Stage 4 output
+│       ├── train_final.parquet        # Final train (2009–2021)
+│       ├── val_final.parquet          # Final validation (2022)
+│       ├── test_final.parquet         # Final test (2023)
+│       ├── rag_context.parquet        # News text for RAG
+│       └── 0*_*_summary.json         # Per-stage summaries
+├── eda/
+│   ├── 01_EDA.ipynb                   # Main EDA notebook (12 sections)
+│   ├── run_eda.py                     # Notebook executor
+│   └── outputs/                       # 8 PNGs + 1 JSON + 1 CSV
+├── scripts/
+│   ├── run_pipeline.py                # Orchestrates all 5 stages
+│   ├── 01_load_data.py                # Stage 1: load raw data
+│   ├── 02_clean_data.py               # Stage 2: clean data
+│   ├── 03_align_data.py               # Stage 3: temporal alignment
+│   ├── 04_feature_engineering.py      # Stage 4: features
+│   ├── 05_merge_and_split.py          # Stage 5: split + normalize
+│   ├── download_all_data.py           # Parallel downloader (all sources)
+│   ├── _dl_stocks.py                  # Finnhub API downloader
+│   ├── _dl_fnspid.py                  # FNSPID HuggingFace downloader
+│   ├── _dl_phrasebank.py             # Phrasebank downloader
+│   ├── _dl_finqa.py                   # FinQA GitHub downloader
+│   ├── ingest_fin_memory.py           # Neo4j ingest (start + memorize)
+│   ├── build_explainability_dataset.py # → prompts JSONL (if separate)
+│   ├── run_explainability_eval.py     # → results + plots
+│   ├── export_demo_data.py            # → demo JSON/JS for HTML
+│   ├── generate_hp_comparison_plots.py # HP baseline vs tuned plots
+│   ├── generate_hp_demo_data.py       # HP demo embed data
+│   ├── generate_docx.py              # Word doc report generator
+│   ├── download_data.py              # Older download script (legacy)
+│   ├── test_download.py              # Download verification
+│   ├── _list_fnspid.py               # HuggingFace repo lister
+│   ├── _test_finnhub.py              # Finnhub endpoint tester
+│   └── README.md                     # Pipeline documentation
+├── src/
+│   ├── agents/
+│   │   ├── graph_context.py           # Neo4j context retrieval
+│   │   ├── data_context.py            # Market data from parquet
+│   │   ├── prompt_builder.py          # Analyst + judge prompt construction
+│   │   ├── llm_judge.py              # LLM-as-judge scoring
+│   │   └── fin_memory.py             # Finnhub → Neo4j ingestion CLI
+│   ├── evaluation/
+│   │   ├── explainability.py          # Main eval pipeline (build/run/export)
+│   │   ├── hyperparam_sweep.py        # HP tuning sweep
+│   │   └── classification_eval.py     # Classification metrics
+│   └── server/
+│       ├── manage.py                  # Server CLI (start/stop/test/etc.)
+│       ├── _serve.py                  # LiteLLM proxy launcher
+│       └── mcp_server.py             # MCP tool server for Cursor IDE
+├── assets/
+│   ├── figures/eval/                  # Evaluation plots (PNG)
+│   ├── eval_summary_embed.js          # Metrics for HTML report
+│   ├── demo_hp_embed.js              # Demo data (HP-tuned)
+│   ├── demo_data.json                # Demo data (baseline)
+│   ├── hyperparam_embed.js           # HP sweep results
+│   └── README.md                     # Assets documentation
+├── reports/
+│   ├── PLAN.md                       # Implementation plan
+│   ├── FIN_MEMORY_IMPLEMENTATION.md  # Neo4j graph documentation
+│   ├── PIPELINE_SUMMARY.md          # Pipeline documentation
+│   ├── NEO4J_BROWSER_QUERIES.md     # Example Cypher queries
+│   ├── Addressing_TA_Comments.md    # Response to TA feedback
+│   ├── eval_summary.json             # Evaluation results
+│   ├── hyperparam_results.json       # HP sweep results
+│   ├── DSC288_Progress_Report.html   # HTML progress report
+│   ├── DSC288_Progress_Report_Group10.md
+│   └── Progress_Report_1/           # Earlier progress report
+├── index.html                        # GitHub Pages report (main deliverable)
+├── README.md                         # Project readme
+├── PROJECT_STRUCTURE.md              # Navigable project layout
+├── requirements.txt                  # Python dependencies
+├── .gitignore                        # Excludes data, keys, caches
+└── REPO_EXPLANATION.txt              # This file
+
+================================================================================
+WHAT IS BUILT (complete as of March 2026)
+================================================================================
+
+  ✓ All data download scripts (Finnhub, FNSPID, Phrasebank, FinQA, S&P 500)
+  ✓ 5-stage data pipeline (load → clean → align → features → split+normalize)
+  ✓ Leakage-free design (normalization on train only, per-split forward-fill)
+  ✓ Comprehensive EDA notebook (12 sections, 10 output artifacts)
+  ✓ Neo4j knowledge graph with Finnhub data (60 tickers, 5 entity types)
+  ✓ Graph RAG context retrieval (graph_context.py)
+  ✓ Analyst prompt construction with 3 variants (standard/earnings/news focus)
+  ✓ LLM-as-judge evaluation (4 dimensions: faithfulness/relevance/consistency/correctness)
+  ✓ Full explainability evaluation pipeline (build prompts → run analyst → judge → metrics → plots)
+  ✓ Hyperparameter sweep (prompt strategy × tokens × model × temperature)
+  ✓ Classification evaluation with baselines
+  ✓ LiteLLM proxy server with model routing and project aliases
+  ✓ MCP server with implemented tools (analyze_stock, evaluate, search_news)
+  ✓ GitHub Pages HTML report with evaluation results and live demo
+  ✓ HP comparison plots and demo data generation
+
+Not implemented (future work):
+  - Multi-agent debate (multiple specialist agents discussing before synthesis)
+  - Real-time API integration (live Finnhub data)
+  - Full backtesting simulation
+  - RAGAS faithfulness enforcement / citation constraints
+  - FinBERT fine-tuning on Phrasebank
+
+================================================================================
